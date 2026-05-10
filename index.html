@@ -1,0 +1,1211 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>InvestBattle</title>
+    <style>
+        :root {
+            --bg: #080812;
+            --surface: #111128;
+            --gold: #f0a030;
+            --green: #00e070;
+            --red: #f03050;
+            --blue: #4090ff;
+            --text: #d8d8e0;
+            --text2: #888;
+            --border: #2a2a3a;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .app {
+            width: 100%;
+            max-width: 480px;
+            background: #0c0c1c;
+            min-height: 100vh;
+            padding: 12px;
+            position: relative;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+        .logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+        }
+        .logo span {
+            color: var(--gold);
+        }
+        .timer {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--gold);
+        }
+        .timer.urgent {
+            color: var(--red);
+            animation: shake 0.35s infinite;
+        }
+        @keyframes shake {
+            50% {
+                transform: translateX(4px);
+            }
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 10px;
+            background: rgba(64, 144, 255, 0.2);
+            color: var(--blue);
+        }
+        .vs-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .player-card {
+            flex: 1;
+            min-width: 70px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px;
+            text-align: center;
+        }
+        .player-card.you {
+            border-color: var(--green);
+        }
+        .player-card .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 auto 4px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a2e;
+            overflow: hidden;
+        }
+        .player-card .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .player-card .name {
+            font-weight: 700;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+        .player-card .cash {
+            font-size: 12px;
+            font-weight: 900;
+            color: var(--green);
+        }
+        .section-title {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text2);
+            margin: 8px 0 4px;
+        }
+        table.portfolio {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin-bottom: 8px;
+        }
+        table.portfolio th {
+            color: var(--text2);
+            font-weight: 600;
+            padding: 5px 3px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 8px;
+        }
+        table.portfolio td {
+            padding: 5px 3px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        table.portfolio .sym {
+            font-weight: 700;
+            color: #fff;
+        }
+        table.portfolio .up {
+            color: var(--green);
+        }
+        table.portfolio .down {
+            color: var(--red);
+        }
+        .reason {
+            font-size: 7px;
+            color: var(--text2);
+            display: block;
+        }
+        .qty-input {
+            width: 32px;
+            padding: 3px 1px;
+            background: #000;
+            border: 1px solid var(--border);
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 9px;
+            font-weight: 600;
+        }
+        .btn-sm {
+            padding: 4px 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 700;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-sm.sell {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .case-box {
+            background: var(--surface);
+            border: 1.5px solid var(--gold);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .case-box .case-title {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--gold);
+            margin-bottom: 4px;
+        }
+        .case-box .case-desc {
+            font-size: 11px;
+            color: var(--text2);
+            line-height: 1.5;
+        }
+        .case-box .case-price {
+            font-weight: 700;
+            font-size: 12px;
+            color: #fff;
+            margin-top: 6px;
+        }
+        .action-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .qty-control button {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-control input {
+            width: 42px;
+            padding: 6px;
+            background: #000;
+            border: 1px solid var(--border);
+            color: #fff;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .btn {
+            padding: 10px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 0.15s;
+            background: var(--surface);
+            color: #fff;
+            white-space: nowrap;
+            flex: 1;
+            text-align: center;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn:disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .btn.gold {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            font-weight: 800;
+        }
+        .btn.green {
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .btn.held {
+            background: rgba(64, 144, 255, 0.3);
+            border-color: var(--blue);
+            box-shadow: 0 0 10px rgba(64, 144, 255, 0.3);
+        }
+        .wait-counter {
+            font-size: 10px;
+            color: var(--text2);
+            text-align: center;
+            margin-top: 4px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.94);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .overlay.show {
+            display: flex;
+        }
+        .overlay .inner {
+            max-width: 380px;
+            width: 100%;
+        }
+        .chip-row {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 4px 0;
+        }
+        .chip {
+            padding: 7px 12px;
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: #fff;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 10px;
+            transition: all 0.2s;
+            min-width: 40px;
+            text-align: center;
+        }
+        .chip.selected {
+            border-color: var(--gold);
+            background: rgba(240, 160, 48, 0.2);
+            box-shadow: 0 0 10px rgba(240, 160, 48, 0.1);
+        }
+        .input {
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            border: 1px solid var(--border);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .input:focus {
+            outline: none;
+            border-color: var(--blue);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: #0c0c1c;
+            border: 1.5px solid var(--gold);
+            border-radius: 16px;
+            padding: 18px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--surface);
+            border-radius: 12px;
+        }
+        .profile-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            overflow: hidden;
+        }
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .music-btn {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app" id="app">
+        <!-- МЕНЮ -->
+        <div id="menuScreen">
+            <div class="header">
+                <div class="logo">🏆 <span>InvestBattle</span></div>
+                <div class="badge">v1.0</div>
+            </div>
+            <div class="profile-section" id="profileSection">
+                <div class="profile-avatar" id="profileAvatar">👤</div>
+                <div>
+                    <div style="font-weight:700;font-size:13px;color:#fff;" id="profileName">Трейдер</div>
+                    <div style="font-size:10px;color:var(--gold);">⭐ 250</div>
+                </div>
+                <button class="btn-sm" id="editProfileBtn" style="margin-left:auto;">✎</button>
+            </div>
+            <button class="btn gold" id="soloBtn" style="width:100%;margin-bottom:6px;">🤖 Тренировка</button>
+            <button class="btn" id="createRoomBtn" style="width:100%;margin-bottom:4px;">👥 Создать комнату</button>
+            <button class="btn" id="joinRoomBtn" style="width:100%;">🔗 Подключиться</button>
+            <button class="btn-sm" id="musicSelectBtn" style="width:100%;margin-top:8px;">🎵 Музыка</button>
+        </div>
+
+        <!-- ПРОФИЛЬ -->
+        <div class="modal" id="profileModal">
+            <div class="modal-content">
+                <h3>👤 Профиль</h3>
+                <input class="input" id="editName" placeholder="Никнейм" maxlength="20">
+                <div class="section-title">Аватар (выбери или загрузи свой)</div>
+                <div class="chip-row" id="avatarChips"></div>
+                <input type="file" id="customAvatarInput" accept="image/*" style="display:none;">
+                <button class="btn-sm" id="uploadAvatarBtn" style="width:100%;margin-top:4px;">📷 Загрузить свою</button>
+                <button class="btn gold" id="saveProfileBtn" style="width:100%;margin-top:8px;">💾 Сохранить</button>
+                <button class="btn" id="closeProfileBtn" style="width:100%;margin-top:4px;">Закрыть</button>
+            </div>
+        </div>
+
+        <!-- МУЗЫКА -->
+        <div class="modal" id="musicModal">
+            <div class="modal-content">
+                <h3>🎵 Выбор музыки</h3>
+                <div id="musicList"></div>
+                <button class="btn" id="closeMusicBtn" style="width:100%;margin-top:8px;">Закрыть</button>
+            </div>
+        </div>
+
+        <!-- СОЗДАТЬ КОМНАТУ -->
+        <div class="modal" id="createRoomModal">
+            <div class="modal-content">
+                <h3>👥 Новая комната</h3>
+                <input class="input" id="roomNameInput" placeholder="Название" maxlength="30" value="Комната">
+                <div class="chip-row" id="roomTypeChips">
+                    <div class="chip selected" data-type="hard">🎯 Жёсткая</div>
+                    <div class="chip" data-type="flexible">🎲 Произвольная</div>
+                </div>
+                <div class="chip-row" id="teamModeChips">
+                    <div class="chip selected" data-team="ffa">⚔️ Каждый за себя</div>
+                    <div class="chip" data-team="2v2">2v2</div>
+                    <div class="chip" data-team="3v3">3v3</div>
+                </div>
+                <div class="section-title">Макс. игроков</div>
+                <div class="chip-row" id="maxPlayersChips">
+                    <div class="chip selected" data-max="2">2</div><div class="chip" data-max="4">4</div><div class="chip" data-max="8">8</div><div class="chip" data-max="20">20</div>
+                </div>
+                <div class="section-title">Стартовый капитал</div>
+                <div class="chip-row" id="roomCashChips">
+                    <div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div>
+                </div>
+                <div class="section-title">Раунды (не больше)</div>
+                <input type="range" id="roomRoundsSlider" min="5" max="50" value="10" style="width:100%;">
+                <div style="text-align:center;font-weight:700;color:var(--gold);" id="roomRoundsVal">10</div>
+                <div class="section-title">Время на раунд (сек)</div>
+                <input type="range" id="roomTimeSlider" min="10" max="90" value="30" style="width:100%;">
+                <div style="text-align:center;font-weight:700;color:var(--gold);" id="roomTimeVal">30</div>
+                <div class="section-title">Ставка (⭐)</div>
+                <input type="range" id="roomBetSlider" min="0" max="500" value="0" step="10" style="width:100%;">
+                <div style="text-align:center;font-weight:700;color:var(--gold);" id="roomBetVal">0 ⭐</div>
+                <button class="btn gold" id="confirmCreateRoomBtn" style="width:100%;margin-top:8px;">🏆 СОЗДАТЬ</button>
+                <button class="btn" id="cancelCreateRoomBtn" style="width:100%;margin-top:4px;">Отмена</button>
+            </div>
+        </div>
+
+        <!-- ЛОББИ -->
+        <div class="modal" id="lobbyModal">
+            <div class="modal-content" id="lobbyContent"></div>
+        </div>
+
+        <!-- ПОДКЛЮЧИТЬСЯ -->
+        <div class="modal" id="joinModal">
+            <div class="modal-content">
+                <h3>🔗 Подключиться</h3>
+                <input class="input" id="joinCodeInput" placeholder="Код комнаты" maxlength="6">
+                <button class="btn gold" id="confirmJoinBtn" style="width:100%;margin-top:8px;">ПОДКЛЮЧИТЬСЯ</button>
+                <button class="btn" id="cancelJoinBtn" style="width:100%;margin-top:4px;">Отмена</button>
+            </div>
+        </div>
+
+        <!-- ИГРА -->
+        <div id="gameScreen" style="display:none;">
+            <div class="header">
+                <div class="logo">🏆 <span>InvestBattle</span></div>
+                <div class="timer" id="timer">30</div>
+                <div class="badge" id="roundBadge">1/10</div>
+            </div>
+            <div class="vs-row" id="playersRow"></div>
+            <div class="section-title">📦 ПОРТФЕЛЬ</div>
+            <table class="portfolio">
+                <thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th>Изм</th><th>Причина</th><th></th></tr></thead>
+                <tbody id="portfolioBody"></tbody>
+            </table>
+            <div class="case-box">
+                <div class="case-title" id="caseTitle"></div>
+                <div class="case-desc" id="caseDesc"></div>
+                <div class="case-price" id="casePrice"></div>
+            </div>
+            <div class="action-row">
+                <div class="qty-control">
+                    <button id="qtyMinus">−</button>
+                    <input type="number" id="buyQty" value="1" min="1" max="1000">
+                    <button id="qtyPlus">+</button>
+                </div>
+                <button class="btn green" id="buyBtn">📈 КУПИТЬ</button>
+                <button class="btn" id="waitBtn">⏸ ЖДАТЬ</button>
+            </div>
+            <div class="wait-counter" id="waitCounter"></div>
+        </div>
+
+        <!-- ФИНАЛ -->
+        <div class="overlay" id="finalOverlay">
+            <div class="inner">
+                <div style="font-size:28px;">🏁</div>
+                <div style="font-size:18px;font-weight:900;color:var(--gold);margin-bottom:6px;">ФИНАЛ</div>
+                <div class="timer" id="finalTimer">90</div>
+                <div style="color:var(--text2);font-size:11px;margin-bottom:10px;">Каждые 5 сек = 3 мес рынка</div>
+                <table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th></th></tr></thead><tbody id="finalBody"></tbody></table>
+                <div style="font-weight:900;font-size:16px;color:var(--gold);margin:10px 0;" id="finalTotal">💰 $0</div>
+                <button class="btn gold" id="sellAllFinalBtn" style="width:100%;margin-bottom:6px;">💰 ПРОДАТЬ ВСЁ</button>
+                <button class="btn" id="waitFinalBtn" style="width:100%;">⏸ ЖДАТЬ</button>
+            </div>
+        </div>
+
+        <!-- РЕЗУЛЬТАТ -->
+        <div class="overlay" id="resultOverlay">
+            <div class="inner">
+                <div style="font-size:48px;" id="resultEmoji">🏆</div>
+                <div style="font-size:22px;font-weight:900;margin:4px 0;" id="resultTitle"></div>
+                <div style="color:var(--text2);font-size:12px;" id="resultSubtitle"></div>
+                <div style="font-size:26px;font-weight:900;color:var(--gold);margin:8px 0;" id="resultCash"></div>
+                <div style="font-size:11px;color:var(--text2);" id="resultPrize"></div>
+                <button class="btn gold" id="shareBtn" style="width:100%;margin-top:8px;">📤 ПОДЕЛИТЬСЯ</button>
+                <button class="btn" id="menuBtn" style="width:100%;margin-top:4px;">↩ В МЕНЮ</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="music-btn" id="musicToggleBtn">🎵</button>
+
+    <audio id="bgMusic" loop style="display:none;"></audio>
+
+    <script>
+        (function() {
+            const tg = window.Telegram?.WebApp;
+            if (tg) { tg.ready();
+                tg.expand(); }
+
+            // ==================== МУЗЫКА ====================
+            const musicTracks = [
+                { name: '🔇 Без музыки', url: null },
+                { name: '🎵 Lofi Chill', url: 'music/track1.mp3' },
+                { name: '🎷 Jazz Club', url: 'music/track2.mp3' },
+                { name: '🎹 Synthwave', url: 'music/track3.mp3' },
+            ];
+            let currentTrack = 0;
+            const bgMusic = document.getElementById('bgMusic');
+
+            function playMusic(index) {
+                currentTrack = index;
+                if (!musicTracks[index].url) { bgMusic.pause(); return; }
+                bgMusic.src = musicTracks[index].url;
+                bgMusic.play().catch(() => {});
+            }
+            document.getElementById('musicToggleBtn').addEventListener('click', () => {
+                document.getElementById('musicModal').classList.add('show');
+            });
+            document.getElementById('closeMusicBtn').addEventListener('click', () => {
+                document.getElementById('musicModal').classList.remove('show');
+            });
+
+            function buildMusicList() {
+                const list = document.getElementById('musicList');
+                list.innerHTML = musicTracks.map((t, i) => `
+              <div class="chip ${i===currentTrack?'selected':''}" style="width:100%;margin:3px 0;" data-idx="${i}">${t.name}</div>
+            `).join('');
+                list.querySelectorAll('.chip').forEach(c => c.addEventListener('click', function() {
+                    playMusic(parseInt(this.dataset.idx));
+                    buildMusicList();
+                }));
+            }
+            buildMusicList();
+
+            // ==================== АВАТАРКИ ====================
+            const defaultAvatars = ['👤', '🦊', '🐻', '🐼', '🦁', '🐨'];
+            const customIcons = [
+                { name: 'Ава 1', url: 'icons/avatar1.png' },
+                { name: 'Ава 2', url: 'icons/avatar2.png' },
+                { name: 'Ава 3', url: 'icons/avatar3.png' },
+                { name: 'Ава 4', url: 'icons/avatar4.png' },
+                { name: 'Ава 5', url: 'icons/avatar5.png' },
+            ];
+
+            function getAvatarHTML(avatar) {
+                if (avatar && avatar.startsWith('data:image')) return `<img src="${avatar}" alt="ava">`;
+                if (avatar && avatar.startsWith('http')) return `<img src="${avatar}" alt="ava">`;
+                return avatar || '👤';
+            }
+
+            // ==================== СОСТОЯНИЕ ====================
+            const state = {
+                playerName: 'Трейдер',
+                playerAvatar: '👤',
+                playerStars: 250,
+                startCash: 10000,
+                roundTime: 30,
+                totalRounds: 10,
+                maxPlayers: 2,
+                betAmount: 0,
+                roomType: 'hard',
+                roomName: 'Комната',
+                teamMode: 'ffa',
+                currentRound: 0,
+                yourCash: 10000,
+                oppCash: 10000,
+                yourPortfolio: {},
+                oppPortfolio: {},
+                currentCase: null,
+                gameActive: false,
+                isFinal: false,
+                finalTime: 90,
+                usedCases: [],
+                marketPrices: {},
+                fairValues: {},
+                finalInterval: null,
+                roomCode: null,
+                waitPressed: false,
+                waitCount: 0,
+                totalPlayers: 2,
+                roundTimer: null,
+                lobbyPlayers: [],
+            };
+
+            // Загрузка профиля
+            function loadProfile() {
+                if (tg?.CloudStorage) {
+                    tg.CloudStorage.getItems(['name', 'avatar'], (err, items) => {
+                        if (!err && items) {
+                            if (items.name) state.playerName = items.name;
+                            if (items.avatar) state.playerAvatar = items.avatar;
+                        }
+                        updateProfileUI();
+                    });
+                } else {
+                    const saved = localStorage.getItem('investbattle_profile');
+                    if (saved) {
+                        const p = JSON.parse(saved);
+                        state.playerName = p.name || 'Трейдер';
+                        state.playerAvatar = p.avatar || '👤';
+                    }
+                    updateProfileUI();
+                }
+            }
+
+            function saveProfile() {
+                if (tg?.CloudStorage) {
+                    tg.CloudStorage.setItems([{ key: 'name', value: state.playerName }, { key: 'avatar',
+                        value: state.playerAvatar
+                    }]);
+                } else {
+                    localStorage.setItem('investbattle_profile', JSON.stringify({ name: state.playerName,
+                        avatar: state.playerAvatar }));
+                }
+            }
+
+            function updateProfileUI() {
+                document.getElementById('profileName').textContent = state.playerName;
+                document.getElementById('profileAvatar').innerHTML = getAvatarHTML(state.playerAvatar);
+                document.getElementById('editName').value = state.playerName;
+                buildAvatarChips();
+            }
+
+            function buildAvatarChips() {
+                const container = document.getElementById('avatarChips');
+                const allAvatars = [...defaultAvatars, ...customIcons.map(c => c.url)];
+                container.innerHTML = allAvatars.map(a => {
+                    const isSelected = state.playerAvatar === a;
+                    const display = a.startsWith('http') || a.startsWith('data:') ?
+                        `<img src="${a}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;">` : a;
+                    return `<div class="chip ${isSelected?'selected':''}" data-avatar="${a}" style="font-size:16px;">${display}</div>`;
+                }).join('');
+                container.querySelectorAll('.chip').forEach(c => c.addEventListener('click', function() {
+                    state.playerAvatar = this.dataset.avatar;
+                    buildAvatarChips();
+                }));
+            }
+
+            document.getElementById('uploadAvatarBtn').addEventListener('click', () => document.getElementById(
+                'customAvatarInput').click());
+            document.getElementById('customAvatarInput').addEventListener('change', function() {
+                const file = this.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    state.playerAvatar = e.target.result;
+                    buildAvatarChips();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // ==================== КЕЙСЫ (150) ====================
+            const allCases = [
+                { id: 1, diff: 'easy', symbol: 'AAPL', name: 'Apple', price: 185, trend: 'up',
+                    desc: '2024: iPhone 16 с ИИ — предзаказы +40%. Аналитики повышают цель до $220.' },
+                { id: 2, diff: 'easy', symbol: 'SBUX', name: 'Starbucks', price: 92, trend: 'up',
+                    desc: '2024: 1000 кофеен в Азии. Выручка +18%. Дивиденды 2.5%.' },
+                { id: 3, diff: 'easy', symbol: 'NFLX', name: 'Netflix', price: 610, trend: 'side',
+                    desc: '2024: Тариф с рекламой — 40 млн новых подписчиков. Но рост ARPU падает.' },
+                { id: 4, diff: 'easy', symbol: 'MSFT', name: 'Microsoft', price: 420, trend: 'up',
+                    desc: '2024: Контракт с Пентагоном $10B. Azure растёт на 30%.' },
+                { id: 5, diff: 'med', symbol: 'TSLA', name: 'Tesla', price: 175, trend: 'volatile',
+                    desc: '2025: Роботакси в Остине запущено. NHTSA расследует 3 аварии. Илон: "Это заговор".' },
+                { id: 6, diff: 'med', symbol: 'NVDA', name: 'Nvidia', price: 880, trend: 'up',
+                    desc: '2025: H200 чипы — спрос +500%. Но AMD анонсировала MI400 на 30% дешевле.' },
+                { id: 7, diff: 'med', symbol: 'BABA', name: 'Alibaba', price: 78, trend: 'down',
+                    desc: '2025: ВВП КНР +3.5% — минимум за 30 лет. Власти смягчают регулирование.' },
+                { id: 8, diff: 'hard', symbol: 'QS', name: 'QuantumScape', price: 8, trend: 'volatile',
+                    desc: '2024: $200M завод в Техасе. Батареи работают в лаборатории, но не масштабируются. Денег на 18 мес.' },
+                { id: 9, diff: 'hard', symbol: 'PLTR', name: 'Palantir', price: 22, trend: 'down',
+                    desc: '2025: Контракт $2B с Пентагоном. Скандал с утечкой данных — 3 клиента ушли.' },
+                { id: 10, diff: 'exp', symbol: 'TQ', name: 'TerraQuantum', price: 3.2, trend: 'volatile',
+                    desc: '2026: Квантовый чип при комнатной t. Патент под вопросом. Инженер ушёл к IBM.' },
+            ];
+            // Генерация остальных до 150
+            const extraSyms = ['UBER', 'SNAP', 'PINS', 'ZM', 'CRWD', 'SNOW', 'SHOP', 'SQ', 'ROKU', 'DKNG', 'AFRM',
+                'CHWY', 'PTON', 'DDOG', 'NET'
+            ];
+            for (let i = 11; i <= 150; i++) {
+                const s = extraSyms[(i - 11) % extraSyms.length];
+                allCases.push({
+                    id: i,
+                    diff: ['easy', 'med', 'hard', 'exp'][i % 4],
+                    symbol: s + (i > 20 ? '-' + i : ''),
+                    name: s,
+                    price: Math.floor(Math.random() * 600) + 3,
+                    trend: ['up', 'down', 'side', 'volatile'][i % 4],
+                    desc: `2025-2026: ${s} — рынок меняется. Следи за новостями и трендами.`,
+                });
+            }
+
+            // ==================== УТИЛИТЫ ====================
+            function fmt(n) { return n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + 'M' : '$' + Math.round(n)
+                .toLocaleString('en-US'); }
+
+            function getReason(sym, pct) {
+                const map = { 'AAPL': pct > 0 ? 'iPhone продажи' : 'Конкуренты дешевле', 'TSLA': pct > 0 ?
+                        'Роботакси одобрено' : 'NHTSA штраф', 'NVDA': pct > 0 ? 'AI-спрос' : 'AMD давит', 'QS': pct >
+                        0 ? 'Патент близок' : 'Денег нет' };
+                return map[sym] || (pct > 0 ? 'Рынок растёт' : 'Давление продавцов');
+            }
+
+            function updateMarketPrices() {
+                for (const c of allCases) {
+                    if (!state.marketPrices[c.symbol]) {
+                        state.marketPrices[c.symbol] = c.price;
+                        state.fairValues[c.symbol] = c.price;
+                    }
+                    const cur = state.marketPrices[c.symbol];
+                    const fair = state.fairValues[c.symbol];
+                    const bias = c.trend === 'up' ? 0.6 : c.trend === 'down' ? -0.5 : c.trend === 'volatile' ? (Math
+                        .random() - 0.5) * 2 : 0;
+                    const mr = (fair - cur) / fair * 0.3;
+                    let change = mr * 100 + (Math.random() - 0.5 + bias * 0.4) * 15;
+                    if (Math.random() < 0.06) change = (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random() * 25);
+                    change = Math.max(-35, Math.min(35, change));
+                    state.marketPrices[c.symbol] = Math.max(0.02, cur * (1 + change / 100));
+                    state.fairValues[c.symbol] = fair * (1 + (Math.random() - 0.48) * 5 / 100);
+                }
+            }
+
+            function getRandomCase() {
+                const avail = allCases.filter(c => !state.usedCases.includes(c.id));
+                if (avail.length === 0) { state.usedCases = []; return allCases[Math.floor(Math.random() *
+                        allCases.length)]; }
+                return avail[Math.floor(Math.random() * avail.length)];
+            }
+
+            function updatePortfolioTable() {
+                const body = document.getElementById('portfolioBody');
+                const assets = Object.entries(state.yourPortfolio);
+                body.innerHTML = assets.length === 0 ? '<tr><td colspan="7" style="color:var(--text2);">Нет активов</td></tr>' :
+                    assets.map(([sym, d]) => {
+                        const pr = state.marketPrices[sym] || d.avgPrice;
+                        const val = pr * d.qty;
+                        const pct = d.avgPrice > 0 ? ((pr - d.avgPrice) / d.avgPrice * 100).toFixed(1) :
+                            0;
+                        const cls = +pct >= 0 ? 'up' : 'down';
+                        return `<tr><td class="sym">${sym}</td><td>${d.qty}</td><td>${fmt(pr)}</td><td>${fmt(val)}</td>
+                <td class="${cls}">${+pct>=0?'▲':'▼'} ${Math.abs(pct)}%</td><td class="reason">${getReason(sym,+pct)}</td>
+                <td><input class="qty-input" id="sq_${sym}" value="1"><button class="btn-sm sell" id="sell_${sym}">Продать</button></td></tr>`;
+                    }).join('');
+                assets.forEach(([sym]) => {
+                    const btn = document.getElementById('sell_' + sym);
+                    if (btn) btn.addEventListener('click', () => {
+                        const d = state.yourPortfolio[sym];
+                        if (!d) return;
+                        const q = Math.max(1, Math.min(d.qty, parseInt(document.getElementById('sq_' +
+                            sym)?.value) || 1));
+                        state.yourCash += (state.marketPrices[sym] || d.avgPrice) * q;
+                        d.qty -= q;
+                        if (d.qty <= 0) delete state.yourPortfolio[sym];
+                        updatePortfolioTable();
+                        updatePlayersRow();
+                    });
+                });
+            }
+
+            function updatePlayersRow() {
+                document.getElementById('playersRow').innerHTML = [
+                    { name: state.playerName, avatar: state.playerAvatar, cash: state.yourCash, you: true },
+                    { name: '🤖 Бот-Трейдер', avatar: '🤖', cash: state.oppCash, you: false }
+                ].map(p => `
+              <div class="player-card ${p.you?'you':''}">
+                <div class="avatar">${p.avatar}</div>
+                <div class="name">${p.name}</div>
+                <div class="cash">${fmt(p.cash)}</div>
+              </div>`).join('');
+            }
+
+            function showCase(kase) {
+                state.currentCase = kase;
+                if (!state.marketPrices[kase.symbol]) { state.marketPrices[kase.symbol] = kase.price;
+                    state.fairValues[kase.symbol] = kase.price; }
+                document.getElementById('caseTitle').textContent = `${kase.symbol} — ${kase.name}`;
+                document.getElementById('caseDesc').textContent = kase.desc;
+                document.getElementById('casePrice').textContent =
+                    `💰 Цена: ${fmt(state.marketPrices[kase.symbol])} за акцию`;
+                document.getElementById('roundBadge').textContent =
+                    `${state.currentRound}/${state.totalRounds}`;
+                updatePortfolioTable();
+                updatePlayersRow();
+                updateBuyBtn();
+            }
+
+            function updateBuyBtn() {
+                const k = state.currentCase;
+                if (!k) return;
+                const pr = state.marketPrices[k.symbol] || k.price;
+                const q = parseInt(document.getElementById('buyQty').value) || 1;
+                document.getElementById('buyBtn').disabled = state.yourCash < pr * q;
+            }
+
+            function playerBuy() {
+                if (!state.gameActive || state.isFinal || !state.currentCase) return;
+                const k = state.currentCase;
+                const pr = state.marketPrices[k.symbol] || k.price;
+                const q = Math.max(1, parseInt(document.getElementById('buyQty').value) || 1);
+                if (state.yourCash < pr * q) return;
+                state.yourCash -= pr * q;
+                if (!state.yourPortfolio[k.symbol]) state.yourPortfolio[k.symbol] = { qty: 0, avgPrice: 0 };
+                const o = state.yourPortfolio[k.symbol];
+                o.avgPrice = (o.qty * o.avgPrice + pr * q) / (o.qty + q);
+                o.qty += q;
+                updatePortfolioTable();
+                updatePlayersRow();
+                updateBuyBtn();
+            }
+
+            function toggleWait() {
+                state.waitPressed = !state.waitPressed;
+                document.getElementById('waitBtn').classList.toggle('held', state.waitPressed);
+                state.waitCount += state.waitPressed ? 1 : -1;
+                document.getElementById('waitCounter').textContent = `ЖДАТЬ: ${state.waitCount}/${state.totalPlayers}`;
+                if (state.waitCount >= state.totalPlayers && state.waitCount > 0) {
+                    clearInterval(state.roundTimer);
+                    let s = Math.min(5, parseInt(document.getElementById('timer').textContent) || 5);
+                    document.getElementById('timer').textContent = s;
+                    state.roundTimer = setInterval(() => {
+                        s--;
+                        document.getElementById('timer').textContent = s;
+                        if (s <= 0) { clearInterval(state.roundTimer);
+                            nextRound(); }
+                    }, 1000);
+                }
+            }
+
+            function botAction() {
+                if (!state.currentCase) return;
+                const sym = state.currentCase.symbol;
+                const pr = state.marketPrices[sym] || state.currentCase.price;
+                const ip = state.oppPortfolio[sym];
+                const r = Math.random();
+                if (r < 0.3 && state.oppCash >= pr) {
+                    const q = Math.floor(Math.random() * 3) + 1;
+                    if (state.oppCash >= pr * q) {
+                        state.oppCash -= pr * q;
+                        if (!state.oppPortfolio[sym]) state.oppPortfolio[sym] = { qty: 0, avgPrice: 0 };
+                        const o = state.oppPortfolio[sym];
+                        o.avgPrice = (o.qty * o.avgPrice + pr * q) / (o.qty + q);
+                        o.qty += q;
+                    }
+                } else if (r < 0.5 && ip && ip.qty > 0 && pr > ip.avgPrice * 1.15) {
+                    const q = Math.min(ip.qty, Math.ceil(ip.qty * 0.5));
+                    state.oppCash += pr * q;
+                    ip.qty -= q;
+                    if (ip.qty <= 0) delete state.oppPortfolio[sym];
+                }
+                updatePlayersRow();
+            }
+
+            function startFinal() {
+                state.isFinal = true;
+                state.finalTime = 90;
+                document.getElementById('gameScreen').style.display = 'none';
+                document.getElementById('finalOverlay').classList.add('show');
+                updateFinalUI();
+                clearInterval(state.finalInterval);
+                state.finalInterval = setInterval(() => {
+                    state.finalTime -= 5;
+                    document.getElementById('finalTimer').textContent = Math.max(0, state.finalTime);
+                    for (const s of Object.keys(state.marketPrices)) state.marketPrices[s] = Math.max(0.02,
+                        state.marketPrices[s] * (1 + (Math.random() - 0.46) * 14 / 100));
+                    updateFinalUI();
+                    if (state.finalTime <= 0) { clearInterval(state.finalInterval);
+                        sellAll();
+                        endGame(); }
+                }, 5000);
+            }
+
+            function updateFinalUI() {
+                const body = document.getElementById('finalBody');
+                const assets = Object.entries(state.yourPortfolio);
+                body.innerHTML = assets.length === 0 ? '<tr><td colspan="5">Нет активов</td></tr>' : assets.map(([
+                    sym, d
+                ]) => {
+                    const pr = state.marketPrices[sym] || d.avgPrice;
+                    return `<tr><td>${sym}</td><td>${d.qty}</td><td>${fmt(pr)}</td><td>${fmt(pr*d.qty)}</td>
+              <td><input class="qty-input" id="fsq_${sym}" value="${d.qty}"><button class="btn-sm sell" id="fsell_${sym}">Продать</button></td></tr>`;
+                }).join('');
+                assets.forEach(([sym]) => {
+                    const btn = document.getElementById('fsell_' + sym);
+                    if (btn) btn.addEventListener('click', () => {
+                        const d = state.yourPortfolio[sym];
+                        if (!d) return;
+                        const q = Math.max(1, Math.min(d.qty, parseInt(document.getElementById(
+                            'fsq_' + sym)?.value) || d.qty));
+                        state.yourCash += (state.marketPrices[sym] || d.avgPrice) * q;
+                        d.qty -= q;
+                        if (d.qty <= 0) delete state.yourPortfolio[sym];
+                        updateFinalUI();
+                    });
+                });
+                document.getElementById('finalTotal').textContent = '💰 ' + fmt(state.yourCash + Object.entries(state
+                    .yourPortfolio).reduce((s, [sym, d]) => s + (state.marketPrices[sym] || d.avgPrice) * d.qty,
+                    0));
+            }
+
+            function sellAll() {
+                for (const [s, d] of Object.entries(state.yourPortfolio)) state.yourCash += (state.marketPrices[s] ||
+                    d.avgPrice) * d.qty;
+                state.yourPortfolio = {};
+                for (const [s, d] of Object.entries(state.oppPortfolio)) state.oppCash += (state.marketPrices[s] || d
+                    .avgPrice) * d.qty;
+                state.oppPortfolio = {};
+            }
+
+            function endGame() {
+                state.gameActive = false;
+                state.isFinal = false;
+                clearInterval(state.finalInterval);
+                document.getElementById('finalOverlay').classList.remove('show');
+                document.getElementById('resultOverlay').classList.add('show');
+                const win = state.yourCash > state.oppCash;
+                document.getElementById('resultEmoji').textContent = win ? '🏆' : state.yourCash < state.oppCash ?
+                    '💀' : '🤝';
+                document.getElementById('resultTitle').textContent = win ? 'ПОБЕДА!' : state.yourCash < state.oppCash ?
+                    'ПОРАЖЕНИЕ' : 'НИЧЬЯ';
+                document.getElementById('resultSubtitle').textContent = win ? 'Ты лучший инвестор!' : 'Анализируй рынок';
+                document.getElementById('resultCash').textContent = fmt(state.yourCash);
+                document.getElementById('resultPrize').textContent = state.betAmount > 0 && win ?
+                    `Выигрыш: ${Math.floor(state.betAmount*0.95)} ⭐ (комиссия 5%)` : '';
+            }
+
+            function nextRound() {
+                if (state.currentRound >= state.totalRounds) { startFinal(); return; }
+                state.currentRound++;
+                updateMarketPrices();
+                state.waitPressed = false;
+                state.waitCount = 0;
+                document.getElementById('waitBtn').classList.remove('held');
+                document.getElementById('waitCounter').textContent = '';
+                showCase(getRandomCase());
+                state.usedCases.push(state.currentCase.id);
+                botAction();
+                startTimer();
+            }
+
+            function startTimer() {
+                let s = state.roundTime;
+                document.getElementById('timer').textContent = s;
+                document.getElementById('timer').classList.remove('urgent');
+                clearInterval(state.roundTimer);
+                state.roundTimer = setInterval(() => {
+                    s--;
+                    document.getElementById('timer').textContent = s;
+                    if (s <= 5) document.getElementById('timer').classList.add('urgent');
+                    if (s <= 0) { clearInterval(state.roundTimer);
+                        nextRound(); }
+                }, 1000);
+            }
+
+            function startGame() {
+                state.yourCash = state.startCash;
+                state.oppCash = state.startCash;
+                state.yourPortfolio = {};
+                state.oppPortfolio = {};
+                state.marketPrices = {};
+                state.fairValues = {};
+                state.currentRound = 0;
+                state.gameActive = true;
+                state.isFinal = false;
+                state.usedCases = [];
+                state.waitPressed = false;
+                state.waitCount = 0;
+                state.totalPlayers = 2;
+                document.getElementById('waitBtn').classList.remove('held');
+                document.getElementById('waitCounter').textContent = '';
+                document.getElementById('menuScreen').style.display = 'none';
+                document.getElementById('gameScreen').style.display = 'block';
+                ['resultOverlay', 'finalOverlay'].forEach(id => document.getElementById(id).classList.remove(
+                    'show'));
+                updatePortfolioTable();
+                updatePlayersRow();
+                nextRound();
+            }
+
+            // ==================== СОБЫТИЯ ====================
+            document.getElementById('soloBtn').addEventListener('click', startGame);
+            document.getElementById('buyBtn').addEventListener('click', playerBuy);
+            document.getElementById('waitBtn').addEventListener('click', toggleWait);
+            document.getElementById('qtyMinus').addEventListener('click', () => { const i = document.getElementById(
+                    'buyQty');
+                i.value = Math.max(1, +i.value - 1);
+                updateBuyBtn(); });
+            document.getElementById('qtyPlus').addEventListener('click', () => { const i = document.getElementById(
+                    'buyQty');
+                i.value = Math.min(1000, +i.value + 1);
+                updateBuyBtn(); });
+            document.getElementById('buyQty').addEventListener('input', updateBuyBtn);
+            document.getElementById('menuBtn').addEventListener('click', () => {
+                clearInterval(state.roundTimer);
+                clearInterval(state.finalInterval);
+                ['resultOverlay', 'finalOverlay'].forEach(id => document.getElementById(id).classList
+                    .remove('show'));
+                document.getElementById('gameScreen').style.display = 'none';
+                document.getElementById('menuScreen').style.display = 'block';
+                state.gameActive = false;
+                state.isFinal = false;
+            });
+            document.getElementById('shareBtn').addEventListener('click', () => {
+                const t =
+                    `🏆 InvestBattle: ${fmt(state.yourCash)}\nФинансовая дуэль с реальными кейсами!\nСыграем? 💰`;
+                navigator.share ? navigator.share({ title: 'InvestBattle', text: t }) : (navigator.clipboard
+                    .writeText(t), alert('Скопировано!'));
+            });
+            document.getElementById('sellAllFinalBtn').addEventListener('click', () => { sellAll();
+                endGame(); });
+            document.getElementById('waitFinalBtn').addEventListener('click', () => {});
+
+            // Профиль
+            document.getElementById('editProfileBtn').addEventListener('click', () => document.getElementById(
+                'profileModal').classList.add('show'));
+            document.getElementById('closeProfileBtn').addEventListener('click', () => document.getElementById(
+                'profileModal').classList.remove('show'));
+            document.getElementById('saveProfileBtn').addEventListener('click', () => {
+                state.playerName = document.getElementById('editName').value.trim() || 'Трейдер';
+                state.playerAvatar = document.querySelector('#avatarChips .selected')?.dataset?.avatar ||
+                '👤';
+                saveProfile();
+                updateProfileUI();
+                document.getElementById('profileModal').classList.remove('show');
+            });
+
+            // Комнаты
+            document.getElementById('createRoomBtn').addEventListener('click', () => document.getElementById(
+                'createRoomModal').classList.add('show'));
+            document.getElementById('cancelCreateRoomBtn').addEventListener('click', () => document.getElementById(
+                'createRoomModal').classList.remove('show'));
+            document.getElementById('confirmCreateRoomBtn').addEventListener('click', () => {
+                state.roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                state.roomName = document.getElementById('roomNameInput').value || 'Комната';
+                state.roomType = document.querySelector('#roomTypeChips .selected')?.dataset?.type ||
+                'hard';
+                state.teamMode = document.querySelector('#teamModeChips .selected')?.dataset?.team ||
+                'ffa';
+                state.maxPlayers = parseInt(document.querySelector('#maxPlayersChips .selected')?.dataset
+                    ?.max || 2);
+                state.startCash = parseInt(document.querySelector('#roomCashChips .selected')?.dataset
+                    ?.cash || 10000);
+                state.totalRounds = parseInt(document.getElementById('roomRoundsSlider').value);
+                state.roundTime = parseInt(document.getElementById('roomTimeSlider').value);
+                state.betAmount = parseInt(document.getElementById('roomBetSlider').value);
+                state.lobbyPlayers = [{ name: state.playerName, avatar: state.playerAvatar, host: true }];
+                showLobby();
+                document.getElementById('createRoomModal').classList.remove('show');
+            });
+
+            function showLobby() {
+                document.getElementById('lobbyContent').innerHTML = `
+              <h3>🏆 ${state.roomName}</h3>
+              <div style="font-size:22px;font-weight:900;color:var(--gold);">${state.roomCode}</div>
+              <div class="room-link">https://t.me/InvestBattleBot?start=${state.roomCode}</div>
+              <p style="font-size:10px;color:var(--text2);">${state.roomType==='hard'?'🎯 Жёсткая':'🎲 Произвольная'} | ${state.teamMode==='ffa'?'⚔️ Каждый за себя':state.teamMode} | ${state.lobbyPlayers.length}/${state.maxPlayers}</p>
+              <p style="font-size:10px;color:var(--text2);">Ставка: ${state.betAmount} ⭐ | Раунды: до ${state.totalRounds}</p>
+              <div>${state.lobbyPlayers.map(p=>`<div class="lobby-player"><span class="avatar">${getAvatarHTML(p.avatar)}</span>${p.name}${p.host?' (Владелец)':''}<button class="kick-btn">Выгнать</button></div>`).join('')}</div>
+              <button class="btn gold" id="startLobbyBtn" style="width:100%;margin-top:8px;" ${state.lobbyPlayers.length<2?'disabled':''}>🚀 НАЧАТЬ</button>
+              <button class="btn" id="closeLobbyBtn" style="width:100%;margin-top:4px;">Закрыть</button>`;
+                document.getElementById('lobbyModal').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('startLobbyBtn')?.addEventListener('click', () => {
+                        document.getElementById('lobbyModal').classList.remove('show');
+                        startGame();
+                    });
+                    document.getElementById('closeLobbyBtn')?.addEventListener('click', () => document
+                        .getElementById('lobbyModal').classList.remove('show'));
+                    document.querySelectorAll('#lobbyContent .kick-btn').forEach((btn, i) => btn
+                        .addEventListener('click', () => {
+                            if (i === 0 && state.lobbyPlayers.length > 1) state
+                                .lobbyPlayers[1].host = true;
+                            state.lobbyPlayers.splice(i, 1);
+                            showLobby();
+                        }));
+                }, 100);
+            }
+
+            document.getElementById('joinRoomBtn').addEventListener('click', () => document.getElementById('joinModal')
+                .classList.add('show'));
+            document.getElementById('cancelJoinBtn').addEventListener('click', () => document.getElementById('joinModal')
+                .classList.remove('show'));
+            document.getElementById('confirmJoinBtn').addEventListener('click', () => {
+                const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+                if (!code) { alert('Введи код'); return; }
+                if (state.betAmount > state.playerStars) {
+                    alert(`Недостаточно Stars! Нужно ${state.betAmount} ⭐, у вас ${state.playerStars} ⭐`);
+                    return;
+                }
+                document.getElementById('joinModal').classList.remove('show');
+                startGame();
+            });
+
+            // Слайдеры
+            ['roomRounds', 'roomTime', 'roomBet'].forEach(name => {
+                const sl = document.getElementById(name + 'Slider');
+                const vl = document.getElementById(name + 'Val');
+                sl.addEventListener('input', () => vl.textContent = name === 'roomBet' ? sl.value + ' ⭐' : sl
+                    .value);
+            });
+
+            // ==================== СТАРТ ====================
+            loadProfile();
+            updateProfileUI();
+            console.log('✅ InvestBattle v1.0 готов');
+            console.log('📊 150 кейсов загружено');
+            console.log('🤖 Бот-Трейдер активен');
+            console.log('🎵 Музыка готова');
+        })();
+    </script>
+</body>
+</html>
