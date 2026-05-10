@@ -1,1 +1,17 @@
-
+[
+  {"id":1,"diff":"easy","symbol":"AAPL","name":"Apple","price":185,"trend":"up","desc":"2024: iPhone 16 с ИИ — предзаказы +40%. Аналитики повышают цель до $220."},
+  {"id":2,"diff":"easy","symbol":"SBUX","name":"Starbucks","price":92,"trend":"up","desc":"2024: 1000 новых кофеен в Азии. Выручка +18%. Дивиденды 2.5%."},
+  {"id":3,"diff":"easy","symbol":"NFLX","name":"Netflix","price":610,"trend":"side","desc":"2024: Тариф с рекламой — 40 млн подписчиков. Рост ARPU падает."},
+  {"id":4,"diff":"easy","symbol":"MSFT","name":"Microsoft","price":420,"trend":"up","desc":"2024: Контракт с Пентагоном на $10B. Azure растёт на 30%."},
+  {"id":5,"diff":"med","symbol":"TSLA","name":"Tesla","price":175,"trend":"volatile","desc":"2025: Роботакси в Остине запущено. NHTSA расследует 3 аварии. Илон: «Это заговор»."},
+  {"id":6,"diff":"med","symbol":"NVDA","name":"Nvidia","price":880,"trend":"up","desc":"2025: H200 чипы — спрос +500%. Но AMD анонсировала MI400 на 30% дешевле."},
+  {"id":7,"diff":"med","symbol":"BABA","name":"Alibaba","price":78,"trend":"down","desc":"2025: ВВП КНР +3.5% — минимум за 30 лет. Власти смягчают регулирование."},
+  {"id":8,"diff":"hard","symbol":"QS","name":"QuantumScape","price":8,"trend":"volatile","desc":"2024: $200M завод в Техасе. Батареи работают в лаборатории, но не масштабируются. Денег на 18 мес."},
+  {"id":9,"diff":"hard","symbol":"PLTR","name":"Palantir","price":22,"trend":"down","desc":"2025: Контракт $2B с Пентагоном. Скандал с утечкой данных — 3 клиента ушли."},
+  {"id":10,"diff":"exp","symbol":"TQ","name":"TerraQuantum","price":3.2,"trend":"volatile","desc":"2026: Квантовый чип при комнатной t. Патент под вопросом. Инженер ушёл к IBM."},
+  {"id":11,"diff":"med","symbol":"META","name":"Meta","price":510,"trend":"up","desc":"2025: Meta AI — 500 млн пользователей. Реклама +22%. Но регуляторы ЕС штрафуют на €1.2B."},
+  {"id":12,"diff":"hard","symbol":"BYD","name":"BYD Auto","price":32,"trend":"volatile","desc":"2025: Электрокары в ЕС. Пошлины +30%. Но рынок Африки открыт — потенциал 50 млн машин."},
+  {"id":13,"diff":"exp","symbol":"NKLA","name":"Nikola","price":0.8,"trend":"down","desc":"2026: Водородные грузовики. Основатель осуждён за мошенничество. Новый CEO из GM."},
+  {"id":14,"diff":"easy","symbol":"KO","name":"Coca-Cola","price":62,"trend":"up","desc":"2024: Новый вкус в Азии. Продажи +12%. Дивиденды 3.2%."},
+  {"id":15,"diff":"hard","symbol":"RIVN","name":"Rivian","price":11,"trend":"volatile","desc":"2025: Amazon заказал 100K фургонов. Завод в Джорджии простаивает. Убытки $1.5B."}
+]
