@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v6.1</title>
+    <title>InvestBattle v7.0</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -65,7 +65,7 @@
         .profile-avatar img { width:100%; height:100%; object-fit:cover; }
         .profile-btn { padding:12px 18px; background:var(--surface); border:2px solid var(--gold); border-radius:14px; color:var(--gold); font-weight:700; font-size:14px; cursor:pointer; transition:all 0.2s; }
         .profile-btn:hover { background:rgba(240,160,48,0.1); }
-        .admin-btn { position:fixed; bottom:20px; left:20px; width:50px; height:50px; border-radius:14px; background:#000; border:2px solid var(--green); color:var(--green); font-size:24px; cursor:pointer; z-index:300; display:flex; align-items:center; justify-content:center; font-family:monospace; transition:all 0.2s; box-shadow:0 0 20px rgba(0,224,112,0.4); }
+        .admin-btn { position:fixed; bottom:20px; left:20px; width:50px; height:50px; border-radius:14px; background:#000; border:2px solid var(--green); color:var(--green); font-size:24px; cursor:pointer; z-index:300; display:none; align-items:center; justify-content:center; font-family:monospace; transition:all 0.2s; box-shadow:0 0 20px rgba(0,224,112,0.4); }
         .admin-btn:active { transform:scale(0.9); }
         .admin-panel { display:none; position:fixed; bottom:80px; left:20px; width:290px; background:#0c0c1c; border:2px solid var(--green); border-radius:14px; padding:14px; z-index:299; box-shadow:0 0 30px rgba(0,0,0,0.9); }
         .admin-panel.show { display:block; }
@@ -78,25 +78,27 @@
     <div class="app" id="app">
         <div class="loading-screen" id="loadingScreen">Загрузка...</div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v6.1</div></div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v7.0</div></div>
             <div class="profile-section">
-                <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('profileModal').classList.add('show')">👤</div>
+                <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
-                <button class="profile-btn" id="editProfileBtn">👤 Профиль</button>
+                <button class="profile-btn" id="settingsBtn">⚙️ Настройки</button>
             </div>
             <button class="btn gold" id="playMenuBtn" style="width:100%;margin-bottom:10px;">🎮 ИГРАТЬ</button>
-            <button class="create-company-btn" id="createCompanyBtn">🏗 СОЗДАТЬ КОМПАНИЮ<br><span style="font-size:10px;opacity:0.7;">в следующем обновлении</span></button>
-            
+            <button class="create-company-btn" id="createCompanyBtn">🏗 СОЗДАТЬ СВОЮ КОМПАНИЮ<br><span style="font-size:10px;opacity:0.7;">в следующем обновлении</span></button>
             <div id="playMenu" style="display:none;margin-top:10px;">
-                <button class="btn gold" id="soloBtn" style="width:100%;margin-bottom:6px;">🤖 Тренировка с ботом</button>
+                <button class="btn gold" id="soloSetupBtn" style="width:100%;margin-bottom:6px;">🤖 Тренировка с ботом</button>
                 <button class="btn" id="createRoomBtn" style="width:100%;margin-bottom:4px;">👥 Создать комнату</button>
                 <button class="btn" id="joinRoomBtn" style="width:100%;margin-bottom:4px;">🔗 Подключиться</button>
-                <button class="btn" id="openRoomsBtn" style="width:100%;">🌍 Открытые комнаты</button>
+                <button class="btn" id="openRoomsBtn" style="width:100%;margin-bottom:4px;">🌍 Открытые комнаты</button>
+                <button class="btn" id="competitionBtn" style="width:100%;">🏆 Соревнования</button>
                 <button class="btn" id="backMenuBtn" style="width:100%;margin-top:6px;">↩ Назад</button>
             </div>
         </div>
 
-        <div class="modal" id="profileModal"><div class="modal-content"><h3>👤 Профиль</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">👤</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip selected" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div></div><div class="section-title">Язык</div><div class="chip-row"><div class="chip selected">🇷🇺 Русский</div><div class="chip">🇬🇧 English</div></div><p style="font-size:10px;color:var(--text2);margin-top:8px;">📞 Связь с поддержкой: скоро</p><button class="btn gold" id="saveProfileBtn" style="width:100%;margin-top:10px;">💾 Сохранить</button><button class="btn" id="closeProfileBtn" style="width:100%;margin-top:6px;">Закрыть</button></div></div>
+        <div class="modal" id="profileModal"><div class="modal-content"><h3>👤 Смена профиля</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">👤</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip selected" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div></div><button class="btn gold" id="saveProfileBtn" style="width:100%;margin-top:10px;">💾 Сохранить</button><button class="btn" id="closeProfileBtn" style="width:100%;margin-top:6px;">Закрыть</button></div></div>
+        <div class="modal" id="settingsModal"><div class="modal-content"><h3>⚙️ Настройки</h3><div class="section-title">Язык</div><div class="chip-row"><div class="chip selected">🇷🇺 Русский</div><div class="chip">🇬🇧 English</div></div><div class="section-title">Поддержка</div><button class="btn" style="width:100%;margin-bottom:6px;">📞 Связаться с поддержкой</button><p style="font-size:10px;color:var(--text2);">Язык и поддержка — в следующем обновлении</p><button class="btn gold" id="closeSettingsBtn" style="width:100%;margin-top:8px;">Закрыть</button></div></div>
+        <div class="modal" id="soloSetupModal"><div class="modal-content"><h3>🤖 Тренировка с ботом</h3><div class="section-title">Капитал</div><div class="chip-row" id="soloCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">Раунды</div><div class="chip-row" id="soloRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div><div class="chip" data-rounds="20">20</div></div><div class="section-title">Сек/раунд</div><div class="chip-row" id="soloTimeChips"><div class="chip" data-time="15">15</div><div class="chip selected" data-time="30">30</div><div class="chip" data-time="45">45</div><div class="chip" data-time="60">60</div></div><button class="btn gold" id="startSoloBtn" style="width:100%;margin-top:10px;">🚀 Начать</button><button class="btn" id="cancelSoloSetupBtn" style="width:100%;margin-top:6px;">Отмена</button></div></div>
         <div class="modal" id="createRoomModal"><div class="modal-content"><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" placeholder="Название" maxlength="30" value="Комната"><div class="section-title">Тип</div><div class="chip-row" id="roomTypeChips"><div class="chip selected" data-type="hard">🎯 Жёсткая</div><div class="chip" data-type="flexible">🎲 Произвольная</div></div><div class="section-title">Доступ</div><div class="chip-row" id="roomAccessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">Макс. игроков</div><div class="chip-row" id="maxPlayersChips"><div class="chip selected" data-max="2">2</div><div class="chip" data-max="4">4</div><div class="chip" data-max="8">8</div><div class="chip" data-max="20">20</div></div><div id="hardSettings"><div class="section-title">Капитал</div><div class="chip-row" id="roomCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">Раунды</div><div class="chip-row" id="roomRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div><div class="chip" data-rounds="20">20</div></div><div class="section-title">Сек/раунд</div><div class="chip-row" id="roomTimeChips2"><div class="chip" data-time="15">15</div><div class="chip selected" data-time="30">30</div><div class="chip" data-time="45">45</div><div class="chip" data-time="60">60</div></div></div><div class="section-title">Ставка (⭐) — у вас <span id="roomStarsAvail">0</span></div><input class="input" id="starInput" type="number" min="0" max="1000000" value="0" placeholder="0" inputmode="numeric"><button class="btn gold" id="confirmCreateRoomBtn" style="width:100%;margin-top:10px;">🏆 Создать</button><button class="btn" id="cancelCreateRoomBtn" style="width:100%;margin-top:6px;">Отмена</button></div></div>
         <div class="modal" id="lobbyModal"><div class="modal-content" id="lobbyContent"></div></div>
         <div class="modal" id="joinModal"><div class="modal-content"><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" placeholder="Код комнаты" maxlength="6"><button class="btn gold" id="confirmJoinBtn" style="width:100%;margin-top:10px;">Подключиться</button><button class="btn" id="cancelJoinBtn" style="width:100%;margin-top:6px;">Отмена</button></div></div>
@@ -123,8 +125,6 @@
             const bgMusic = document.getElementById('bgMusic');
             function playMusic(i) { currentTrack = i; if (!musicTracks[i].url) { bgMusic.pause(); return; } bgMusic.src = musicTracks[i].url; bgMusic.play().catch(() => {}); }
             document.getElementById('musicToggleBtn').addEventListener('click', () => alert('Музыка в разработке'));
-            function buildMusicList() { const list = document.getElementById('musicList'); if(list) { list.innerHTML = musicTracks.map((t, i) => `<div class="chip ${i===currentTrack?'selected':''}" style="width:100%;margin:4px 0;" data-idx="${i}">${t.name}</div>`).join(''); list.querySelectorAll('.chip').forEach(c => c.addEventListener('click', function() { playMusic(parseInt(this.dataset.idx)); buildMusicList(); })); } }
-            buildMusicList();
 
             const state = {
                 playerName:'Трейдер', playerAvatar:'icons/avatar1.png', playerStars:0, playerDollars:0,
@@ -138,8 +138,8 @@
                 isMultiplayer:false, opponentName:'🤖 Бот-Трейдер', opponentAvatar:'🤖'
             };
 
-            function loadState() { try { const r=localStorage.getItem('ib_v7'); if(r){ const s=JSON.parse(r); Object.assign(state, s); } } catch(e) {} }
-            function saveState() { localStorage.setItem('ib_v7', JSON.stringify({ playerName:state.playerName, playerAvatar:state.playerAvatar, playerStars:state.playerStars, playerDollars:state.playerDollars })); }
+            function loadState() { try { const r=localStorage.getItem('ib_v8'); if(r){ const s=JSON.parse(r); Object.assign(state, s); } } catch(e) {} }
+            function saveState() { localStorage.setItem('ib_v8', JSON.stringify({ playerName:state.playerName, playerAvatar:state.playerAvatar, playerStars:state.playerStars, playerDollars:state.playerDollars })); }
 
             function avatarHTML(a) { return a&&a.startsWith('icons/')?`<img src="${a}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:a||'👤'; }
             function updateProfileUI() {
@@ -151,6 +151,25 @@
                 document.getElementById('profileDollars').textContent=state.playerDollars;
                 document.getElementById('roomStarsAvail').textContent=state.playerStars;
                 document.querySelectorAll('#avatarChips .chip').forEach(c=>c.classList.toggle('selected',c.dataset.avatar===state.playerAvatar));
+            }
+
+            // ПОЛУЧАЕМ РЕАЛЬНЫЕ STARS ИЗ TELEGRAM (если доступно)
+            function loadRealStars() {
+                if (tg?.initDataUnsafe?.user?.id) {
+                    // Пытаемся получить Stars через CloudStorage
+                    if (tg?.CloudStorage) {
+                        tg.CloudStorage.getItems(['ib_stars'], (err, items) => {
+                            if (!err && items && items.ib_stars) {
+                                state.playerStars = parseInt(items.ib_stars) || 0;
+                            }
+                            updateProfileUI();
+                        });
+                    } else {
+                        updateProfileUI();
+                    }
+                } else {
+                    updateProfileUI();
+                }
             }
 
             function loadProfileFromCloud() {
@@ -175,7 +194,7 @@
 
             function afterProfileLoad() {
                 updateProfileUI();
-                // АДМИН-ПАНЕЛЬ: ВСЕГДА показываем для ADMIN_IDS
+                // АДМИН-ПАНЕЛЬ: ТОЛЬКО ДЛЯ ADMIN_IDS
                 const actualUid = tg?.initDataUnsafe?.user?.id;
                 if (actualUid && ADMIN_IDS.includes(actualUid)) {
                     const btn = document.getElementById('adminBtn');
@@ -186,7 +205,6 @@
                         document.getElementById('adminStats').innerHTML = `ID: ${actualUid}<br>⭐: ${state.playerStars}<br>💵: ${state.playerDollars}<br>Кейсов: ${state.allCasesLoaded.length}`;
                     };
                 }
-                // Слушаем открытые комнаты
                 db.ref('open_rooms').on('value', snap => {
                     const rooms = snap.val() || {};
                     const list = document.getElementById('openRoomsList');
@@ -272,7 +290,7 @@
                     <div class="room-link">https://t.me/InvestBattleBot?start=${state.roomCode}</div>
                     <button class="btn-sm" id="copyLinkBtn" style="width:100%;margin:4px 0;">📋 Копировать ссылку</button>
                     <p style="font-size:11px;">${state.roomType==='hard'?'🎯 Жёсткая':'🎲 Произвольная'} | ${state.roomAccess==='open'?'🌍 Открытая':'🔒 Закрытая'} | ${state.lobbyPlayers.length}/${state.maxPlayers} | Ставка: ${state.betAmount} ⭐</p>
-                    ${state.lobbyPlayers.map(p=>`<div class="lobby-player"><span class="avatar" style="width:28px;height:28px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#1a1a2e;font-size:14px;">${avatarHTML(p.avatar)}</span>${p.name}${p.host?' (Владелец)':''}${p.host?`<button class="kick-btn self-kick">Выйти</button>`:''}</div>`).join('')}
+                    ${state.lobbyPlayers.map(p=>`<div class="lobby-player"><span class="avatar" style="width:28px;height:28px;border-radius:50%;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:#1a1a2e;font-size:14px;margin-right:6px;">${avatarHTML(p.avatar)}</span>${p.name}${p.host?' (Владелец)':''}</div>`).join('')}
                     <button class="btn gold" id="startLobbyBtn" style="width:100%;margin-top:10px;" ${state.lobbyPlayers.length<2?'disabled':''}>🚀 НАЧАТЬ</button>
                     <button class="btn" id="closeLobbyBtn" style="width:100%;margin-top:6px;">Закрыть</button>
                 `;
@@ -281,7 +299,6 @@
                     document.getElementById('copyLinkBtn')?.addEventListener('click', () => { navigator.clipboard.writeText(`https://t.me/InvestBattleBot?start=${state.roomCode}`); alert('Ссылка скопирована!'); });
                     document.getElementById('startLobbyBtn')?.addEventListener('click', () => { db.ref('rooms/' + state.roomCode + '/status').set('playing'); });
                     document.getElementById('closeLobbyBtn')?.addEventListener('click', () => { db.ref('rooms/' + state.roomCode).remove(); db.ref('open_rooms/' + state.roomCode).remove(); state.lobbyPlayers=[]; state.isMultiplayer=false; document.getElementById('lobbyModal').classList.remove('show'); });
-                    document.querySelectorAll('.self-kick').forEach(b=>b.addEventListener('click', ()=>{ db.ref('rooms/' + state.roomCode).remove(); db.ref('open_rooms/' + state.roomCode).remove(); state.lobbyPlayers=[]; state.isMultiplayer=false; document.getElementById('lobbyModal').classList.remove('show'); }));
                 }, 100);
             }
 
@@ -313,7 +330,12 @@
             // СОБЫТИЯ
             document.getElementById('playMenuBtn').addEventListener('click', () => { document.getElementById('playMenu').style.display='block'; document.getElementById('playMenuBtn').style.display='none'; document.getElementById('createCompanyBtn').style.display='none'; });
             document.getElementById('backMenuBtn').addEventListener('click', () => { document.getElementById('playMenu').style.display='none'; document.getElementById('playMenuBtn').style.display='block'; document.getElementById('createCompanyBtn').style.display='block'; });
-            document.getElementById('soloBtn').addEventListener('click', ()=>{ state.isMultiplayer=false; state.betAmount=0; startGame(); });
+            document.getElementById('profileAvatar').addEventListener('click', () => document.getElementById('profileModal').classList.add('show'));
+            document.getElementById('settingsBtn').addEventListener('click', () => document.getElementById('settingsModal').classList.add('show'));
+            document.getElementById('closeSettingsBtn').addEventListener('click', () => document.getElementById('settingsModal').classList.remove('show'));
+            document.getElementById('soloSetupBtn').addEventListener('click', () => document.getElementById('soloSetupModal').classList.add('show'));
+            document.getElementById('cancelSoloSetupBtn').addEventListener('click', () => document.getElementById('soloSetupModal').classList.remove('show'));
+            document.getElementById('startSoloBtn').addEventListener('click', () => { state.startCash = parseInt(document.querySelector('#soloCashChips .selected')?.dataset?.cash || 10000); state.totalRounds = parseInt(document.querySelector('#soloRoundsChips .selected')?.dataset?.rounds || 10); state.roundTime = parseInt(document.querySelector('#soloTimeChips .selected')?.dataset?.time || 30); state.isMultiplayer = false; state.betAmount = 0; document.getElementById('soloSetupModal').classList.remove('show'); startGame(); });
             document.getElementById('buyBtn').addEventListener('click', playerBuy);
             document.getElementById('waitBtn').addEventListener('click', toggleWait);
             document.getElementById('qtyMinus').addEventListener('click', ()=>{ const i=document.getElementById('buyQty'); i.value=Math.max(1,+i.value-1); updateBuyBtn(); });
@@ -322,7 +344,6 @@
             document.getElementById('menuBtn').addEventListener('click', ()=>{ clearInterval(state.roundTimer);clearInterval(state.finalInterval);['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';state.gameActive=false;state.isFinal=false; });
             document.getElementById('shareBtn').addEventListener('click', ()=>{ const t=`🏆 InvestBattle: ${fmt(state.yourCash)}\nСыграем? 💰`; navigator.share?navigator.share({title:'InvestBattle',text:t}):(navigator.clipboard.writeText(t),alert('Скопировано!')); });
             document.getElementById('sellAllFinalBtn').addEventListener('click', ()=>{ sellAll(); endGame(); });
-            document.getElementById('editProfileBtn').addEventListener('click', ()=>document.getElementById('profileModal').classList.add('show'));
             document.getElementById('closeProfileBtn').addEventListener('click', ()=>document.getElementById('profileModal').classList.remove('show'));
             document.getElementById('saveProfileBtn').addEventListener('click', ()=>{ state.playerName=document.getElementById('editName').value.trim()||'Трейдер'; state.playerAvatar=document.querySelector('#avatarChips .selected')?.dataset?.avatar||'icons/avatar1.png'; saveProfileToCloud(); updateProfileUI(); document.getElementById('profileModal').classList.remove('show'); });
             document.querySelectorAll('#avatarChips .chip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('#avatarChips .chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));
@@ -334,13 +355,17 @@
             document.getElementById('confirmJoinBtn').addEventListener('click', ()=>{ const code=document.getElementById('joinCodeInput').value.trim().toUpperCase(); if(!code){alert('Введи код');return;} document.getElementById('joinModal').classList.remove('show'); window._joinRoom(code); });
             document.getElementById('openRoomsBtn').addEventListener('click', ()=>document.getElementById('openRoomsModal').classList.add('show'));
             document.getElementById('closeOpenRoomsBtn').addEventListener('click', ()=>document.getElementById('openRoomsModal').classList.remove('show'));
-            document.getElementById('createCompanyBtn').addEventListener('click', ()=>{ alert('🏗 Строительство компании — в следующем обновлении!'); });
+            document.getElementById('competitionBtn').addEventListener('click', ()=>{ alert('🏆 Соревнования — в следующем обновлении!'); });
+            document.getElementById('createCompanyBtn').addEventListener('click', ()=>{ alert('🏗 Создание компании — в следующем обновлении!'); });
+
+            // Чипсы для тренировки с ботом
+            ['soloCashChips','soloRoundsChips','soloTimeChips'].forEach(id=>{document.querySelectorAll('#'+id+' .chip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('#'+id+' .chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));});
             ['roomTypeChips','roomAccessChips','maxPlayersChips','roomCashChips','roomRoundsChips','roomTimeChips2'].forEach(id=>{document.querySelectorAll('#'+id+' .chip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('#'+id+' .chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));});
 
             loadState();
             loadProfileFromCloud();
             loadCases();
-            console.log('✅ InvestBattle v6.1 готов');
+            console.log('✅ InvestBattle v7.0 готов');
         })();
     </script>
 </body>
