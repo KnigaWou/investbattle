@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v7.1</title>
+    <title>InvestBattle v8.0</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -48,78 +48,57 @@
         .btn.gold { background:var(--gold); color:#000; border:none; font-weight:800; }
         .btn.green { border-color:var(--green); color:var(--green); }
         .btn.held { background:rgba(64,144,255,0.3); border-color:var(--blue); box-shadow:0 0 12px rgba(64,144,255,0.3); }
-        .wait-counter { font-size:11px; color:var(--text2); text-align:center; margin-top:6px; }
         .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.94); z-index:100; flex-direction:column; align-items:center; justify-content:center; padding:20px; text-align:center; }
         .overlay.show { display:flex; } .overlay .inner { max-width:400px; width:100%; }
         .chip-row { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin:6px 0; }
-        .chip { padding:8px 14px; border:1.5px solid var(--border); background:var(--surface); color:#fff; border-radius:18px; cursor:pointer; font-weight:700; font-size:11px; transition:all 0.2s; min-width:44px; text-align:center; }
-        .chip.selected { border-color:var(--gold); background:rgba(240,160,48,0.2); box-shadow:0 0 12px rgba(240,160,48,0.1); }
+        .chip { padding:8px 14px; border:1.5px solid var(--border); background:var(--surface); color:#fff; border-radius:18px; cursor:pointer; font-weight:700; font-size:11px; min-width:44px; text-align:center; }
+        .chip.selected { border-color:var(--gold); background:rgba(240,160,48,0.2); }
         .input { width:100%; padding:12px; background:#000; border:1px solid var(--border); color:#fff; border-radius:10px; font-size:14px; text-align:center; font-weight:700; margin-bottom:8px; }
-        .input:focus { outline:none; border-color:var(--blue); }
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:250; align-items:center; justify-content:center; }
         .modal.show { display:flex; }
-        .modal-content { background:#0c0c1c; border:2px solid var(--gold); border-radius:18px; padding:20px; width:92%; max-width:420px; max-height:90vh; overflow-y:auto; position:relative; }
-        .modal-content h3 { color:var(--gold); margin-bottom:12px; text-align:center; font-size:16px; position:relative; }
-        .secret-trigger { position:absolute; top:8px; right:8px; width:10px; height:10px; background:rgba(255,255,255,0.01); cursor:pointer; z-index:10; border-radius:50%; transition:all 0.3s; }
-        .secret-trigger:hover { background:rgba(255,255,255,0.05); }
-        .secret-field { display:none; margin-top:8px; }
-        .secret-field.show { display:block; }
+        .modal-content { background:#0c0c1c; border:2px solid var(--gold); border-radius:18px; padding:20px; width:92%; max-width:420px; max-height:90vh; overflow-y:auto; }
         .profile-section { display:flex; align-items:center; gap:12px; margin-bottom:14px; padding:12px; background:var(--surface); border-radius:14px; }
-        .profile-avatar { width:50px; height:50px; border-radius:50%; background:#1a1a2e; border:2px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:20px; overflow:hidden; cursor:pointer; }
-        .profile-avatar img { width:100%; height:100%; object-fit:cover; }
-        .profile-btn { padding:12px 18px; background:var(--surface); border:2px solid var(--gold); border-radius:14px; color:var(--gold); font-weight:700; font-size:14px; cursor:pointer; transition:all 0.2s; }
-        .profile-btn:hover { background:rgba(240,160,48,0.1); }
-        .admin-btn { position:fixed; bottom:20px; left:20px; width:50px; height:50px; border-radius:14px; background:#000; border:2px solid var(--green); color:var(--green); font-size:24px; cursor:pointer; z-index:300; display:none; align-items:center; justify-content:center; font-family:monospace; transition:all 0.2s; box-shadow:0 0 20px rgba(0,224,112,0.4); }
-        .admin-btn:active { transform:scale(0.9); }
-        .admin-panel { display:none; position:fixed; bottom:80px; left:20px; width:290px; background:#0c0c1c; border:2px solid var(--green); border-radius:14px; padding:14px; z-index:299; box-shadow:0 0 30px rgba(0,0,0,0.9); }
+        .profile-avatar { width:50px; height:50px; border-radius:50%; background:#1a1a2e; border:2px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; }
+        .profile-btn { padding:12px 18px; background:var(--surface); border:2px solid var(--gold); border-radius:14px; color:var(--gold); font-weight:700; font-size:14px; cursor:pointer; }
+        .admin-btn { position:fixed; bottom:20px; left:20px; width:50px; height:50px; border-radius:14px; background:#000; border:2px solid var(--green); color:var(--green); font-size:24px; cursor:pointer; z-index:300; display:none; align-items:center; justify-content:center; }
+        .admin-panel { display:none; position:fixed; bottom:80px; left:20px; width:290px; background:#0c0c1c; border:2px solid var(--green); border-radius:14px; padding:14px; z-index:299; }
         .admin-panel.show { display:block; }
-        .create-company-btn { width:100%; padding:20px; background:rgba(240,160,48,0.08); border:2px dashed var(--gold); border-radius:14px; color:var(--gold); font-weight:700; font-size:14px; cursor:pointer; margin-top:8px; transition:all 0.2s; text-align:center; }
-        .create-company-btn:hover { background:rgba(240,160,48,0.15); }
-        .music-toggle { display:flex; align-items:center; gap:10px; }
-        .music-switch { width:48px; height:26px; border-radius:13px; background:var(--red); cursor:pointer; position:relative; transition:all 0.3s; }
-        .music-switch.on { background:var(--green); }
-        .music-switch::after { content:''; width:22px; height:22px; border-radius:50%; background:#fff; position:absolute; top:2px; left:2px; transition:all 0.3s; }
-        .music-switch.on::after { left:24px; }
-        .room-link { background:#000; border:1px solid var(--gold); padding:8px; border-radius:8px; font-size:10px; color:var(--gold); word-break:break-all; text-align:center; margin:6px 0; }
         .lobby-player { display:flex; align-items:center; gap:8px; padding:8px; background:var(--surface); border-radius:10px; margin-bottom:4px; font-size:11px; }
     </style>
 </head>
 <body>
     <div class="app" id="app">
-        <div class="loading-screen" id="loadingScreen">Загрузка...</div>
+        <div id="loadingScreen" style="text-align:center;padding:40px;">Загрузка...</div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v7.1</div></div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v8.0</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
-                <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
-                <button class="profile-btn" id="settingsBtn">⚙️ Настройки</button>
+                <div style="flex:1;"><div id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
+                <button class="profile-btn" id="settingsBtn">⚙️</button>
             </div>
             <button class="btn gold" id="playMenuBtn" style="width:100%;margin-bottom:10px;">🎮 ИГРАТЬ</button>
-            <button class="create-company-btn" id="createCompanyBtn">🏗 СОЗДАТЬ СВОЮ КОМПАНИЮ<br><span style="font-size:10px;opacity:0.7;">в следующем обновлении</span></button>
+            <button class="btn" id="createCompanyBtn" style="width:100%;padding:20px;border:2px dashed var(--gold);">🏗 СОЗДАТЬ КОМПАНИЮ</button>
             <div id="playMenu" style="display:none;margin-top:10px;">
-                <button class="btn gold" id="soloSetupBtn" style="width:100%;margin-bottom:6px;">🤖 Тренировка с ботом</button>
+                <button class="btn gold" id="soloSetupBtn" style="width:100%;margin-bottom:6px;">🤖 Тренировка</button>
                 <button class="btn" id="createRoomBtn" style="width:100%;margin-bottom:4px;">👥 Создать комнату</button>
                 <button class="btn" id="joinRoomBtn" style="width:100%;margin-bottom:4px;">🔗 Подключиться</button>
-                <button class="btn" id="openRoomsBtn" style="width:100%;margin-bottom:4px;">🌍 Открытые комнаты</button>
-                <button class="btn" id="competitionBtn" style="width:100%;">🏆 Соревнования</button>
+                <button class="btn" id="openRoomsBtn" style="width:100%;">🌍 Открытые комнаты</button>
                 <button class="btn" id="backMenuBtn" style="width:100%;margin-top:6px;">↩ Назад</button>
             </div>
         </div>
 
-        <div class="modal" id="profileModal"><div class="modal-content"><h3>👤 Смена профиля</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">👤</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip selected" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></div></div><button class="btn gold" id="saveProfileBtn" style="width:100%;margin-top:10px;">💾 Сохранить</button><button class="btn" id="closeProfileBtn" style="width:100%;margin-top:6px;">Закрыть</button></div></div>
-        <div class="modal" id="settingsModal"><div class="modal-content"><h3>⚙️ Настройки<span class="secret-trigger" id="secretTrigger"></span></h3><div class="section-title">Язык</div><div class="chip-row"><div class="chip selected">🇷🇺 Русский</div><div class="chip">🇬🇧 English</div></div><div class="section-title">Музыка</div><div class="music-toggle"><span>🔇</span><div class="music-switch on" id="musicSwitch"></div><span>🔊</span><select id="trackSelect" style="background:#000;border:1px solid var(--border);color:#fff;padding:6px;border-radius:8px;margin-left:10px;flex:1;"></select></div><div class="section-title">Поддержка</div><button class="btn" style="width:100%;margin-bottom:6px;">📞 Связаться с поддержкой</button><div class="secret-field" id="secretField"><input class="input" id="secretPassword" placeholder="Пароль" maxlength="30" autocomplete="off"><button class="btn gold" id="secretSubmitBtn" style="width:100%;">Подтвердить</button></div><button class="btn gold" id="closeSettingsBtn" style="width:100%;margin-top:8px;">Закрыть</button></div></div>
-        <div class="modal" id="soloSetupModal"><div class="modal-content"><h3>🤖 Тренировка с ботом</h3><div class="section-title">Капитал</div><div class="chip-row" id="soloCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">Раунды</div><div class="chip-row" id="soloRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div><div class="chip" data-rounds="20">20</div></div><div class="section-title">Сек/раунд</div><div class="chip-row" id="soloTimeChips"><div class="chip" data-time="15">15</div><div class="chip selected" data-time="30">30</div><div class="chip" data-time="45">45</div><div class="chip" data-time="60">60</div></div><button class="btn gold" id="startSoloBtn" style="width:100%;margin-top:10px;">🚀 Начать</button><button class="btn" id="cancelSoloSetupBtn" style="width:100%;margin-top:6px;">Отмена</button></div></div>
-        <div class="modal" id="createRoomModal"><div class="modal-content"><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" placeholder="Название" maxlength="30" value="Комната"><div class="section-title">Тип</div><div class="chip-row" id="roomTypeChips"><div class="chip selected" data-type="hard">🎯 Жёсткая</div><div class="chip" data-type="flexible">🎲 Произвольная</div></div><div class="section-title">Доступ</div><div class="chip-row" id="roomAccessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">Макс. игроков</div><div class="chip-row" id="maxPlayersChips"><div class="chip selected" data-max="2">2</div><div class="chip" data-max="4">4</div><div class="chip" data-max="8">8</div><div class="chip" data-max="20">20</div></div><div id="hardSettings"><div class="section-title">Капитал</div><div class="chip-row" id="roomCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">Раунды</div><div class="chip-row" id="roomRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div><div class="chip" data-rounds="20">20</div></div><div class="section-title">Сек/раунд</div><div class="chip-row" id="roomTimeChips2"><div class="chip" data-time="15">15</div><div class="chip selected" data-time="30">30</div><div class="chip" data-time="45">45</div><div class="chip" data-time="60">60</div></div></div><div class="section-title">Ставка (⭐) — у вас <span id="roomStarsAvail">0</span></div><input class="input" id="starInput" type="number" min="0" max="1000000" value="0" placeholder="0" inputmode="numeric"><button class="btn gold" id="confirmCreateRoomBtn" style="width:100%;margin-top:10px;">🏆 Создать</button><button class="btn" id="cancelCreateRoomBtn" style="width:100%;margin-top:6px;">Отмена</button></div></div>
+        <div class="modal" id="profileModal"><div class="modal-content"><h3>👤 Профиль</h3><div id="editAvatarBig" style="font-size:28px;"></div><input class="input" id="editName" maxlength="20"><div class="chip-row" id="avatarChips"><div class="chip selected" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div></div><button class="btn gold" id="saveProfileBtn" style="width:100%;">Сохранить</button><button class="btn" id="closeProfileBtn" style="width:100%;">Закрыть</button></div></div>
+        <div class="modal" id="settingsModal"><div class="modal-content"><h3>⚙️ Настройки</h3><p>Музыка: <select id="trackSelect"></select></p><button class="btn" id="closeSettingsBtn" style="width:100%;">Закрыть</button></div></div>
+        <div class="modal" id="soloSetupModal"><div class="modal-content"><h3>🤖 Тренировка</h3><div class="chip-row" id="soloCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div></div><div class="chip-row" id="soloRoundsChips"><div class="chip" data-rounds="5">5 раундов</div><div class="chip selected" data-rounds="10">10 раундов</div></div><button class="btn gold" id="startSoloBtn" style="width:100%;">🚀 Начать</button></div></div>
+        <div class="modal" id="createRoomModal"><div class="modal-content"><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" value="Комната"><div class="chip-row" id="maxPlayersChips"><div class="chip selected" data-max="2">2 игрока</div><div class="chip" data-max="4">4 игрока</div></div><button class="btn gold" id="confirmCreateRoomBtn" style="width:100%;">🏆 Создать</button></div></div>
         <div class="modal" id="lobbyModal"><div class="modal-content" id="lobbyContent"></div></div>
-        <div class="modal" id="joinModal"><div class="modal-content"><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" placeholder="Код комнаты" maxlength="6"><button class="btn gold" id="confirmJoinBtn" style="width:100%;margin-top:10px;">Подключиться</button><button class="btn" id="cancelJoinBtn" style="width:100%;margin-top:6px;">Отмена</button></div></div>
-        <div class="modal" id="openRoomsModal"><div class="modal-content"><h3>🌍 Открытые комнаты</h3><div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div><button class="btn" id="closeOpenRoomsBtn" style="width:100%;margin-top:10px;">Закрыть</button></div></div>
+        <div class="modal" id="joinModal"><div class="modal-content"><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" maxlength="6"><button class="btn gold" id="confirmJoinBtn" style="width:100%;">Подключиться</button></div></div>
 
-        <div id="gameScreen" style="display:none;"><div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="timer" id="timer">30</div><div class="badge" id="roundBadge">1/10</div></div><div class="vs-row" id="playersRow"></div><div class="section-title">📦 ПОРТФЕЛЬ</div><table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th>±</th><th>Причина</th><th></th></tr></thead><tbody id="portfolioBody"></tbody></table><div class="case-box"><div class="case-title" id="caseTitle"></div><div class="case-desc" id="caseDesc"></div><div class="case-price" id="casePrice"></div></div><div class="action-row"><div class="qty-control"><button id="qtyMinus">−</button><input type="number" id="buyQty" value="1" min="1" max="1000"><button id="qtyPlus">+</button></div><button class="btn green" id="buyBtn">📈 КУПИТЬ</button><button class="btn" id="waitBtn">⏸ ЖДАТЬ</button></div><div class="wait-counter" id="waitCounter"></div></div>
-        <div class="overlay" id="finalOverlay"><div class="inner"><div style="font-size:32px;">🏁</div><div style="font-size:20px;font-weight:900;color:var(--gold);">ФИНАЛ</div><div class="timer" id="finalTimer">90</div><table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th></th></tr></thead><tbody id="finalBody"></tbody></table><div style="font-weight:900;font-size:18px;color:var(--gold);margin:12px 0;" id="finalTotal">💰 $0</div><button class="btn gold" id="sellAllFinalBtn" style="width:100%;margin-bottom:8px;">💰 ПРОДАТЬ ВСЁ</button></div></div>
-        <div class="overlay" id="resultOverlay"><div class="inner"><div style="font-size:52px;" id="resultEmoji">🏆</div><div style="font-size:24px;font-weight:900;margin:6px 0;" id="resultTitle"></div><div style="color:var(--text2);font-size:13px;" id="resultSubtitle"></div><div style="font-size:30px;font-weight:900;color:var(--gold);margin:10px 0;" id="resultCash"></div><div style="font-size:12px;color:var(--text2);" id="resultPrize"></div><button class="btn gold" id="shareBtn" style="width:100%;margin-top:10px;">📤 ПОДЕЛИТЬСЯ</button><button class="btn" id="menuBtn" style="width:100%;margin-top:6px;">↩ В МЕНЮ</button></div></div>
+        <div id="gameScreen" style="display:none;"><div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="timer" id="timer">30</div><div class="badge" id="roundBadge">1/10</div></div><div class="vs-row" id="playersRow"></div><div class="section-title">📦 ПОРТФЕЛЬ</div><table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th></th></tr></thead><tbody id="portfolioBody"></tbody></table><div class="case-box"><div class="case-title" id="caseTitle"></div><div class="case-desc" id="caseDesc"></div><div class="case-price" id="casePrice"></div></div><div class="action-row"><div class="qty-control"><button id="qtyMinus">−</button><input type="number" id="buyQty" value="1"><button id="qtyPlus">+</button></div><button class="btn green" id="buyBtn">📈 КУПИТЬ</button></div></div>
+        <div class="overlay" id="resultOverlay"><div class="inner"><div style="font-size:52px;" id="resultEmoji">🏆</div><div id="resultTitle"></div><div id="resultCash"></div><button class="btn gold" id="menuBtn" style="width:100%;">↩ В МЕНЮ</button></div></div>
     </div>
     <button class="admin-btn" id="adminBtn">⌬</button>
-    <div class="admin-panel" id="adminPanel"><div style="font-weight:700;color:var(--green);margin-bottom:6px;">🖥 Админ</div><div id="adminStats" style="font-size:10px;color:var(--text2);">Загрузка...</div></div>
+    <div class="admin-panel" id="adminPanel"><div style="font-weight:700;color:var(--green);">🖥 Админ</div><div id="adminStats"></div></div>
 
     <script>
         (function() {
@@ -127,301 +106,272 @@
             const db = firebase.database();
             const tg = window.Telegram?.WebApp;
             if (tg) { tg.ready(); tg.expand(); }
-            const SECRET_PASSWORD = 'lovcevich';
-            const musicTracks = [
-                { name: '🔇 Без музыки', url: null },
-                { name: '🎵 Трек 1', url: 'music/track1.mp3' },
-                { name: '🎵 Трек 2', url: 'music/track2.mp3' },
-                { name: '🎵 Трек 3', url: 'music/track3.mp3' }
-            ];
-            let currentTrack = 0;
-            let musicOn = true;
-            const bgMusic = document.getElementById('bgMusic') || new Audio();
-            bgMusic.loop = true;
-
-            function playMusic(i) {
-                currentTrack = i;
-                if (!musicTracks[i].url || !musicOn) { bgMusic.pause(); return; }
-                bgMusic.src = musicTracks[i].url;
-                bgMusic.play().catch(() => {});
-            }
 
             const state = {
                 playerName:'Трейдер', playerAvatar:'icons/avatar1.png', playerStars:0, playerDollars:0,
                 startCash:10000, roundTime:30, totalRounds:10, maxPlayers:2, betAmount:0,
-                roomType:'hard', roomAccess:'open', roomName:'Комната',
-                currentRound:0, yourCash:10000, oppCash:10000, yourPortfolio:{}, oppPortfolio:{},
-                currentCase:null, gameActive:false, isFinal:false, finalTime:90,
-                usedCases:[], marketPrices:{}, fairValues:{}, finalInterval:null,
-                roomCode:null, waitPressed:false, waitCount:0, totalPlayers:2, roundTimer:null,
-                lobbyPlayers:[], allCasesLoaded:[], casesReady:false,
-                isMultiplayer:false, opponentName:'🤖 Бот-Трейдер', opponentAvatar:'🤖',
-                adminActivated:false, lobbyRefreshInterval:null
+                roomCode:null, yourCash:10000, oppCash:10000, yourPortfolio:{}, oppPortfolio:{},
+                gameActive:false, usedCases:[], marketPrices:{}, lobbyPlayers:[], allCasesLoaded:[], casesReady:false,
+                isMultiplayer:false, opponentName:'🤖 Бот', opponentAvatar:'🤖'
             };
 
-            function loadState() { try { const r=localStorage.getItem('ib_v9'); if(r){ const s=JSON.parse(r); Object.assign(state, s); } } catch(e) {} }
-            function saveState() { localStorage.setItem('ib_v9', JSON.stringify({ playerName:state.playerName, playerAvatar:state.playerAvatar, playerStars:state.playerStars, playerDollars:state.playerDollars, adminActivated:state.adminActivated })); }
+            function loadState() { try { const r=localStorage.getItem('ib_v10'); if(r) Object.assign(state, JSON.parse(r)); } catch(e) {} }
+            function saveState() { localStorage.setItem('ib_v10', JSON.stringify({ playerName:state.playerName, playerAvatar:state.playerAvatar, playerStars:state.playerStars, playerDollars:state.playerDollars })); }
 
-            function sanitize(str) { return String(str).replace(/[<>&"']/g, '').substring(0, 30); }
-            function avatarHTML(a) { return a&&a.startsWith('icons/')?`<img src="${a}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:a||'👤'; }
             function updateProfileUI() {
                 document.getElementById('profileName').textContent=state.playerName;
-                document.getElementById('profileAvatar').innerHTML=avatarHTML(state.playerAvatar);
-                const big = document.getElementById('editAvatarBig'); if(big) big.innerHTML=avatarHTML(state.playerAvatar);
+                document.getElementById('profileAvatar').textContent=state.playerAvatar;
                 document.getElementById('editName').value=state.playerName;
                 document.getElementById('profileStars').textContent=state.playerStars;
                 document.getElementById('profileDollars').textContent=state.playerDollars;
-                document.getElementById('roomStarsAvail').textContent=state.playerStars;
-                document.querySelectorAll('#avatarChips .chip').forEach(c=>c.classList.toggle('selected',c.dataset.avatar===state.playerAvatar));
             }
 
-            function loadProfileFromCloud() {
+            function loadProfile() {
                 if (tg?.CloudStorage) {
-                    tg.CloudStorage.getItems(['ib_name','ib_avatar','ib_stars','ib_dollars'], (err, items) => {
+                    tg.CloudStorage.getItems(['ib_name','ib_avatar','ib_stars'], (err, items) => {
                         if (!err && items) {
                             if (items.ib_name) state.playerName = items.ib_name;
                             if (items.ib_avatar) state.playerAvatar = items.ib_avatar;
                             if (items.ib_stars) state.playerStars = parseInt(items.ib_stars) || 0;
-                            if (items.ib_dollars) state.playerDollars = parseInt(items.ib_dollars) || 0;
                         }
-                        afterProfileLoad();
+                        updateProfileUI();
+                        checkAdmin();
                     });
-                } else { afterProfileLoad(); }
-            }
-            function saveProfileToCloud() {
-                if (tg?.CloudStorage) {
-                    tg.CloudStorage.setItems([{key:'ib_name',value:state.playerName},{key:'ib_avatar',value:state.playerAvatar},{key:'ib_stars',value:String(state.playerStars)},{key:'ib_dollars',value:String(state.playerDollars)}]);
+                } else {
+                    updateProfileUI();
+                    checkAdmin();
                 }
-                saveState();
             }
 
-            function afterProfileLoad() {
-                updateProfileUI();
-                // ПРОВЕРКА АДМИНА
-const actualUsername = tg?.initDataUnsafe?.user?.username;
-if (state.adminActivated || actualUsername === 'KnigaWou') {
-    activateAdmin();
-}
-                // СЛУШАЕМ ОТКРЫТЫЕ КОМНАТЫ
-                db.ref('open_rooms').on('value', snap => {
-                    const rooms = snap.val() || {};
-                    const list = document.getElementById('openRoomsList');
-                    if(!list) return;
-                    const entries = Object.entries(rooms).filter(([code, r]) => r.status === 'waiting');
-                    list.innerHTML = entries.length === 0 ? '<p style="color:var(--text2);text-align:center;">Нет открытых комнат</p>' :
-                        entries.map(([code, r]) => `<div class="lobby-player" style="justify-content:space-between;"><span>🏆 ${sanitize(r.roomName)} (${r.players}/${r.maxPlayers})</span><button class="btn-sm" onclick="window._quickJoin('${code}')">Войти</button></div>`).join('');
+            function checkAdmin() {
+                const username = tg?.initDataUnsafe?.user?.username;
+                if (username === 'KnigaWou' || username === 'nadonachatb') {
+                    document.getElementById('adminBtn').style.display = 'flex';
+                    document.getElementById('adminBtn').onclick = () => {
+                        const p = document.getElementById('adminPanel');
+                        p.classList.toggle('show');
+                        document.getElementById('adminStats').textContent = `@${username} | ⭐${state.playerStars}`;
+                    };
+                }
+            }
+
+            function fmt(n) { return n>=1e6?'$'+(n/1e6).toFixed(1)+'M':'$'+Math.round(n).toLocaleString('en-US'); }
+
+            function updatePortfolioTable() {
+                const body=document.getElementById('portfolioBody');
+                const assets=Object.entries(state.yourPortfolio);
+                body.innerHTML=assets.length===0?'<tr><td colspan="5">Нет активов</td></tr>':assets.map(([sym,d])=>{
+                    const pr=state.marketPrices[sym]||d.avgPrice;
+                    return `<tr><td>${sym}</td><td>${d.qty}</td><td>${fmt(pr)}</td><td>${fmt(pr*d.qty)}</td><td><button class="btn-sm sell" id="sell_${sym}">Продать</button></td></tr>`;
+                }).join('');
+                assets.forEach(([sym])=>{
+                    document.getElementById('sell_'+sym)?.addEventListener('click', ()=>{
+                        const d=state.yourPortfolio[sym];
+                        if(!d) return;
+                        state.yourCash+=(state.marketPrices[sym]||d.avgPrice)*d.qty;
+                        delete state.yourPortfolio[sym];
+                        updatePortfolioTable();
+                    });
                 });
             }
 
-            function activateAdmin() {
-                state.adminActivated = true;
-                const btn = document.getElementById('adminBtn');
-                btn.style.display = 'flex';
-                btn.onclick = () => {
-                    const p = document.getElementById('adminPanel');
-                    p.classList.toggle('show');
-                    document.getElementById('adminStats').innerHTML = `ID: ${tg?.initDataUnsafe?.user?.id||'—'}<br>⭐: ${state.playerStars}<br>💵: ${state.playerDollars}<br>Кейсов: ${state.allCasesLoaded.length}`;
-                };
-                saveState();
+            function showCase(kase) {
+                state.currentCase=kase;
+                document.getElementById('caseTitle').textContent=`${kase.symbol} — ${kase.name}`;
+                document.getElementById('caseDesc').textContent=kase.desc;
+                document.getElementById('casePrice').textContent=`💰 ${fmt(state.marketPrices[kase.symbol])}`;
+                updatePortfolioTable();
             }
 
-            // СЕКРЕТНОЕ ПОЛЕ
-document.getElementById('secretSubmitBtn').addEventListener('click', () => {
-    const pw = document.getElementById('secretPassword').value.trim();
-    if (pw === SECRET_PASSWORD) {
-        const actualUsername = tg?.initDataUnsafe?.user?.username;
-        if (actualUsername === 'KnigaWou') {
-            activateAdmin();
-            alert('Админ-панель добавлена!');
-        } else {
-            alert('Неверный username. Доступ запрещён.');
-        }
-    } else {
-        alert('Неверный пароль.');
-    }
-    document.getElementById('secretPassword').value = '';
-    document.getElementById('secretField').classList.remove('show');
-});
+            function playerBuy() {
+                if(!state.gameActive||!state.currentCase) return;
+                const k=state.currentCase, pr=state.marketPrices[k.symbol], q=parseInt(document.getElementById('buyQty').value)||1;
+                if(state.yourCash<pr*q) return;
+                state.yourCash-=pr*q;
+                if(!state.yourPortfolio[k.symbol]) state.yourPortfolio[k.symbol]={qty:0,avgPrice:0};
+                const o=state.yourPortfolio[k.symbol];
+                o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);
+                o.qty+=q;
+                updatePortfolioTable();
+            }
 
-            window._quickJoin = function(code) { document.getElementById('openRoomsModal').classList.remove('show'); window._joinRoom(code); };
-            function fmt(n) { return n>=1e6?'$'+(n/1e6).toFixed(1)+'M':'$'+Math.round(n).toLocaleString('en-US'); }
-            function updateMarketPrices() { for (const c of state.allCasesLoaded) { if(!state.marketPrices[c.symbol]){state.marketPrices[c.symbol]=c.price;state.fairValues[c.symbol]=c.price;} const cur=state.marketPrices[c.symbol],fair=state.fairValues[c.symbol]; const bias=c.trend==='up'?0.5:c.trend==='down'?-0.4:c.trend==='volatile'?(Math.random()-0.5)*1.5:0; let change=(fair-cur)/fair*30+(Math.random()-0.5+bias*0.4)*12; if(Math.random()<0.06) change=(Math.random()>0.5?1:-1)*(15+Math.random()*20); change=Math.max(-30,Math.min(30,change)); state.marketPrices[c.symbol]=Math.max(0.05,cur*(1+change/100)); state.fairValues[c.symbol]=fair*(1+(Math.random()-0.49)*4/100); } }
-            function getRandomCase() { const avail=state.allCasesLoaded.filter(c=>!state.usedCases.includes(c.id)); if(!avail.length){state.usedCases=[];return state.allCasesLoaded[Math.floor(Math.random()*state.allCasesLoaded.length)];} return avail[Math.floor(Math.random()*avail.length)]; }
-            function updatePortfolioTable() { const body=document.getElementById('portfolioBody'); if(!body) return; const assets=Object.entries(state.yourPortfolio); body.innerHTML=assets.length===0?'<tr><td colspan="7">Нет активов</td></tr>':assets.map(([sym,d])=>{ const pr=state.marketPrices[sym]||d.avgPrice, val=pr*d.qty, pct=d.avgPrice?((pr-d.avgPrice)/d.avgPrice*100).toFixed(1):0; const kase=state.allCasesLoaded.find(c=>c.symbol===sym); return `<tr><td class="sym">${sym}</td><td>${d.qty}</td><td>${fmt(pr)}</td><td>${fmt(val)}</td><td class="${+pct>=0?'up':'down'}">${+pct>=0?'▲':'▼'}${Math.abs(pct)}%</td><td style="font-size:8px;">${kase?kase.reason:'—'}</td><td><input class="qty-input" id="sq_${sym}" value="1"><button class="btn-sm sell" id="sell_${sym}">Продать</button></td></tr>`; }).join(''); assets.forEach(([sym])=>{ const btn=document.getElementById('sell_'+sym); if(btn) btn.onclick=()=>{ const d=state.yourPortfolio[sym]; if(!d) return; const q=Math.max(1,Math.min(d.qty,parseInt(document.getElementById('sq_'+sym)?.value)||1)); state.yourCash+=(state.marketPrices[sym]||d.avgPrice)*q; d.qty-=q; if(d.qty<=0) delete state.yourPortfolio[sym]; updatePortfolioTable(); updatePlayersRow(); }; }); }
-            function updatePlayersRow() { const row = document.getElementById('playersRow'); if(!row) return; row.innerHTML = [{ name: state.playerName, avatar: state.playerAvatar, cash: state.yourCash, you: true }, { name: state.opponentName, avatar: state.opponentAvatar, cash: state.oppCash, you: false }].map(p => `<div class="player-card ${p.you?'you':''}"><div class="avatar">${avatarHTML(p.avatar)}</div><div class="name">${sanitize(p.name)}</div><div class="cash">${fmt(p.cash)}</div></div>`).join(''); }
-            function showCase(kase) { state.currentCase=kase; if(!state.marketPrices[kase.symbol]){state.marketPrices[kase.symbol]=kase.price;state.fairValues[kase.symbol]=kase.price;} document.getElementById('caseTitle').textContent=`${kase.symbol} — ${kase.name}`; document.getElementById('caseDesc').textContent=kase.desc; document.getElementById('casePrice').textContent=`💰 Цена: ${fmt(state.marketPrices[kase.symbol])}`; document.getElementById('roundBadge').textContent=`${state.currentRound}/${state.totalRounds}`; updatePortfolioTable(); updatePlayersRow(); updateBuyBtn(); }
-            function updateBuyBtn() { const k=state.currentCase; if(!k) return; const pr=state.marketPrices[k.symbol]||k.price; document.getElementById('buyBtn').disabled=state.yourCash<pr*(+document.getElementById('buyQty').value||1); }
-            function playerBuy() { if(!state.gameActive||state.isFinal||!state.currentCase) return; const k=state.currentCase,pr=state.marketPrices[k.symbol]||k.price,q=Math.max(1,+document.getElementById('buyQty').value||1); if(state.yourCash<pr*q) return; state.yourCash-=pr*q; if(!state.yourPortfolio[k.symbol]) state.yourPortfolio[k.symbol]={qty:0,avgPrice:0}; const o=state.yourPortfolio[k.symbol]; o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q); o.qty+=q; updatePortfolioTable(); updatePlayersRow(); updateBuyBtn(); }
-            function toggleWait() { state.waitPressed=!state.waitPressed; document.getElementById('waitBtn').classList.toggle('held',state.waitPressed); state.waitCount+=state.waitPressed?1:-1; document.getElementById('waitCounter').textContent=`ЖДАТЬ: ${state.waitCount}/${state.totalPlayers}`; if(state.waitCount>=state.totalPlayers&&state.waitCount>0){ clearInterval(state.roundTimer); let s=Math.min(5,+document.getElementById('timer').textContent||5); document.getElementById('timer').textContent=s; state.roundTimer=setInterval(()=>{s--;document.getElementById('timer').textContent=s;if(s<=0){clearInterval(state.roundTimer);nextRound();}},1000); } }
-            function botAction() { if(!state.currentCase||state.isMultiplayer) return; const sym=state.currentCase.symbol,pr=state.marketPrices[sym]||state.currentCase.price,ip=state.oppPortfolio[sym]; const r=Math.random(); if(r<0.3&&state.oppCash>=pr){const q=Math.floor(Math.random()*3)+1;if(state.oppCash>=pr*q){state.oppCash-=pr*q;if(!state.oppPortfolio[sym])state.oppPortfolio[sym]={qty:0,avgPrice:0};const o=state.oppPortfolio[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}} else if(r<0.5&&ip&&ip.qty>0&&pr>ip.avgPrice*1.15){const q=Math.min(ip.qty,Math.ceil(ip.qty*0.5));state.oppCash+=pr*q;ip.qty-=q;if(ip.qty<=0)delete state.oppPortfolio[sym];} updatePlayersRow(); }
-            function startFinal() { state.isFinal=true;state.finalTime=90;document.getElementById('gameScreen').style.display='none';document.getElementById('finalOverlay').classList.add('show');updateFinalUI();clearInterval(state.finalInterval);state.finalInterval=setInterval(()=>{state.finalTime-=5;document.getElementById('finalTimer').textContent=Math.max(0,state.finalTime);for(const s of Object.keys(state.marketPrices))state.marketPrices[s]=Math.max(0.02,state.marketPrices[s]*(1+(Math.random()-0.46)*14/100));updateFinalUI();if(state.finalTime<=0){clearInterval(state.finalInterval);sellAll();endGame();}},5000); }
-            function updateFinalUI() { const body=document.getElementById('finalBody');const assets=Object.entries(state.yourPortfolio);body.innerHTML=assets.length===0?'<tr><td colspan="5">Нет активов</td></tr>':assets.map(([sym,d])=>{const pr=state.marketPrices[sym]||d.avgPrice;return`<tr><td>${sym}</td><td>${d.qty}</td><td>${fmt(pr)}</td><td>${fmt(pr*d.qty)}</td><td><input class="qty-input" id="fsq_${sym}" value="${d.qty}"><button class="btn-sm sell" id="fsell_${sym}">Продать</button></td></tr>`;}).join(''); assets.forEach(([sym])=>{const btn=document.getElementById('fsell_'+sym);if(btn)btn.onclick=()=>{const d=state.yourPortfolio[sym];if(!d)return;const q=Math.max(1,Math.min(d.qty,parseInt(document.getElementById('fsq_'+sym)?.value)||d.qty));state.yourCash+=(state.marketPrices[sym]||d.avgPrice)*q;d.qty-=q;if(d.qty<=0)delete state.yourPortfolio[sym];updateFinalUI();};}); document.getElementById('finalTotal').textContent='💰 '+fmt(state.yourCash+Object.entries(state.yourPortfolio).reduce((s,[sym,d])=>s+(state.marketPrices[sym]||d.avgPrice)*d.qty,0)); }
-            function sellAll() { for(const[s,d]of Object.entries(state.yourPortfolio))state.yourCash+=(state.marketPrices[s]||d.avgPrice)*d.qty; state.yourPortfolio={}; for(const[s,d]of Object.entries(state.oppPortfolio))state.oppCash+=(state.marketPrices[s]||d.avgPrice)*d.qty; state.oppPortfolio={}; }
-            function endGame() { state.gameActive=false;state.isFinal=false;clearInterval(state.finalInterval);document.getElementById('finalOverlay').classList.remove('show');document.getElementById('resultOverlay').classList.add('show');const win=state.yourCash>state.oppCash;document.getElementById('resultEmoji').textContent=win?'🏆':state.yourCash<state.oppCash?'💀':'🤝';document.getElementById('resultTitle').textContent=win?'ПОБЕДА!':state.yourCash<state.oppCash?'ПОРАЖЕНИЕ':'НИЧЬЯ';document.getElementById('resultSubtitle').textContent=win?'Ты лучший инвестор!':'Анализируй рынок';document.getElementById('resultCash').textContent=fmt(state.yourCash);if(state.betAmount>0&&win){const prize=Math.floor(state.betAmount*0.95);state.playerStars+=prize;document.getElementById('resultPrize').textContent=`Выигрыш: +${prize} ⭐ (комиссия 5%) | Баланс: ${state.playerStars} ⭐`;}else if(state.betAmount>0){document.getElementById('resultPrize').textContent=`Потеряно: -${state.betAmount} ⭐ | Баланс: ${state.playerStars} ⭐`;}else{document.getElementById('resultPrize').textContent='';} if(win){state.playerDollars+=100;} saveState(); saveProfileToCloud(); updateProfileUI(); }
-            function nextRound() { if(state.currentRound>=state.totalRounds){startFinal();return;} state.currentRound++;updateMarketPrices();state.waitPressed=false;state.waitCount=0;document.getElementById('waitBtn').classList.remove('held');document.getElementById('waitCounter').textContent='';const kase=getRandomCase();state.usedCases.push(kase.id);showCase(kase);botAction();startTimer(); }
-            function startTimer() { let s=state.roundTime;document.getElementById('timer').textContent=s;document.getElementById('timer').classList.remove('urgent');clearInterval(state.roundTimer);state.roundTimer=setInterval(()=>{s--;document.getElementById('timer').textContent=s;if(s<=5)document.getElementById('timer').classList.add('urgent');if(s<=0){clearInterval(state.roundTimer);nextRound();}},1000); }
-            function startGame() { if(!state.casesReady){alert('Кейсы загружаются...');return;} if(state.betAmount>0&&state.betAmount>state.playerStars){alert(`❌ Недостаточно Stars!\nСтавка: ${state.betAmount} ⭐\nБаланс: ${state.playerStars} ⭐`);return;} if(state.betAmount>0){state.playerStars-=state.betAmount;saveState();saveProfileToCloud();updateProfileUI();} state.yourCash=state.startCash;state.oppCash=state.startCash; state.yourPortfolio={};state.oppPortfolio={}; state.marketPrices={};state.fairValues={}; state.currentRound=0;state.gameActive=true;state.isFinal=false; state.usedCases=[];state.waitPressed=false;state.waitCount=0; state.totalPlayers=state.isMultiplayer?state.lobbyPlayers.length:2; document.getElementById('waitBtn').classList.remove('held'); document.getElementById('waitCounter').textContent=''; document.getElementById('menuScreen').style.display='none'; document.getElementById('gameScreen').style.display='block'; ['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show')); if(!state.isMultiplayer){state.opponentName='🤖 Бот-Трейдер';state.opponentAvatar='🤖';} updatePortfolioTable();updatePlayersRow();nextRound(); }
-            function loadCases() { fetch('cases.json').then(r=>r.json()).then(cases=>{state.allCasesLoaded=cases;state.casesReady=true;document.getElementById('loadingScreen').style.display='none';document.getElementById('menuScreen').style.display='block';}).catch(()=>{document.getElementById('loadingScreen').textContent='Ошибка cases.json';}); }
+            function endGame() {
+                state.gameActive=false;
+                const win=state.yourCash>state.oppCash;
+                document.getElementById('resultEmoji').textContent=win?'🏆':'💀';
+                document.getElementById('resultTitle').textContent=win?'ПОБЕДА!':'ПОРАЖЕНИЕ';
+                document.getElementById('resultCash').textContent=fmt(state.yourCash);
+                if(win) state.playerDollars+=100;
+                saveState();
+                document.getElementById('gameScreen').style.display='none';
+                document.getElementById('resultOverlay').classList.add('show');
+            }
 
-            function createRoomInFirebase() {
-                const roomRef = db.ref('rooms/' + state.roomCode);
-                roomRef.set({
-                    host: tg?.initDataUnsafe?.user?.id || 'anon', roomName: state.roomName, roomType: state.roomType,
-                    roomAccess: state.roomAccess, maxPlayers: state.maxPlayers, startCash: state.startCash,
-                    totalRounds: state.totalRounds, roundTime: state.roundTime, betAmount: state.betAmount,
-                    players: { [tg?.initDataUnsafe?.user?.id || 'anon']: { name: state.playerName, avatar: state.playerAvatar } },
-                    status: 'waiting'
-                }).then(() => {
-                    if (state.roomAccess === 'open') {
-                        db.ref('open_rooms/' + state.roomCode).set({
-                            roomName: state.roomName, maxPlayers: state.maxPlayers, players: 1, status: 'waiting'
-                        });
+            function nextRound() {
+                if(state.currentRound>=state.totalRounds) { endGame(); return; }
+                state.currentRound++;
+                const kase = state.allCasesLoaded[Math.floor(Math.random()*state.allCasesLoaded.length)];
+                state.marketPrices[kase.symbol] = kase.price*(0.8+Math.random()*0.4);
+                showCase(kase);
+                if(!state.isMultiplayer) {
+                    const r=Math.random();
+                    if(r<0.4&&state.oppCash>=state.marketPrices[kase.symbol]) {
+                        const q=Math.floor(Math.random()*3)+1;
+                        if(state.oppCash>=state.marketPrices[kase.symbol]*q) {
+                            state.oppCash-=state.marketPrices[kase.symbol]*q;
+                            if(!state.oppPortfolio[kase.symbol]) state.oppPortfolio[kase.symbol]={qty:0};
+                            state.oppPortfolio[kase.symbol].qty+=q;
+                        }
                     }
+                }
+                startTimer();
+            }
+
+            let roundTimer;
+            function startTimer() {
+                let s=state.roundTime;
+                document.getElementById('timer').textContent=s;
+                clearInterval(roundTimer);
+                roundTimer=setInterval(()=>{
+                    s--;
+                    document.getElementById('timer').textContent=s;
+                    if(s<=0) { clearInterval(roundTimer); nextRound(); }
+                },1000);
+            }
+
+            function startGame() {
+                if(!state.casesReady) return;
+                state.yourCash=state.startCash; state.oppCash=state.startCash;
+                state.yourPortfolio={}; state.oppPortfolio={};
+                state.marketPrices={}; state.currentRound=0;
+                state.gameActive=true;
+                document.getElementById('menuScreen').style.display='none';
+                document.getElementById('gameScreen').style.display='block';
+                document.getElementById('resultOverlay').classList.remove('show');
+                updatePortfolioTable();
+                nextRound();
+            }
+
+            fetch('cases.json').then(r=>r.json()).then(cases=>{
+                state.allCasesLoaded=cases; state.casesReady=true;
+                document.getElementById('loadingScreen').style.display='none';
+                document.getElementById('menuScreen').style.display='block';
+            });
+
+            function createRoom() {
+                state.roomCode = Math.random().toString(36).substring(2,8).toUpperCase();
+                db.ref('rooms/'+state.roomCode).set({
+                    host: tg?.initDataUnsafe?.user?.username||'host',
+                    players: { 0: { name: state.playerName, avatar: state.playerAvatar } },
+                    status: 'waiting', maxPlayers: state.maxPlayers
+                }).then(() => {
                     listenRoom();
                     showLobby();
                 });
             }
 
             function listenRoom() {
-                db.ref('rooms/' + state.roomCode).on('value', snap => {
+                db.ref('rooms/'+state.roomCode).on('value', snap => {
                     const room = snap.val();
-                    if (!room) return;
-                    if (room.players) {
-                        const entries = Object.entries(room.players);
-                        state.lobbyPlayers = entries.map(([id, p]) => ({ name: p.name, avatar: p.avatar, host: id === room.host }));
-                        state.maxPlayers = room.maxPlayers;
-                        state.startCash = room.startCash;
-                        state.totalRounds = room.totalRounds;
-                        state.roundTime = room.roundTime;
-                        state.betAmount = room.betAmount;
-                        if (room.status === 'playing' && !state.gameActive) {
-                            state.isMultiplayer = true;
-                            const opp = state.lobbyPlayers.find(p => !p.host);
-                            state.opponentName = opp ? opp.name : 'Соперник';
-                            state.opponentAvatar = opp ? opp.avatar : '👤';
-                            document.getElementById('lobbyModal').classList.remove('show');
-                            startGame();
-                        }
-                        if (document.getElementById('lobbyModal').classList.contains('show')) showLobby();
+                    if(!room) return;
+                    const entries = Object.entries(room.players||{});
+                    state.lobbyPlayers = entries.map(([id,p]) => ({ name:p.name, avatar:p.avatar, host:id==='0' }));
+                    if(room.status==='playing' && !state.gameActive) {
+                        state.isMultiplayer = true;
+                        const opp = state.lobbyPlayers.find(p=>!p.host);
+                        if(opp) { state.opponentName=opp.name; state.opponentAvatar=opp.avatar; }
+                        document.getElementById('lobbyModal').classList.remove('show');
+                        startGame();
                     }
-                    if (room.status === 'playing') db.ref('open_rooms/' + state.roomCode).remove();
+                    if(document.getElementById('lobbyModal').classList.contains('show')) showLobby();
                 });
             }
 
             function showLobby() {
                 document.getElementById('lobbyContent').innerHTML = `
-                    <h3>🏆 ${sanitize(state.roomName)}</h3><div style="font-size:24px;font-weight:900;color:var(--gold);">${state.roomCode}</div>
-                    <div class="room-link">https://t.me/InvestBattleBot?start=${state.roomCode}</div>
-                    <p style="font-size:11px;">${state.roomType==='hard'?'🎯 Жёсткая':'🎲 Произвольная'} | ${state.roomAccess==='open'?'🌍 Открытая':'🔒 Закрытая'} | ${state.lobbyPlayers.length}/${state.maxPlayers} | Ставка: ${state.betAmount} ⭐</p>
-                    ${state.lobbyPlayers.map(p=>`<div class="lobby-player"><span class="avatar" style="width:28px;height:28px;border-radius:50%;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:#1a1a2e;font-size:14px;margin-right:6px;">${avatarHTML(p.avatar)}</span>${sanitize(p.name)}${p.host?' (Владелец)':''}</div>`).join('')}
-                    <p style="font-size:10px;color:var(--text2);">${state.lobbyPlayers.length<2?'Ожидание игроков...':''}</p>
-                    <button class="btn gold" id="startLobbyBtn" style="width:100%;margin-top:10px;" ${state.lobbyPlayers.length<2?'disabled':''}>🚀 НАЧАТЬ</button>
-                    <button class="btn" id="closeLobbyBtn" style="width:100%;margin-top:6px;">Закрыть</button>
+                    <h3>🏆 Комната ${state.roomCode}</h3>
+                    ${state.lobbyPlayers.map(p=>`<div class="lobby-player"><span>${p.avatar}</span> ${p.name} ${p.host?'(Владелец)':''}</div>`).join('')}
+                    <p>${state.lobbyPlayers.length<2?'Ожидание игроков...':''}</p>
+                    <button class="btn gold" id="startLobbyBtn" style="width:100%;" ${state.lobbyPlayers.length<2?'disabled':''}>🚀 НАЧАТЬ</button>
                 `;
                 document.getElementById('lobbyModal').classList.add('show');
-                // АВТО-ОБНОВЛЕНИЕ ЛОББИ
-                clearInterval(state.lobbyRefreshInterval);
-                state.lobbyRefreshInterval = setInterval(() => {
-                    db.ref('rooms/' + state.roomCode + '/players').once('value', snap => {
-                        const players = snap.val() || {};
-                        const entries = Object.entries(players);
-                        state.lobbyPlayers = entries.map(([id, p]) => ({ name: p.name, avatar: p.avatar, host: id === (room?.host || '') }));
-                        showLobby();
+                setTimeout(() => {
+                    document.getElementById('startLobbyBtn')?.addEventListener('click', ()=>{
+                        db.ref('rooms/'+state.roomCode+'/status').set('playing');
+                    });
+                }, 200);
+                setInterval(() => {
+                    db.ref('rooms/'+state.roomCode+'/players').once('value', snap => {
+                        const players = snap.val()||{};
+                        state.lobbyPlayers = Object.entries(players).map(([id,p])=>({ name:p.name, avatar:p.avatar, host:id==='0' }));
+                        if(document.getElementById('lobbyModal').classList.contains('show')) showLobby();
                     });
                 }, 2000);
-
-                setTimeout(() => {
-                    document.getElementById('startLobbyBtn')?.addEventListener('click', () => { db.ref('rooms/' + state.roomCode + '/status').set('playing'); });
-                    document.getElementById('closeLobbyBtn')?.addEventListener('click', () => { clearInterval(state.lobbyRefreshInterval); db.ref('rooms/' + state.roomCode).remove(); db.ref('open_rooms/' + state.roomCode).remove(); state.lobbyPlayers=[]; state.isMultiplayer=false; document.getElementById('lobbyModal').classList.remove('show'); });
-                }, 100);
             }
 
-            window._joinRoom = function(code) {
-                const roomRef = db.ref('rooms/' + code);
-                roomRef.once('value', snap => {
+            function joinRoom(code) {
+                db.ref('rooms/'+code).once('value', snap => {
                     const room = snap.val();
-                    if (!room) { alert('Комната не найдена.'); return; }
-                    if (room.status !== 'waiting') { alert('Игра уже началась.'); return; }
-                    if (room.players && Object.keys(room.players).length >= room.maxPlayers) { alert('Комната заполнена.'); return; }
+                    if(!room) { alert('Комната не найдена'); return; }
                     state.roomCode = code;
-                    state.roomName = room.roomName;
-                    state.roomType = room.roomType;
-                    state.roomAccess = room.roomAccess;
-                    state.maxPlayers = room.maxPlayers;
-                    state.startCash = room.startCash;
-                    state.totalRounds = room.totalRounds;
-                    state.roundTime = room.roundTime;
-                    state.betAmount = room.betAmount;
-                    const playerId = tg?.initDataUnsafe?.user?.id || 'anon';
-                    db.ref('rooms/' + code + '/players/' + playerId).set({ name: state.playerName, avatar: state.playerAvatar });
-                    db.ref('open_rooms/' + code + '/players').set(Object.keys(room.players || {}).length + 1);
+                    const idx = Object.keys(room.players||{}).length;
+                    db.ref('rooms/'+code+'/players/'+idx).set({ name:state.playerName, avatar:state.playerAvatar });
                     state.isMultiplayer = true;
                     listenRoom();
                     showLobby();
                 });
-            };
-
-            // ЧИТАЕМ ПАРАМЕТР start ИЗ URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const startCode = urlParams.get('start');
-            if (startCode) {
-                setTimeout(() => {
-                    document.getElementById('joinCodeInput').value = startCode.toUpperCase();
-                    document.getElementById('joinModal').classList.add('show');
-                }, 1500);
             }
 
-            // СОБЫТИЯ
-            document.getElementById('playMenuBtn').addEventListener('click', () => { document.getElementById('playMenu').style.display='block'; document.getElementById('playMenuBtn').style.display='none'; document.getElementById('createCompanyBtn').style.display='none'; });
-            document.getElementById('backMenuBtn').addEventListener('click', () => { document.getElementById('playMenu').style.display='none'; document.getElementById('playMenuBtn').style.display='block'; document.getElementById('createCompanyBtn').style.display='block'; });
-            document.getElementById('profileAvatar').addEventListener('click', () => document.getElementById('profileModal').classList.add('show'));
-            document.getElementById('settingsBtn').addEventListener('click', () => document.getElementById('settingsModal').classList.add('show'));
-            document.getElementById('closeSettingsBtn').addEventListener('click', () => document.getElementById('settingsModal').classList.remove('show'));
-            document.getElementById('soloSetupBtn').addEventListener('click', () => document.getElementById('soloSetupModal').classList.add('show'));
-            document.getElementById('cancelSoloSetupBtn').addEventListener('click', () => document.getElementById('soloSetupModal').classList.remove('show'));
-            document.getElementById('startSoloBtn').addEventListener('click', () => { state.startCash = parseInt(document.querySelector('#soloCashChips .selected')?.dataset?.cash || 10000); state.totalRounds = parseInt(document.querySelector('#soloRoundsChips .selected')?.dataset?.rounds || 10); state.roundTime = parseInt(document.querySelector('#soloTimeChips .selected')?.dataset?.time || 30); state.isMultiplayer = false; state.betAmount = 0; document.getElementById('soloSetupModal').classList.remove('show'); startGame(); });
-            document.getElementById('buyBtn').addEventListener('click', playerBuy);
-            document.getElementById('waitBtn').addEventListener('click', toggleWait);
-            document.getElementById('qtyMinus').addEventListener('click', ()=>{ const i=document.getElementById('buyQty'); i.value=Math.max(1,+i.value-1); updateBuyBtn(); });
-            document.getElementById('qtyPlus').addEventListener('click', ()=>{ const i=document.getElementById('buyQty'); i.value=Math.min(1000,+i.value+1); updateBuyBtn(); });
-            document.getElementById('buyQty').addEventListener('input', updateBuyBtn);
-            document.getElementById('menuBtn').addEventListener('click', ()=>{ clearInterval(state.roundTimer);clearInterval(state.finalInterval);['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';state.gameActive=false;state.isFinal=false; });
-            document.getElementById('shareBtn').addEventListener('click', ()=>{ const t=`🏆 InvestBattle: ${fmt(state.yourCash)}\nСыграем? 💰`; navigator.share?navigator.share({title:'InvestBattle',text:t}):(navigator.clipboard.writeText(t),alert('Скопировано!')); });
-            document.getElementById('sellAllFinalBtn').addEventListener('click', ()=>{ sellAll(); endGame(); });
+            document.getElementById('playMenuBtn').addEventListener('click', ()=>{ document.getElementById('playMenu').style.display='block'; document.getElementById('playMenuBtn').style.display='none'; });
+            document.getElementById('backMenuBtn').addEventListener('click', ()=>{ document.getElementById('playMenu').style.display='none'; document.getElementById('playMenuBtn').style.display='block'; });
+            document.getElementById('profileAvatar').addEventListener('click', ()=>document.getElementById('profileModal').classList.add('show'));
+            document.getElementById('settingsBtn').addEventListener('click', ()=>document.getElementById('settingsModal').classList.add('show'));
+            document.getElementById('closeSettingsBtn').addEventListener('click', ()=>document.getElementById('settingsModal').classList.remove('show'));
             document.getElementById('closeProfileBtn').addEventListener('click', ()=>document.getElementById('profileModal').classList.remove('show'));
-            document.getElementById('saveProfileBtn').addEventListener('click', ()=>{ state.playerName=sanitize(document.getElementById('editName').value.trim()||'Трейдер'); state.playerAvatar=document.querySelector('#avatarChips .selected')?.dataset?.avatar||'icons/avatar1.png'; saveProfileToCloud(); updateProfileUI(); document.getElementById('profileModal').classList.remove('show'); });
-            document.querySelectorAll('#avatarChips .chip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('#avatarChips .chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));
-            document.getElementById('createRoomBtn').addEventListener('click', ()=>{ updateProfileUI(); document.getElementById('createRoomModal').classList.add('show'); });
-            document.getElementById('cancelCreateRoomBtn').addEventListener('click', ()=>document.getElementById('createRoomModal').classList.remove('show'));
-            document.getElementById('confirmCreateRoomBtn').addEventListener('click', ()=>{ state.betAmount=parseInt(document.getElementById('starInput').value)||0; if(state.betAmount>state.playerStars){alert(`❌ Недостаточно Stars! Нужно ${state.betAmount} ⭐, у вас ${state.playerStars} ⭐`);return;} state.roomCode=Math.random().toString(36).substring(2,8).toUpperCase(); state.roomName=sanitize(document.getElementById('roomNameInput').value||'Комната'); state.roomType=document.querySelector('#roomTypeChips .selected')?.dataset?.type||'hard'; state.roomAccess=document.querySelector('#roomAccessChips .selected')?.dataset?.access||'open'; state.maxPlayers=parseInt(document.querySelector('#maxPlayersChips .selected')?.dataset?.max||2); state.startCash=parseInt(document.querySelector('#roomCashChips .selected')?.dataset?.cash||10000); state.totalRounds=parseInt(document.querySelector('#roomRoundsChips .selected')?.dataset?.rounds||10); state.roundTime=parseInt(document.querySelector('#roomTimeChips2 .selected')?.dataset?.time||30); state.lobbyPlayers=[{name:state.playerName,avatar:state.playerAvatar,host:true}]; state.isMultiplayer=false; createRoomInFirebase(); document.getElementById('createRoomModal').classList.remove('show'); saveState(); });
-            document.getElementById('joinRoomBtn').addEventListener('click', ()=>document.getElementById('joinModal').classList.add('show'));
-            document.getElementById('cancelJoinBtn').addEventListener('click', ()=>document.getElementById('joinModal').classList.remove('show'));
-            document.getElementById('confirmJoinBtn').addEventListener('click', ()=>{ const code=sanitize(document.getElementById('joinCodeInput').value.trim().toUpperCase()); if(!code){alert('Введи код');return;} document.getElementById('joinModal').classList.remove('show'); window._joinRoom(code); });
-            document.getElementById('openRoomsBtn').addEventListener('click', ()=>document.getElementById('openRoomsModal').classList.add('show'));
-            document.getElementById('closeOpenRoomsBtn').addEventListener('click', ()=>document.getElementById('openRoomsModal').classList.remove('show'));
-            document.getElementById('competitionBtn').addEventListener('click', ()=>{ alert('🏆 Соревнования — в следующем обновлении!'); });
-            document.getElementById('createCompanyBtn').addEventListener('click', ()=>{ alert('🏗 Создание компании — в следующем обновлении!'); });
-
-            // МУЗЫКА
-            const trackSelect = document.getElementById('trackSelect');
-            if (trackSelect) {
-                trackSelect.innerHTML = musicTracks.map((t, i) => `<option value="${i}" ${i===currentTrack?'selected':''}>${t.name}</option>`).join('');
-                trackSelect.addEventListener('change', function() { playMusic(parseInt(this.value)); });
-            }
-            document.getElementById('musicSwitch').addEventListener('click', function() {
-                musicOn = !musicOn;
-                this.classList.toggle('on', musicOn);
-                if (musicOn) playMusic(currentTrack);
-                else bgMusic.pause();
+            document.getElementById('saveProfileBtn').addEventListener('click', ()=>{
+                state.playerName = document.getElementById('editName').value.trim()||'Трейдер';
+                state.playerAvatar = document.querySelector('#avatarChips .selected')?.dataset?.avatar||'icons/avatar1.png';
+                if(tg?.CloudStorage) tg.CloudStorage.setItems([{key:'ib_name',value:state.playerName},{key:'ib_avatar',value:state.playerAvatar}]);
+                saveState(); updateProfileUI();
+                document.getElementById('profileModal').classList.remove('show');
             });
-
-            ['soloCashChips','soloRoundsChips','soloTimeChips'].forEach(id=>{document.querySelectorAll('#'+id+' .chip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('#'+id+' .chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));});
-            ['roomTypeChips','roomAccessChips','maxPlayersChips','roomCashChips','roomRoundsChips','roomTimeChips2'].forEach(id=>{document.querySelectorAll('#'+id+' .chip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('#'+id+' .chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));});
+            document.getElementById('soloSetupBtn').addEventListener('click', ()=>document.getElementById('soloSetupModal').classList.add('show'));
+            document.getElementById('startSoloBtn').addEventListener('click', ()=>{
+                state.startCash = parseInt(document.querySelector('#soloCashChips .selected')?.dataset?.cash||10000);
+                state.totalRounds = parseInt(document.querySelector('#soloRoundsChips .selected')?.dataset?.rounds||10);
+                state.isMultiplayer = false;
+                document.getElementById('soloSetupModal').classList.remove('show');
+                startGame();
+            });
+            document.getElementById('createRoomBtn').addEventListener('click', ()=>document.getElementById('createRoomModal').classList.add('show'));
+            document.getElementById('confirmCreateRoomBtn').addEventListener('click', ()=>{
+                state.roomName = document.getElementById('roomNameInput').value||'Комната';
+                state.maxPlayers = parseInt(document.querySelector('#maxPlayersChips .selected')?.dataset?.max||2);
+                createRoom();
+                document.getElementById('createRoomModal').classList.remove('show');
+            });
+            document.getElementById('joinRoomBtn').addEventListener('click', ()=>document.getElementById('joinModal').classList.add('show'));
+            document.getElementById('confirmJoinBtn').addEventListener('click', ()=>{
+                const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+                if(code) { joinRoom(code); document.getElementById('joinModal').classList.remove('show'); }
+            });
+            document.getElementById('buyBtn').addEventListener('click', playerBuy);
+            document.getElementById('qtyMinus').addEventListener('click', ()=>{ const i=document.getElementById('buyQty'); i.value=Math.max(1,+i.value-1); });
+            document.getElementById('qtyPlus').addEventListener('click', ()=>{ const i=document.getElementById('buyQty'); i.value=Math.min(1000,+i.value+1); });
+            document.getElementById('menuBtn').addEventListener('click', ()=>{
+                clearInterval(roundTimer);
+                document.getElementById('gameScreen').style.display='none';
+                document.getElementById('menuScreen').style.display='block';
+                document.getElementById('resultOverlay').classList.remove('show');
+                state.gameActive=false;
+            });
+            document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',function(){
+                this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));
+                this.classList.add('selected');
+            }));
 
             loadState();
-            loadProfileFromCloud();
-            loadCases();
-            console.log('✅ InvestBattle v7.1 готов');
+            loadProfile();
         })();
     </script>
 </body>
