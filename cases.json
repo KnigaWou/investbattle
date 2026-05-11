@@ -298,9 +298,7 @@
     "trend": "volatile",
     "desc": "2026: AquaFuel создала топливо из водорослей — углеродно-нейтральное, дешевле бензина на 40%. Exxon купила 20% акций за $200M. Но экологи протестуют: водоросли токсичны для рыб. Правительство Норвегии думает о запрете.",
     "reason": "Топливо из водорослей"
-  }
-]
-[
+  },
   {
     "id": 31,
     "diff": "med",
@@ -500,9 +498,7 @@
     "trend": "volatile",
     "desc": "2026: Nauticus — подводные роботы для нефтяных платформ. Контракт с Petrobras на $200M. Но технология не прошла сертификацию. Задержка на год. Если сертифицируют — x10. Если нет — банкротство.",
     "reason": "Сертификация решает всё"
-  }
-]
-[
+  },
   {
     "id": 51,
     "diff": "med",
@@ -702,9 +698,7 @@
     "trend": "up",
     "desc": "Австралия, 2025: BHP — крупнейший горнодобытчик. Цены на железную руду +20% из-за спроса Китая. Дивиденды 5%. Новый проект по добыче меди в Чили.",
     "reason": "Руда + Китай"
-  }
-]
-[
+  },
   {
     "id": 71,
     "diff": "hard",
@@ -1004,9 +998,7 @@
     "trend": "volatile",
     "desc": "США, 2026: GameStop — мем-акция. Райан Коэн обещает трансформацию в Web3-компанию. Но продажи игр падают. NFT-маркетплейс закрыт. Кеш $1B — хватит на 3 года.",
     "reason": "Web3 + кеш"
-  }
-]
-[
+  },
   {
     "id": 101,
     "diff": "med",
@@ -1506,9 +1498,7 @@
     "trend": "up",
     "desc": "США, 2025: Wells Fargo — банк. Санкции ФРС сняты. Кредитование +15%. Но штрафы за прошлые скандалы всё ещё $2B. Новый CEO обещает «чистый лист».",
     "reason": "Санкции сняты + штрафы"
-  }
-]
-[
+  },
   {
     "id": 151,
     "diff": "exp",
@@ -1608,9 +1598,7 @@
     "trend": "up",
     "desc": "США, 2025: Domino's — пицца. Доставка дронами в Техасе. Продажи +12%. Лояльность клиентов +20%. Новые рынки: Индия, Бразилия. Дивиденды 1.5%.",
     "reason": "Дроны + Индия"
-  }
-]
-[
+  },
   {
     "id": 161,
     "diff": "med",
@@ -1710,9 +1698,7 @@
     "trend": "down",
     "desc": "США, 2025: Wayfair — мебель онлайн. Продажи -15% после бума пандемии. Доставка дорожает. Но AR-примерка мебели +40% конверсии. Прибыль под вопросом.",
     "reason": "Спад + AR"
-  }
-]
-[
+  },
   {
     "id": 171,
     "diff": "exp",
@@ -1812,9 +1798,7 @@
     "trend": "up",
     "desc": "США, 2025: John Deere — тракторы. AI-тракторы без водителя. Продажи +15%. Фермеры переходят на точное земледелие. Дивиденды 1.5%.",
     "reason": "AI тракторы"
-  }
-]
-[
+  },
   {
     "id": 181,
     "diff": "hard",
@@ -2014,9 +1998,7 @@
     "trend": "up",
     "desc": "Норвегия, 2025: Seadrill — морское бурение. Цены на аренду платформ +40%. Спрос на нефть растёт. Новый контракт с Petrobras на $1B. Восстановление после банкротства.",
     "reason": "Платформы + Petrobras"
-  }
-]
-[
+  },
   {
     "id": 201,
     "diff": "hard",
@@ -2316,9 +2298,7 @@
     "trend": "volatile",
     "desc": "Германия, 2026: Lilium — электрические самолёты. Первый тестовый полёт успешен. Заказы от Lufthansa на 50 штук. Но сертификация — 2028. Если Lufthansa подтвердит — x10.",
     "reason": "Lufthansa + тест"
-  }
-]
-[
+  },
   {"id":231,"diff":"med","symbol":"RKLB","name":"Rocket Lab","price":5.5,"trend":"up","desc":"Новая Зеландия, 2025: Rocket Lab — запуски. Рекорд — 10 запусков за квартал. Новый двигатель Archimedes для Neutron. Контракт с NASA на Марс.","reason":"10 запусков + NASA"},
   {"id":232,"diff":"hard","symbol":"U","name":"Unity Software","price":28,"trend":"down","desc":"США, 2025: Unity — игровой движок. Конфликт с разработчиками из-за цен. Новый CEO. Конкуренты: Unreal Engine. Но метавселенная ещё жива.","reason":"Цены + конкуренты"},
   {"id":233,"diff":"exp","symbol":"SMRT","name":"SmartRent","price":3.5,"trend":"volatile","desc":"США, 2026: SmartRent — умные квартиры. Контракт с Blackstone на 100K units. Но рынок недвижимости падает. Если ставки снизят — x5.","reason":"Blackstone + ставки"},
@@ -2358,9 +2338,7 @@
   {"id":267,"diff":"med","symbol":"MBGYY","name":"Mercedes-Benz","price":70,"trend":"side","desc":"Германия, 2025: Mercedes — авто премиум. Продажи в Китае -10%. Но электрокары EQ +30%. Новый S-Class с AI-автопилотом.","reason":"Китай + EQ"},
   {"id":268,"diff":"hard","symbol":"SNAP","name":"Snap Inc","price":14,"trend":"down","desc":"США, 2025: Snapchat — соцсеть. TikTok отбирает подростков. Но AR-очки Spectacles 5 в разработке. Платных подписчиков 10 млн.","reason":"TikTok + очки"},
   {"id":269,"diff":"exp","symbol":"FSLY","name":"Fastly","price":12,"trend":"volatile","desc":"США, 2026: Fastly — CDN и безопасность. Контракт с TikTok на $200M. Но конкуренты: Cloudflare, Akamai. Если TikTok не уйдёт — x5.","reason":"TikTok + Cloudflare"},
-  {"id":270,"diff":"easy","symbol":"IBM","name":"IBM","price":180,"trend":"up","desc":"США, 2025: IBM — AI и кванты. WatsonX для бизнеса +50% клиентов. Квантовый компьютер на 1000 кубитов. Дивиденды 4%.","reason":"WatsonX + кванты"}
-]
-[
+  {"id":270,"diff":"easy","symbol":"IBM","name":"IBM","price":180,"trend":"up","desc":"США, 2025: IBM — AI и кванты. WatsonX для бизнеса +50% клиентов. Квантовый компьютер на 1000 кубитов. Дивиденды 4%.","reason":"WatsonX + кванты"},
   {"id":271,"diff":"easy","symbol":"WMT","name":"Walmart","price":170,"trend":"up","desc":"США, 2025: Walmart — розница. Продажи +6%. Доставка дронами в 10 штатах. Дивиденды 1.5%. Инфляция гонит покупателей за дешевизной.","reason":"Дроны + инфляция"},
   {"id":272,"diff":"easy","symbol":"ORCL","name":"Oracle","price":130,"trend":"up","desc":"США, 2025: Oracle — базы данных. Облако +30%. Контракт с TikTok на сервера. Дивиденды 1.8%. Ларри Эллисон: «Мы — облачный лидер».","reason":"Облако + TikTok"},
   {"id":273,"diff":"easy","symbol":"CSCO","name":"Cisco","price":55,"trend":"up","desc":"США, 2025: Cisco — сетевое оборудование. Заказы +15%. Новый AI-роутер для дата-центров. Дивиденды 3%. Покупка Splunk за $28B.","reason":"AI роутер + Splunk"},
@@ -2390,9 +2368,7 @@
   {"id":297,"diff":"easy","symbol":"SWKS","name":"Skyworks","price":105,"trend":"side","desc":"США, 2025: Skyworks — радиочипы. Apple — главный клиент. 5G растёт. Но зависимость от одного клиента — риск. Дивиденды 2.5%.","reason":"Apple + 5G"},
   {"id":298,"diff":"easy","symbol":"QRVO","name":"Qorvo","price":110,"trend":"side","desc":"США, 2025: Qorvo — радиочипы. 5G и Wi-Fi 7. Продажи +10%. Новый чип для спутников. Дивидендов нет, но buyback.","reason":"Wi-Fi 7 + спутники"},
   {"id":299,"diff":"easy","symbol":"TER","name":"Teradyne","price":130,"trend":"up","desc":"США, 2025: Teradyne — тестирование чипов. AI-чипы требуют тестов. Продажи +20%. Роботы Universal Robots +30%. Дивиденды 0.5%.","reason":"Тесты + роботы"},
-  {"id":300,"diff":"easy","symbol":"ENTG","name":"Entegris","price":120,"trend":"up","desc":"США, 2025: Entegris — материалы для чипов. Без них чипы не сделать. Продажи +15%. Новый завод в Тайване. Дивиденды 0.5%.","reason":"Материалы + Тайвань"}
-]
-[
+  {"id":300,"diff":"easy","symbol":"ENTG","name":"Entegris","price":120,"trend":"up","desc":"США, 2025: Entegris — материалы для чипов. Без них чипы не сделать. Продажи +15%. Новый завод в Тайване. Дивиденды 0.5%.","reason":"Материалы + Тайвань"},
   {"id":301,"diff":"easy","symbol":"ACN","name":"Accenture","price":350,"trend":"up","desc":"Ирландия, 2025: Accenture — консалтинг. AI-трансформация бизнеса — спрос +30%. Новый центр в Индии на 50K сотрудников. Дивиденды 1.5%.","reason":"AI спрос + Индия"},
   {"id":302,"diff":"easy","symbol":"T","name":"AT&T","price":20,"trend":"side","desc":"США, 2025: AT&T — телеком. Долг снижен на $50B. Новый фокус на 5G и оптоволокно. Дивиденды 5.5%. Стабильный кеш-флоу.","reason":"Долг + 5G"},
   {"id":303,"diff":"easy","symbol":"VZ","name":"Verizon","price":42,"trend":"side","desc":"США, 2025: Verizon — телеком. 5G покрытие 90% США. Продажи iPhone 16 бустят доходы. Дивиденды 6.5%. Защитный актив.","reason":"5G + iPhone 16"},
@@ -2442,9 +2418,7 @@
   {"id":347,"diff":"easy","symbol":"PODD","name":"Insulet","price":220,"trend":"up","desc":"США, 2025: Insulet — инсулиновые помпы. Omnipod 5 с AI. Продажи +25%. Диабет — рынок $30B. Дивидендов нет, рост.","reason":"Omnipod + диабет"},
   {"id":348,"diff":"easy","symbol":"DXCM","name":"Dexcom","price":120,"trend":"up","desc":"США, 2025: Dexcom — сенсоры глюкозы. G8 с Apple Watch. Продажи +20%. Дивидендов нет. Лидер CGM рынка.","reason":"G8 + Apple Watch"},
   {"id":349,"diff":"easy","symbol":"ABT","name":"Abbott","price":115,"trend":"up","desc":"США, 2025: Abbott — Libre 4. Сенсор глюкозы без прокола. Продажи +30%. Новый тест на сотрясение мозга. Дивиденды 2.5%.","reason":"Libre 4 + мозг"},
-  {"id":350,"diff":"easy","symbol":"MDT","name":"Medtronic","price":88,"trend":"up","desc":"Ирландия, 2025: Medtronic — медтех. Новый инсулиновый насос с AI. Хирургический робот Hugo. Дивиденды 3.5%. Разворот после спада.","reason":"Hugo + диабет"}
-]
-[
+  {"id":350,"diff":"easy","symbol":"MDT","name":"Medtronic","price":88,"trend":"up","desc":"Ирландия, 2025: Medtronic — медтех. Новый инсулиновый насос с AI. Хирургический робот Hugo. Дивиденды 3.5%. Разворот после спада.","reason":"Hugo + диабет"},
   {"id":351,"diff":"easy","symbol":"SYK","name":"Stryker","price":350,"trend":"up","desc":"США, 2025: Stryker — ортопедия. Робот Mako для коленных операций. Продажи +18%. Новый завод в Ирландии. Дивиденды 1.5%.","reason":"Mako + колено"},
   {"id":352,"diff":"easy","symbol":"BSX","name":"Boston Scientific","price":75,"trend":"up","desc":"США, 2025: Boston Scientific — кардиология. Новый кардиостимулятор без проводов Watchman FLX Pro. Продажи +20%. Покупка Axonics за $4B.","reason":"Watchman + Axonics"},
   {"id":353,"diff":"easy","symbol":"EW","name":"Edwards Lifesciences","price":85,"trend":"up","desc":"США, 2025: Edwards — клапаны сердца. Новый транскатетерный клапан SAPIEN X5 одобрен FDA. Продажи +25%. Стареющее население — драйвер.","reason":"SAPIEN X5 + возраст"},
@@ -2744,9 +2718,7 @@
   {"id":647,"diff":"easy","symbol":"ESS","name":"Essex Property","price":280,"trend":"up","desc":"США, 2025: Essex — Западное побережье. Аренда +10%. AI-подбор арендаторов. Дивиденды 3.5%.","reason":"AI + запад"},
   {"id":648,"diff":"easy","symbol":"MAA","name":"Mid-America","price":145,"trend":"up","desc":"США, 2025: MAA — Юг США. Аренда +12%. Миграция в Техас и Флориду. Дивиденды 4%.","reason":"Техас + миграция"},
   {"id":649,"diff":"easy","symbol":"UDR","name":"UDR Inc","price":42,"trend":"up","desc":"США, 2025: UDR — аренда. Города-миллениалы. Аренда +7%. Дивиденды 4.5%.","reason":"Миллениалы + города"},
-  {"id":650,"diff":"easy","symbol":"CPT","name":"Camden Property","price":115,"trend":"up","desc":"США, 2025: Camden — аренда в Солнечном поясе. Аренда +10%. Миграция + работа. Дивиденды 3.5%.","reason":"Солнце + работа"}
-]
-[
+  {"id":650,"diff":"easy","symbol":"CPT","name":"Camden Property","price":115,"trend":"up","desc":"США, 2025: Camden — аренда в Солнечном поясе. Аренда +10%. Миграция + работа. Дивиденды 3.5%.","reason":"Солнце + работа"},
   {"id":651,"diff":"easy","symbol":"INVH","name":"Invitation Homes","price":36,"trend":"up","desc":"США, 2025: Invitation Homes — аренда домов. 85 000 домов в портфеле. Аренда +8%. Миграция в пригороды. Дивиденды 3%.","reason":"85K домов + миграция"},
   {"id":652,"diff":"easy","symbol":"AMH","name":"American Homes 4 Rent","price":38,"trend":"up","desc":"США, 2025: AMH — аренда домов. 60 000 домов. Аренда +10%. Новые посёлки в Техасе. Дивиденды 2.5%.","reason":"60K + Техас"},
   {"id":653,"diff":"easy","symbol":"SUI","name":"Sun Communities","price":135,"trend":"up","desc":"США, 2025: Sun — дома на колёсах и марины. Популярность +20%. Новые парки во Флориде. Дивиденды 2.5%.","reason":"RV + Флорида"},
@@ -3096,9 +3068,7 @@
   {"id":997,"diff":"easy","symbol":"BE","name":"Bloom Energy","price":18,"trend":"up","desc":"США, 2025: Bloom — топливные элементы. AI-дата-центры — клиенты.","reason":"AI + топливные ячейки"},
   {"id":998,"diff":"easy","symbol":"BLDP","name":"Ballard Power","price":3.8,"trend":"volatile","desc":"Канада, 2025: Ballard — водородные топливные элементы. Китай и Европа.","reason":"Водород + Китай"},
   {"id":999,"diff":"easy","symbol":"HYZN","name":"Hyzon Motors","price":0.5,"trend":"down","desc":"США, 2025: Hyzon — водородные грузовики. Расследование SEC. Убытки.","reason":"SEC + грузовики"},
-  {"id":1000,"diff":"easy","symbol":"NKLA","name":"Nikola","price":0.8,"trend":"down","desc":"США, 2025: Nikola — водородные грузовики. Первые поставки Walmart.","reason":"Walmart + водород"}
-]
-[
+  {"id":1000,"diff":"easy","symbol":"NKLA","name":"Nikola","price":0.8,"trend":"down","desc":"США, 2025: Nikola — водородные грузовики. Первые поставки Walmart.","reason":"Walmart + водород"},
   {"id":1,"reason_up":"📱 iPhone 16 — предзаказы +40% в Китае","reason_down":"📱 Конкуренты выпустили дешевле"},
   {"id":2,"reason_up":"☕ Экспансия в Индию — 1000 кофеен","reason_down":"☕ Цены на кофе-бобы выросли"},
   {"id":3,"reason_up":"📺 Рекламный тариф привлёк 40M","reason_down":"📺 Доход с пользователя падает"},
@@ -3198,9 +3168,7 @@
   {"id":97,"reason_up":"🫁 Новая линейка аппаратов ИВЛ","reason_down":"📉 Штраф $1B за отзыв аппаратов"},
   {"id":98,"reason_up":"🇮🇳 Продажи в Индии +20%","reason_down":"📉 Цены на пальмовое масло выросли"},
   {"id":99,"reason_up":"🍺 Безалкогольное пиво +30%","reason_down":"📉 Инфляция — продажи -5%"},
-  {"id":100,"reason_up":"🌐 Трансформация в Web3","reason_down":"📉 Продажи игр падают, NFT закрыт"}
-]
-[
+  {"id":100,"reason_up":"🌐 Трансформация в Web3","reason_down":"📉 Продажи игр падают, NFT закрыт"},
   {"id":101,"reason_up":"🎮 Игры одобрены после заморозки","reason_down":"🇨🇳 Экономика Китая замедляется"},
   {"id":102,"reason_up":"✈️ Туризм в Азию восстанавливается","reason_down":"⛽ Цены на топливо +25%"},
   {"id":103,"reason_up":"📱 Контракт с Apple на сборку iPad","reason_down":"🏭 Foxconn строит завод во Вьетнаме дешевле"},
@@ -3400,9 +3368,7 @@
   {"id":297,"reason_up":"📱 Apple — главный клиент","reason_down":"📉 Зависимость от одного клиента"},
   {"id":298,"reason_up":"📡 Чип для спутников","reason_down":"📉 Рынок 5G насыщается"},
   {"id":299,"reason_up":"🤖 AI-чипы требуют тестов","reason_down":"📉 Цикличный спад в чипах"},
-  {"id":300,"reason_up":"🏭 Новый завод в Тайване","reason_down":"🇨🇳 Китай угрожает Тайваню"}
-]
-[
+  {"id":300,"reason_up":"🏭 Новый завод в Тайване","reason_down":"🇨🇳 Китай угрожает Тайваню"},
   {"id":301,"reason_up":"🤖 AI-трансформация бизнеса +30%","reason_down":"📉 Замедление IT-рынка"},
   {"id":302,"reason_up":"📡 5G и оптоволокно — долг снижен","reason_down":"📉 Конкуренция с T-Mobile"},
   {"id":303,"reason_up":"📱 iPhone 16 бустит продажи","reason_down":"📉 Рынок 5G насыщен"},
@@ -3802,9 +3768,7 @@
   {"id":697,"reason_up":"🥃 Азия — TikTok","reason_down":"📉 Коктейльный тренд"},
   {"id":698,"reason_up":"🥔 Frito-Lay — Quaker","reason_down":"📉 Инфляция"},
   {"id":699,"reason_up":"🍪 Oreo masala — Индия","reason_down":"📉 Цены на сахар"},
-  {"id":700,"reason_up":"🥫 Heinz — веган","reason_down":"📉 Инфляция"}
-]
-[
+  {"id":700,"reason_up":"🥫 Heinz — веган","reason_down":"📉 Инфляция"},
   {"id":701,"reason_up":"🥣 Протеиновый суп — фитнес","reason_down":"📉 Конкуренция с Progresso"},
   {"id":702,"reason_up":"🥦 Healthy Choice — заморозка","reason_down":"📉 Инфляция давит"},
   {"id":703,"reason_up":"🥜 Hostess — Jif","reason_down":"📉 Цены на арахис"},
@@ -3954,8 +3918,6 @@
   {"id":847,"reason_up":"💰 Прибыль — новый CEO","reason_down":"📉 Цены на нефть"},
   {"id":848,"reason_up":"🧪 Химия — Техас","reason_down":"📉 Цены на нефть"},
   {"id":849,"reason_up":"🛢️ Без долга — циклы","reason_down":"📉 Цены на нефть"},
-]
-[
   {"id":850,"reason_up":"⚡ Электро-ГРП флот — добыча +25%","reason_down":"⛽ Спрос на бурение упал"},
   {"id":851,"reason_up":"🏖️ Песок для ГРП — авто-склады","reason_down":"📉 Цены на песок обвалились"},
   {"id":852,"reason_up":"💧 Вода для бурения — переработка +40%","reason_down":"📉 Избыток воды на рынке"},
