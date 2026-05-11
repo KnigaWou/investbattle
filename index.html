@@ -158,9 +158,17 @@
                             if (items.ib_stars) state.playerStars = parseInt(items.ib_stars) || 0;
                         }
                         updateProfileUI();
+                        const uid2 = tg?.initDataUnsafe?.user?.id || null;
+                        if (uid2 && ADMIN_IDS.includes(uid2)) {
+                            document.getElementById('adminBtn').style.display = 'flex';
+                        }
                     });
                 } else {
                     updateProfileUI();
+                    const uid2 = tg?.initDataUnsafe?.user?.id || null;
+                    if (uid2 && ADMIN_IDS.includes(uid2)) {
+                        document.getElementById('adminBtn').style.display = 'flex';
+                    }
                 }
             }
             function saveProfileToCloud() {
