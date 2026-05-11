@@ -149,29 +149,32 @@
                 localStorage.setItem('ib_v2', JSON.stringify(s));
             }
 
-            function loadProfile() {
-                if (tg?.CloudStorage) {
-                    tg.CloudStorage.getItems(['ib_name','ib_avatar','ib_stars'], (err, items) => {
-                        if (!err && items) {
-                            if (items.ib_name) state.playerName = items.ib_name;
-                            if (items.ib_avatar) state.playerAvatar = items.ib_avatar;
-                            if (items.ib_stars) state.playerStars = parseInt(items.ib_stars) || 0;
-                            alert('5909465804 ' + (tg?.initDataUnsafe?.user?.id || 'не определён'));
-                        }
-                        updateProfileUI();
-                        const uid2 = tg?.initDataUnsafe?.user?.id || null;
-                        if (uid2 && ADMIN_IDS.includes(uid2)) {
-                            document.getElementById('adminBtn').style.display = 'flex';
-                        }
-                    });
-                } else {
-                    updateProfileUI();
-                    const uid2 = tg?.initDataUnsafe?.user?.id || null;
-                    if (uid2 && ADMIN_IDS.includes(uid2)) {
-                        document.getElementById('adminBtn').style.display = 'flex';
-                    }
-                }
+function loadProfile() {
+    if (tg?.CloudStorage) {
+        tg.CloudStorage.getItems(['ib_name','ib_avatar','ib_stars'], (err, items) => {
+            if (!err && items) {
+                if (items.ib_name) state.playerName = items.ib_name;
+                if (items.ib_avatar) state.playerAvatar = items.ib_avatar;
+                if (items.ib_stars) state.playerStars = parseInt(items.ib_stars) || 0;
             }
+            updateProfileUI();
+            // ПОКАЗАТЬ АДМИН-ПАНЕЛЬ
+            const myUid = tg?.initDataUnsafe?.user?.id;
+            if (myUid && ADMIN_IDS.includes(myUid)) {
+                document.getElementById('adminBtn').style.display = 'flex';
+                console.log('Админ-панель активирована для ID:', myUid);
+            }
+        });
+    } else {
+        updateProfileUI();
+        // ПОКАЗАТЬ АДМИН-ПАНЕЛЬ
+        const myUid = tg?.initDataUnsafe?.user?.id;
+        if (myUid && ADMIN_IDS.includes(myUid)) {
+            document.getElementById('adminBtn').style.display = 'flex';
+            console.log('Админ-панель активирована для ID:', myUid);
+        }
+    }
+}
             function saveProfileToCloud() {
                 if (tg?.CloudStorage) {
                     tg.CloudStorage.setItems([{key:'ib_name',value:state.playerName},{key:'ib_avatar',value:state.playerAvatar},{key:'ib_stars',value:String(state.playerStars)}]);
