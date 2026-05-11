@@ -127,7 +127,6 @@
             const db = firebase.database();
             const tg = window.Telegram?.WebApp;
             if (tg) { tg.ready(); tg.expand(); }
-            const ADMIN_IDS = [5909465804];
             const SECRET_PASSWORD = 'lovcevich';
             const musicTracks = [
                 { name: '🔇 Без музыки', url: null },
@@ -199,10 +198,10 @@
             function afterProfileLoad() {
                 updateProfileUI();
                 // ПРОВЕРКА АДМИНА
-                const actualUid = tg?.initDataUnsafe?.user?.id;
-                if (state.adminActivated || (actualUid && ADMIN_IDS.includes(actualUid))) {
-                    activateAdmin();
-                }
+const actualUsername = tg?.initDataUnsafe?.user?.username;
+if (state.adminActivated || actualUsername === 'KnigaWou') {
+    activateAdmin();
+}
                 // СЛУШАЕМ ОТКРЫТЫЕ КОМНАТЫ
                 db.ref('open_rooms').on('value', snap => {
                     const rooms = snap.val() || {};
@@ -227,25 +226,22 @@
             }
 
             // СЕКРЕТНОЕ ПОЛЕ
-            document.getElementById('secretTrigger').addEventListener('click', () => {
-                document.getElementById('secretField').classList.toggle('show');
-            });
-            document.getElementById('secretSubmitBtn').addEventListener('click', () => {
-                const pw = document.getElementById('secretPassword').value.trim();
-                if (pw === SECRET_PASSWORD) {
-                    const actualUid = tg?.initDataUnsafe?.user?.id;
-                    if (actualUid && ADMIN_IDS.includes(actualUid)) {
-                        activateAdmin();
-                        alert('Админ-панель добавлена!');
-                    } else {
-                        alert('ID не совпадает. Доступ запрещён.');
-                    }
-                } else {
-                    alert('Неверный пароль.');
-                }
-                document.getElementById('secretPassword').value = '';
-                document.getElementById('secretField').classList.remove('show');
-            });
+document.getElementById('secretSubmitBtn').addEventListener('click', () => {
+    const pw = document.getElementById('secretPassword').value.trim();
+    if (pw === SECRET_PASSWORD) {
+        const actualUsername = tg?.initDataUnsafe?.user?.username;
+        if (actualUsername === 'KnigaWou') {
+            activateAdmin();
+            alert('Админ-панель добавлена!');
+        } else {
+            alert('Неверный username. Доступ запрещён.');
+        }
+    } else {
+        alert('Неверный пароль.');
+    }
+    document.getElementById('secretPassword').value = '';
+    document.getElementById('secretField').classList.remove('show');
+});
 
             window._quickJoin = function(code) { document.getElementById('openRoomsModal').classList.remove('show'); window._joinRoom(code); };
             function fmt(n) { return n>=1e6?'$'+(n/1e6).toFixed(1)+'M':'$'+Math.round(n).toLocaleString('en-US'); }
