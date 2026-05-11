@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v2.3</title>
+    <title>InvestBattle v3.0</title>
     <style>
         :root {
             --bg: #080812;
@@ -84,7 +84,7 @@
     <div class="app" id="app">
         <div class="loading-screen" id="loadingScreen">Загрузка...</div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v2.3</div></div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v3.0</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span></div></div>
@@ -121,51 +121,40 @@
             function buildMusicList() { const list = document.getElementById('musicList'); list.innerHTML = musicTracks.map((t, i) => `<div class="chip ${i===currentTrack?'selected':''}" style="width:100%;margin:4px 0;" data-idx="${i}">${t.name}</div>`).join(''); list.querySelectorAll('.chip').forEach(c => c.addEventListener('click', function() { playMusic(parseInt(this.dataset.idx)); buildMusicList(); })); }
             buildMusicList();
 
-            // СОСТОЯНИЕ
-            const state = {
-                playerName: 'Трейдер', playerAvatar: 'icons/avatar1.png', playerStars: 0,
-                startCash: 10000, roundTime: 30, totalRounds: 10, maxPlayers: 2, betAmount: 0,
-                roomType: 'hard', roomName: 'Комната',
-                currentRound: 0, yourCash: 10000, oppCash: 10000, yourPortfolio: {}, oppPortfolio: {},
-                currentCase: null, gameActive: false, isFinal: false, finalTime: 90,
-                usedCases: [], marketPrices: {}, fairValues: {}, finalInterval: null, roomCode: null,
-                waitPressed: false, waitCount: 0, totalPlayers: 2, roundTimer: null, lobbyPlayers: [],
-                allCasesLoaded: [], casesReady: false, isAdmin: false
-            };
+            const state = { playerName:'Трейдер', playerAvatar:'icons/avatar1.png', playerStars:0, startCash:10000, roundTime:30, totalRounds:10, maxPlayers:2, betAmount:0, roomType:'hard', roomName:'Комната', currentRound:0, yourCash:10000, oppCash:10000, yourPortfolio:{}, oppPortfolio:{}, currentCase:null, gameActive:false, isFinal:false, finalTime:90, usedCases:[], marketPrices:{}, fairValues:{}, finalInterval:null, roomCode:null, waitPressed:false, waitCount:0, totalPlayers:2, roundTimer:null, lobbyPlayers:[], allCasesLoaded:[], casesReady:false, isAdmin:false, isMultiplayer:false, opponentName:'🤖 Бот-Трейдер', opponentAvatar:'🤖' };
 
-            // ЗАГРУЗКА ДАННЫХ
-            function loadState() {
-                try {
-                    const raw = localStorage.getItem('ib_v3');
-                    if (raw) {
-                        const saved = JSON.parse(raw);
-                        state.playerName = saved.playerName || 'Трейдер';
-                        state.playerAvatar = saved.playerAvatar || 'icons/avatar1.png';
-                        state.playerStars = saved.playerStars || 0;
-                        state.startCash = saved.startCash || 10000;
-                        state.roundTime = saved.roundTime || 30;
-                        state.totalRounds = saved.totalRounds || 10;
-                        state.maxPlayers = saved.maxPlayers || 2;
-                        state.betAmount = saved.betAmount || 0;
-                        state.roomType = saved.roomType || 'hard';
-                        state.roomName = saved.roomName || 'Комната';
-                    }
-                } catch (e) { /* ignore */ }
+            function loadState() { try { const r=localStorage.getItem('ib_v3'); if(r){ const s=JSON.parse(r); Object.assign(state, s); } } catch(e){} }
+            function saveState() { localStorage.setItem('ib_v3', JSON.stringify({ playerName:state.playerName, playerAvatar:state.playerAvatar, playerStars:state.playerStars, startCash:state.startCash, roundTime:state.roundTime, totalRounds:state.totalRounds, maxPlayers:state.maxPlayers, betAmount:state.betAmount, roomType:state.roomType, roomName:state.roomName })); }
+
+            function avatarHTML(a) { return a&&a.startsWith('icons/')?`<img src="${a}" style="width:100%;height:100%;object-fit:cover;">`:a||'👤'; }
+            function updateProfileUI() {
+                document.getElementById('profileName').textContent=state.playerName;
+                document.getElementById('profileAvatar').innerHTML=avatarHTML(state.playerAvatar);
+                document.getElementById('editAvatarBig').innerHTML=avatarHTML(state.playerAvatar);
+                document.getElementById('editName').value=state.playerName;
+                document.getElementById('profileStars').textContent=state.playerStars;
+                document.getElementById('roomStarsAvail').textContent=state.playerStars;
+                document.querySelectorAll('#avatarChips .chip').forEach(c=>c.classList.toggle('selected',c.dataset.avatar===state.playerAvatar));
             }
 
-            function saveState() {
-                const toSave = {
-                    playerName: state.playerName, playerAvatar: state.playerAvatar, playerStars: state.playerStars,
-                    startCash: state.startCash, roundTime: state.roundTime, totalRounds: state.totalRounds,
-                    maxPlayers: state.maxPlayers, betAmount: state.betAmount, roomType: state.roomType,
-                    roomName: state.roomName
-                };
-                localStorage.setItem('ib_v3', JSON.stringify(toSave));
+            function afterProfileLoad() {
+                updateProfileUI();
+                const uid = tg?.initDataUnsafe?.user?.id;
+                if (uid && ADMIN_IDS.includes(uid)) {
+                    state.isAdmin = true;
+                    const btn = document.getElementById('adminBtn');
+                    btn.style.display = 'flex';
+                    btn.addEventListener('click', () => {
+                        const p = document.getElementById('adminPanel');
+                        p.classList.toggle('show');
+                        document.getElementById('adminStats').innerHTML = `ID: ${uid}<br>Звёзд: ${state.playerStars}<br>Кейсов: ${state.allCasesLoaded.length}<br>Игрок: ${state.playerName}`;
+                    });
+                }
             }
 
             function loadProfileFromCloud() {
                 if (tg?.CloudStorage) {
-                    tg.CloudStorage.getItems(['ib_name', 'ib_avatar', 'ib_stars'], (err, items) => {
+                    tg.CloudStorage.getItems(['ib_name','ib_avatar','ib_stars'], (err, items) => {
                         if (!err && items) {
                             if (items.ib_name) state.playerName = items.ib_name;
                             if (items.ib_avatar) state.playerAvatar = items.ib_avatar;
@@ -178,335 +167,150 @@
                 }
             }
 
-            function afterProfileLoad() {
-                updateProfileUI();
-                // АДМИН-ПАНЕЛЬ
-                const uid = tg?.initDataUnsafe?.user?.id;
-                if (uid && ADMIN_IDS.includes(uid)) {
-                    state.isAdmin = true;
-                    document.getElementById('adminBtn').style.display = 'flex';
-                }
-            }
-
             function saveProfileToCloud() {
                 if (tg?.CloudStorage) {
-                    tg.CloudStorage.setItems([
-                        { key: 'ib_name', value: state.playerName },
-                        { key: 'ib_avatar', value: state.playerAvatar },
-                        { key: 'ib_stars', value: String(state.playerStars) }
-                    ]);
+                    tg.CloudStorage.setItems([{key:'ib_name',value:state.playerName},{key:'ib_avatar',value:state.playerAvatar},{key:'ib_stars',String(state.playerStars)}]);
                 }
                 saveState();
             }
 
-            function avatarHTML(a) { return a && a.startsWith('icons/') ? `<img src="${a}" style="width:100%;height:100%;object-fit:cover;">` : a || '👤'; }
-
-            function updateProfileUI() {
-                document.getElementById('profileName').textContent = state.playerName;
-                document.getElementById('profileAvatar').innerHTML = avatarHTML(state.playerAvatar);
-                document.getElementById('editAvatarBig').innerHTML = avatarHTML(state.playerAvatar);
-                document.getElementById('editName').value = state.playerName;
-                document.getElementById('profileStars').textContent = state.playerStars;
-                document.getElementById('roomStarsAvail').textContent = state.playerStars;
-                document.querySelectorAll('#avatarChips .chip').forEach(c => c.classList.toggle('selected', c.dataset.avatar === state.playerAvatar));
-            }
-
-            function fmt(n) { return n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + 'M' : '$' + Math.round(n).toLocaleString('en-US'); }
-
-            function updateMarketPrices() {
-                for (const c of state.allCasesLoaded) {
-                    if (!state.marketPrices[c.symbol]) { state.marketPrices[c.symbol] = c.price;
-                        state.fairValues[c.symbol] = c.price; }
-                    const cur = state.marketPrices[c.symbol],
-                        fair = state.fairValues[c.symbol];
-                    const bias = c.trend === 'up' ? 0.5 : c.trend === 'down' ? -0.4 : c.trend === 'volatile' ? (Math.random() - 0.5) * 1.5 : 0;
-                    let change = (fair - cur) / fair * 30 + (Math.random() - 0.5 + bias * 0.4) * 12;
-                    if (Math.random() < 0.06) change = (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random() * 20);
-                    change = Math.max(-30, Math.min(30, change));
-                    state.marketPrices[c.symbol] = Math.max(0.05, cur * (1 + change / 100));
-                    state.fairValues[c.symbol] = fair * (1 + (Math.random() - 0.49) * 4 / 100);
-                }
-            }
-
-            function getRandomCase() {
-                const avail = state.allCasesLoaded.filter(c => !state.usedCases.includes(c.id));
-                if (!avail.length) { state.usedCases = []; return state.allCasesLoaded[Math.floor(Math.random() * state.allCasesLoaded.length)]; }
-                return avail[Math.floor(Math.random() * avail.length)];
-            }
+            function fmt(n) { return n>=1e6?'$'+(n/1e6).toFixed(1)+'M':'$'+Math.round(n).toLocaleString('en-US'); }
+            function updateMarketPrices() { for (const c of state.allCasesLoaded) { if(!state.marketPrices[c.symbol]){state.marketPrices[c.symbol]=c.price;state.fairValues[c.symbol]=c.price;} const cur=state.marketPrices[c.symbol],fair=state.fairValues[c.symbol]; const bias=c.trend==='up'?0.5:c.trend==='down'?-0.4:c.trend==='volatile'?(Math.random()-0.5)*1.5:0; let change=(fair-cur)/fair*30+(Math.random()-0.5+bias*0.4)*12; if(Math.random()<0.06) change=(Math.random()>0.5?1:-1)*(15+Math.random()*20); change=Math.max(-30,Math.min(30,change)); state.marketPrices[c.symbol]=Math.max(0.05,cur*(1+change/100)); state.fairValues[c.symbol]=fair*(1+(Math.random()-0.49)*4/100); } }
+            function getRandomCase() { const avail=state.allCasesLoaded.filter(c=>!state.usedCases.includes(c.id)); if(!avail.length){state.usedCases=[];return state.allCasesLoaded[Math.floor(Math.random()*state.allCasesLoaded.length)];} return avail[Math.floor(Math.random()*avail.length)]; }
 
             function updatePortfolioTable() {
-                const body = document.getElementById('portfolioBody');
-                const assets = Object.entries(state.yourPortfolio);
-                if (assets.length === 0) {
-                    body.innerHTML = '<tr><td colspan="7">Нет активов</td></tr>';
-                    return;
-                }
-                body.innerHTML = assets.map(([sym, d]) => {
-                    const pr = state.marketPrices[sym] || d.avgPrice;
-                    const val = pr * d.qty;
-                    const pct = d.avgPrice ? ((pr - d.avgPrice) / d.avgPrice * 100).toFixed(1) : 0;
-                    const kase = state.allCasesLoaded.find(c => c.symbol === sym);
-                    const reason = kase ? kase.reason : (+pct >= 0 ? 'Рынок растёт' : 'Давление рынка');
-                    return `<tr>
-                <td class="sym">${sym}</td>
-                <td>${d.qty}</td>
-                <td>${fmt(pr)}</td>
-                <td>${fmt(val)}</td>
-                <td class="${+pct>=0?'up':'down'}">${+pct>=0?'▲':'▼'}${Math.abs(pct)}%</td>
-                <td style="font-size:8px;color:var(--text2);">${reason}</td>
-                <td><input class="qty-input" id="sq_${sym}" value="1"><button class="btn-sm sell" id="sell_${sym}">Продать</button></td>
-              </tr>`;
+                const body=document.getElementById('portfolioBody');
+                const assets=Object.entries(state.yourPortfolio);
+                body.innerHTML=assets.length===0?'<tr><td colspan="7">Нет активов</td></tr>':assets.map(([sym,d])=>{
+                    const pr=state.marketPrices[sym]||d.avgPrice, val=pr*d.qty, pct=d.avgPrice?((pr-d.avgPrice)/d.avgPrice*100).toFixed(1):0;
+                    const kase=state.allCasesLoaded.find(c=>c.symbol===sym);
+                    return `<tr><td class="sym">${sym}</td><td>${d.qty}</td><td>${fmt(pr)}</td><td>${fmt(val)}</td><td class="${+pct>=0?'up':'down'}">${+pct>=0?'▲':'▼'}${Math.abs(pct)}%</td><td style="font-size:8px;">${kase?kase.reason:'—'}</td><td><input class="qty-input" id="sq_${sym}" value="1"><button class="btn-sm sell" id="sell_${sym}">Продать</button></td></tr>`;
                 }).join('');
-                // ВЕШАЕМ ОБРАБОТЧИКИ НА КНОПКИ ПРОДАТЬ
-                assets.forEach(([sym]) => {
-                    const btn = document.getElementById('sell_' + sym);
-                    if (btn) {
-                        btn.onclick = function() {
-                            const d = state.yourPortfolio[sym];
-                            if (!d) return;
-                            const qtyInput = document.getElementById('sq_' + sym);
-                            const q = Math.max(1, Math.min(d.qty, parseInt(qtyInput?.value) || 1));
-                            const price = state.marketPrices[sym] || d.avgPrice;
-                            state.yourCash += price * q;
-                            d.qty -= q;
-                            if (d.qty <= 0) delete state.yourPortfolio[sym];
-                            updatePortfolioTable();
-                            updatePlayersRow();
-                            saveState();
-                        };
-                    }
+                assets.forEach(([sym])=>{
+                    const btn=document.getElementById('sell_'+sym);
+                    if(btn) btn.onclick=()=>{
+                        const d=state.yourPortfolio[sym]; if(!d) return;
+                        const q=Math.max(1,Math.min(d.qty,parseInt(document.getElementById('sq_'+sym)?.value)||1));
+                        state.yourCash+=(state.marketPrices[sym]||d.avgPrice)*q; d.qty-=q;
+                        if(d.qty<=0) delete state.yourPortfolio[sym];
+                        updatePortfolioTable(); updatePlayersRow();
+                    };
                 });
             }
 
             function updatePlayersRow() {
                 document.getElementById('playersRow').innerHTML = [
                     { name: state.playerName, avatar: state.playerAvatar, cash: state.yourCash, you: true },
-                    { name: '🤖 Бот-Трейдер', avatar: '🤖', cash: state.oppCash, you: false }
+                    { name: state.opponentName, avatar: state.opponentAvatar, cash: state.oppCash, you: false }
                 ].map(p => `<div class="player-card ${p.you?'you':''}"><div class="avatar">${avatarHTML(p.avatar)}</div><div class="name">${p.name}</div><div class="cash">${fmt(p.cash)}</div></div>`).join('');
             }
 
-            function showCase(kase) {
-                state.currentCase = kase;
-                if (!state.marketPrices[kase.symbol]) { state.marketPrices[kase.symbol] = kase.price;
-                    state.fairValues[kase.symbol] = kase.price; }
-                document.getElementById('caseTitle').textContent = `${kase.symbol} — ${kase.name}`;
-                document.getElementById('caseDesc').textContent = kase.desc;
-                document.getElementById('casePrice').textContent = `💰 Цена: ${fmt(state.marketPrices[kase.symbol])}`;
-                document.getElementById('roundBadge').textContent = `${state.currentRound}/${state.totalRounds}`;
-                updatePortfolioTable();
-                updatePlayersRow();
-                updateBuyBtn();
+            function showCase(kase) { state.currentCase=kase; if(!state.marketPrices[kase.symbol]){state.marketPrices[kase.symbol]=kase.price;state.fairValues[kase.symbol]=kase.price;} document.getElementById('caseTitle').textContent=`${kase.symbol} — ${kase.name}`; document.getElementById('caseDesc').textContent=kase.desc; document.getElementById('casePrice').textContent=`💰 Цена: ${fmt(state.marketPrices[kase.symbol])}`; document.getElementById('roundBadge').textContent=`${state.currentRound}/${state.totalRounds}`; updatePortfolioTable(); updatePlayersRow(); updateBuyBtn(); }
+            function updateBuyBtn() { const k=state.currentCase; if(!k) return; const pr=state.marketPrices[k.symbol]||k.price; document.getElementById('buyBtn').disabled=state.yourCash<pr*(+document.getElementById('buyQty').value||1); }
+            function playerBuy() { if(!state.gameActive||state.isFinal||!state.currentCase) return; const k=state.currentCase,pr=state.marketPrices[k.symbol]||k.price,q=Math.max(1,+document.getElementById('buyQty').value||1); if(state.yourCash<pr*q) return; state.yourCash-=pr*q; if(!state.yourPortfolio[k.symbol]) state.yourPortfolio[k.symbol]={qty:0,avgPrice:0}; const o=state.yourPortfolio[k.symbol]; o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q); o.qty+=q; updatePortfolioTable(); updatePlayersRow(); updateBuyBtn(); }
+            function toggleWait() { state.waitPressed=!state.waitPressed; document.getElementById('waitBtn').classList.toggle('held',state.waitPressed); state.waitCount+=state.waitPressed?1:-1; document.getElementById('waitCounter').textContent=`ЖДАТЬ: ${state.waitCount}/${state.totalPlayers}`; if(state.waitCount>=state.totalPlayers&&state.waitCount>0){ clearInterval(state.roundTimer); let s=Math.min(5,+document.getElementById('timer').textContent||5); document.getElementById('timer').textContent=s; state.roundTimer=setInterval(()=>{s--;document.getElementById('timer').textContent=s;if(s<=0){clearInterval(state.roundTimer);nextRound();}},1000); } }
+            function botAction() { if(!state.currentCase||state.isMultiplayer) return; const sym=state.currentCase.symbol,pr=state.marketPrices[sym]||state.currentCase.price,ip=state.oppPortfolio[sym]; const r=Math.random(); if(r<0.3&&state.oppCash>=pr){const q=Math.floor(Math.random()*3)+1;if(state.oppCash>=pr*q){state.oppCash-=pr*q;if(!state.oppPortfolio[sym])state.oppPortfolio[sym]={qty:0,avgPrice:0};const o=state.oppPortfolio[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}} else if(r<0.5&&ip&&ip.qty>0&&pr>ip.avgPrice*1.15){const q=Math.min(ip.qty,Math.ceil(ip.qty*0.5));state.oppCash+=pr*q;ip.qty-=q;if(ip.qty<=0)delete state.oppPortfolio[sym];} updatePlayersRow(); }
+            function startFinal() { state.isFinal=true;state.finalTime=90;document.getElementById('gameScreen').style.display='none';document.getElementById('finalOverlay').classList.add('show');updateFinalUI();clearInterval(state.finalInterval);state.finalInterval=setInterval(()=>{state.finalTime-=5;document.getElementById('finalTimer').textContent=Math.max(0,state.finalTime);for(const s of Object.keys(state.marketPrices))state.marketPrices[s]=Math.max(0.02,state.marketPrices[s]*(1+(Math.random()-0.46)*14/100));updateFinalUI();if(state.finalTime<=0){clearInterval(state.finalInterval);sellAll();endGame();}},5000); }
+            function updateFinalUI() { const body=document.getElementById('finalBody');const assets=Object.entries(state.yourPortfolio);body.innerHTML=assets.length===0?'<tr><td colspan="5">Нет активов</td></tr>':assets.map(([sym,d])=>{const pr=state.marketPrices[sym]||d.avgPrice;return`<tr><td>${sym}</td><td>${d.qty}</td><td>${fmt(pr)}</td><td>${fmt(pr*d.qty)}</td><td><input class="qty-input" id="fsq_${sym}" value="${d.qty}"><button class="btn-sm sell" id="fsell_${sym}">Продать</button></td></tr>`;}).join(''); assets.forEach(([sym])=>{const btn=document.getElementById('fsell_'+sym);if(btn)btn.onclick=()=>{const d=state.yourPortfolio[sym];if(!d)return;const q=Math.max(1,Math.min(d.qty,parseInt(document.getElementById('fsq_'+sym)?.value)||d.qty));state.yourCash+=(state.marketPrices[sym]||d.avgPrice)*q;d.qty-=q;if(d.qty<=0)delete state.yourPortfolio[sym];updateFinalUI();};}); document.getElementById('finalTotal').textContent='💰 '+fmt(state.yourCash+Object.entries(state.yourPortfolio).reduce((s,[sym,d])=>s+(state.marketPrices[sym]||d.avgPrice)*d.qty,0)); }
+            function sellAll() { for(const[s,d]of Object.entries(state.yourPortfolio))state.yourCash+=(state.marketPrices[s]||d.avgPrice)*d.qty; state.yourPortfolio={}; for(const[s,d]of Object.entries(state.oppPortfolio))state.oppCash+=(state.marketPrices[s]||d.avgPrice)*d.qty; state.oppPortfolio={}; }
+            function endGame() { state.gameActive=false;state.isFinal=false;clearInterval(state.finalInterval);document.getElementById('finalOverlay').classList.remove('show');document.getElementById('resultOverlay').classList.add('show');const win=state.yourCash>state.oppCash;document.getElementById('resultEmoji').textContent=win?'🏆':state.yourCash<state.oppCash?'💀':'🤝';document.getElementById('resultTitle').textContent=win?'ПОБЕДА!':state.yourCash<state.oppCash?'ПОРАЖЕНИЕ':'НИЧЬЯ';document.getElementById('resultSubtitle').textContent=win?'Ты лучший инвестор!':'Анализируй рынок';document.getElementById('resultCash').textContent=fmt(state.yourCash);if(state.betAmount>0&&win){const prize=Math.floor(state.betAmount*0.95);state.playerStars+=prize;document.getElementById('resultPrize').textContent=`Выигрыш: +${prize} ⭐ (комиссия 5%) | Баланс: ${state.playerStars} ⭐`;}else if(state.betAmount>0&&!win){document.getElementById('resultPrize').textContent=`Потеряно: -${state.betAmount} ⭐ | Баланс: ${state.playerStars} ⭐`;}else{document.getElementById('resultPrize').textContent='';} saveState(); saveProfileToCloud(); updateProfileUI(); }
+            function nextRound() { if(state.currentRound>=state.totalRounds){startFinal();return;} state.currentRound++;updateMarketPrices();state.waitPressed=false;state.waitCount=0;document.getElementById('waitBtn').classList.remove('held');document.getElementById('waitCounter').textContent='';const kase=getRandomCase();state.usedCases.push(kase.id);showCase(kase);botAction();startTimer(); }
+            function startTimer() { let s=state.roundTime;document.getElementById('timer').textContent=s;document.getElementById('timer').classList.remove('urgent');clearInterval(state.roundTimer);state.roundTimer=setInterval(()=>{s--;document.getElementById('timer').textContent=s;if(s<=5)document.getElementById('timer').classList.add('urgent');if(s<=0){clearInterval(state.roundTimer);nextRound();}},1000); }
+
+            function startGame() {
+                if(!state.casesReady){alert('Кейсы загружаются...');return;}
+                if(state.betAmount>0&&state.betAmount>state.playerStars){alert(`❌ Недостаточно Stars!\nСтавка: ${state.betAmount} ⭐\nБаланс: ${state.playerStars} ⭐`);return;}
+                if(state.betAmount>0){state.playerStars-=state.betAmount;saveState();saveProfileToCloud();updateProfileUI();}
+                state.yourCash=state.startCash;state.oppCash=state.startCash;
+                state.yourPortfolio={};state.oppPortfolio={};
+                state.marketPrices={};state.fairValues={};
+                state.currentRound=0;state.gameActive=true;state.isFinal=false;
+                state.usedCases=[];state.waitPressed=false;state.waitCount=0;
+                state.totalPlayers=state.isMultiplayer?state.lobbyPlayers.length:2;
+                document.getElementById('waitBtn').classList.remove('held');
+                document.getElementById('waitCounter').textContent='';
+                document.getElementById('menuScreen').style.display='none';
+                document.getElementById('gameScreen').style.display='block';
+                ['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));
+                if(!state.isMultiplayer){state.opponentName='🤖 Бот-Трейдер';state.opponentAvatar='🤖';}
+                updatePortfolioTable();updatePlayersRow();nextRound();
             }
 
-            function updateBuyBtn() {
-                const k = state.currentCase;
-                if (!k) return;
-                const pr = state.marketPrices[k.symbol] || k.price;
-                const q = parseInt(document.getElementById('buyQty').value) || 1;
-                document.getElementById('buyBtn').disabled = state.yourCash < pr * q;
+            function loadCases() { fetch('cases.json').then(r=>r.json()).then(cases=>{state.allCasesLoaded=cases;state.casesReady=true;document.getElementById('loadingScreen').style.display='none';document.getElementById('menuScreen').style.display='block';}).catch(()=>{document.getElementById('loadingScreen').textContent='Ошибка cases.json';}); }
+
+            // ========== КОМНАТЫ ==========
+            function showLobby() {
+                document.getElementById('lobbyContent').innerHTML = `
+                    <h3>🏆 ${state.roomName}</h3>
+                    <div style="font-size:24px;font-weight:900;color:var(--gold);">${state.roomCode}</div>
+                    <div class="room-link" id="roomLinkText">https://t.me/InvestBattleBot?start=${state.roomCode}</div>
+                    <button class="btn-sm" id="copyLinkBtn" style="width:100%;margin:4px 0;">📋 Копировать ссылку</button>
+                    <p style="font-size:11px;">${state.roomType==='hard'?'🎯 Жёсткая':'🎲 Произвольная'} | Игроков: ${state.lobbyPlayers.length}/${state.maxPlayers} | Ставка: ${state.betAmount} ⭐</p>
+                    ${state.lobbyPlayers.map((p,i)=>`<div class="lobby-player"><span class="avatar">${avatarHTML(p.avatar)}</span>${p.name}${p.host?' (Владелец)':''}${p.host?`<button class="kick-btn self-kick">Выйти</button>`:''}</div>`).join('')}
+                    <button class="btn gold" id="startLobbyBtn" style="width:100%;margin-top:10px;" ${state.lobbyPlayers.length<2?'disabled':''}>🚀 НАЧАТЬ ИГРУ</button>
+                    <button class="btn" id="closeLobbyBtn" style="width:100%;margin-top:6px;">Закрыть комнату</button>
+                `;
+                document.getElementById('lobbyModal').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('copyLinkBtn')?.addEventListener('click', () => {
+                        navigator.clipboard.writeText(`https://t.me/InvestBattleBot?start=${state.roomCode}`);
+                        alert('Ссылка скопирована!');
+                    });
+                    document.getElementById('startLobbyBtn')?.addEventListener('click', () => {
+                        state.isMultiplayer = true;
+                        state.opponentName = state.lobbyPlayers[1]?.name || 'Игрок 2';
+                        state.opponentAvatar = state.lobbyPlayers[1]?.avatar || '👤';
+                        document.getElementById('lobbyModal').classList.remove('show');
+                        startGame();
+                    });
+                    document.getElementById('closeLobbyBtn')?.addEventListener('click', () => {
+                        state.lobbyPlayers = [];
+                        state.isMultiplayer = false;
+                        document.getElementById('lobbyModal').classList.remove('show');
+                        saveState();
+                    });
+                    document.querySelectorAll('.self-kick').forEach(b => b.addEventListener('click', () => {
+                        state.lobbyPlayers = [];
+                        state.isMultiplayer = false;
+                        document.getElementById('lobbyModal').classList.remove('show');
+                        saveState();
+                    }));
+                }, 100);
             }
 
-            function playerBuy() {
-                if (!state.gameActive || state.isFinal || !state.currentCase) return;
-                const k = state.currentCase;
-                const pr = state.marketPrices[k.symbol] || k.price;
-                const q = Math.max(1, parseInt(document.getElementById('buyQty').value) || 1);
-                if (state.yourCash < pr * q) return;
-                state.yourCash -= pr * q;
-                if (!state.yourPortfolio[k.symbol]) state.yourPortfolio[k.symbol] = { qty: 0, avgPrice: 0 };
-                const o = state.yourPortfolio[k.symbol];
-                o.avgPrice = (o.qty * o.avgPrice + pr * q) / (o.qty + q);
-                o.qty += q;
-                updatePortfolioTable();
-                updatePlayersRow();
-                updateBuyBtn();
-                saveState();
-            }
-
-            function toggleWait() {
-                state.waitPressed = !state.waitPressed;
-                document.getElementById('waitBtn').classList.toggle('held', state.waitPressed);
-                state.waitCount += state.waitPressed ? 1 : -1;
-                document.getElementById('waitCounter').textContent = `ЖДАТЬ: ${state.waitCount}/${state.totalPlayers}`;
-                if (state.waitCount >= state.totalPlayers && state.waitCount > 0) {
-                    clearInterval(state.roundTimer);
-                    let s = Math.min(5, parseInt(document.getElementById('timer').textContent) || 5);
-                    document.getElementById('timer').textContent = s;
-                    state.roundTimer = setInterval(() => { s--;
-                        document.getElementById('timer').textContent = s; if (s <= 0) { clearInterval(state.roundTimer);
-                            nextRound(); } }, 1000);
+            function joinRoom(code) {
+                // Симуляция: добавляем второго игрока в лобби
+                if (code === state.roomCode) {
+                    state.lobbyPlayers.push({ name: state.playerName, avatar: state.playerAvatar, host: false });
+                    state.isMultiplayer = true;
+                    state.opponentName = 'Игрок 2';
+                    state.opponentAvatar = state.playerAvatar;
+                    showLobby();
+                    alert('Вы подключились к комнате! Ожидайте начала игры.');
+                } else {
+                    alert('Комната не найдена. Проверьте код.');
                 }
             }
 
-            function botAction() {
-                if (!state.currentCase) return;
-                const sym = state.currentCase.symbol;
-                const pr = state.marketPrices[sym] || state.currentCase.price;
-                const ip = state.oppPortfolio[sym];
-                const r = Math.random();
-                if (r < 0.3 && state.oppCash >= pr) {
-                    const q = Math.floor(Math.random() * 3) + 1;
-                    if (state.oppCash >= pr * q) {
-                        state.oppCash -= pr * q;
-                        if (!state.oppPortfolio[sym]) state.oppPortfolio[sym] = { qty: 0, avgPrice: 0 };
-                        const o = state.oppPortfolio[sym];
-                        o.avgPrice = (o.qty * o.avgPrice + pr * q) / (o.qty + q);
-                        o.qty += q;
-                    }
-                } else if (r < 0.5 && ip && ip.qty > 0 && pr > ip.avgPrice * 1.15) {
-                    const q = Math.min(ip.qty, Math.ceil(ip.qty * 0.5));
-                    state.oppCash += pr * q;
-                    ip.qty -= q;
-                    if (ip.qty <= 0) delete state.oppPortfolio[sym];
-                }
-                updatePlayersRow();
-            }
-
-            function startFinal() {
-                state.isFinal = true;
-                state.finalTime = 90;
-                document.getElementById('gameScreen').style.display = 'none';
-                document.getElementById('finalOverlay').classList.add('show');
-                updateFinalUI();
-                clearInterval(state.finalInterval);
-                state.finalInterval = setInterval(() => {
-                    state.finalTime -= 5;
-                    document.getElementById('finalTimer').textContent = Math.max(0, state.finalTime);
-                    for (const s of Object.keys(state.marketPrices)) state.marketPrices[s] = Math.max(0.02, state.marketPrices[s] * (1 + (Math.random() - 0.46) * 14 / 100));
-                    updateFinalUI();
-                    if (state.finalTime <= 0) { clearInterval(state.finalInterval);
-                        sellAll();
-                        endGame(); }
-                }, 5000);
-            }
-
-            function updateFinalUI() {
-                const body = document.getElementById('finalBody');
-                const assets = Object.entries(state.yourPortfolio);
-                body.innerHTML = assets.length === 0 ? '<tr><td colspan="5">Нет активов</td></tr>' : assets.map(([sym, d]) => { const pr = state.marketPrices[sym] || d.avgPrice; return `<tr><td>${sym}</td><td>${d.qty}</td><td>${fmt(pr)}</td><td>${fmt(pr*d.qty)}</td><td><input class="qty-input" id="fsq_${sym}" value="${d.qty}"><button class="btn-sm sell" id="fsell_${sym}">Продать</button></td></tr>`; }).join('');
-                assets.forEach(([sym]) => { const btn = document.getElementById('fsell_' + sym); if (btn) btn.onclick = () => { const d = state.yourPortfolio[sym]; if (!d) return; const q = Math.max(1, Math.min(d.qty, parseInt(document.getElementById('fsq_' + sym)?.value) || d.qty));
-                        state.yourCash += (state.marketPrices[sym] || d.avgPrice) * q;
-                        d.qty -= q; if (d.qty <= 0) delete state.yourPortfolio[sym];
-                        updateFinalUI(); }; });
-                document.getElementById('finalTotal').textContent = '💰 ' + fmt(state.yourCash + Object.entries(state.yourPortfolio).reduce((s, [sym, d]) => s + (state.marketPrices[sym] || d.avgPrice) * d.qty, 0));
-            }
-
-            function sellAll() { for (const [s, d] of Object.entries(state.yourPortfolio)) state.yourCash += (state.marketPrices[s] || d.avgPrice) * d.qty;
-                state.yourPortfolio = {}; for (const [s, d] of Object.entries(state.oppPortfolio)) state.oppCash += (state.marketPrices[s] || d.avgPrice) * d.qty;
-                state.oppPortfolio = {}; }
-
-            function endGame() {
-                state.gameActive = false;
-                state.isFinal = false;
-                clearInterval(state.finalInterval);
-                document.getElementById('finalOverlay').classList.remove('show');
-                document.getElementById('resultOverlay').classList.add('show');
-                const win = state.yourCash > state.oppCash;
-                document.getElementById('resultEmoji').textContent = win ? '🏆' : state.yourCash < state.oppCash ? '💀' : '🤝';
-                document.getElementById('resultTitle').textContent = win ? 'ПОБЕДА!' : state.yourCash < state.oppCash ? 'ПОРАЖЕНИЕ' : 'НИЧЬЯ';
-                document.getElementById('resultSubtitle').textContent = win ? 'Ты лучший инвестор!' : 'Анализируй рынок';
-                document.getElementById('resultCash').textContent = fmt(state.yourCash);
-                if (state.betAmount > 0 && win) { const prize = Math.floor(state.betAmount * 0.95);
-                    state.playerStars += prize;
-                    document.getElementById('resultPrize').textContent = `Выигрыш: +${prize} ⭐ (комиссия 5%) | Баланс: ${state.playerStars} ⭐`; } else if (state.betAmount > 0 && !win) { document.getElementById('resultPrize').textContent = `Потеряно: -${state.betAmount} ⭐ | Баланс: ${state.playerStars} ⭐`; } else { document.getElementById('resultPrize').textContent = ''; }
-                saveState();
-                saveProfileToCloud();
-                updateProfileUI();
-            }
-
-            function nextRound() { if (state.currentRound >= state.totalRounds) { startFinal(); return; }
-                state.currentRound++;
-                updateMarketPrices();
-                state.waitPressed = false;
-                state.waitCount = 0;
-                document.getElementById('waitBtn').classList.remove('held');
-                document.getElementById('waitCounter').textContent = ''; const kase = getRandomCase();
-                state.usedCases.push(kase.id);
-                showCase(kase);
-                botAction();
-                startTimer(); }
-
-            function startTimer() { let s = state.roundTime;
-                document.getElementById('timer').textContent = s;
-                document.getElementById('timer').classList.remove('urgent');
-                clearInterval(state.roundTimer);
-                state.roundTimer = setInterval(() => { s--;
-                    document.getElementById('timer').textContent = s; if (s <= 5) document.getElementById('timer').classList.add('urgent'); if (s <= 0) { clearInterval(state.roundTimer);
-                        nextRound(); } }, 1000); }
-
-            function startGame() { if (!state.casesReady) { alert('Кейсы загружаются...'); return; } if (state.betAmount > 0 && state.betAmount > state.playerStars) { alert(`❌ Недостаточно Stars!\nСтавка: ${state.betAmount} ⭐\nБаланс: ${state.playerStars} ⭐`); return; } if (state.betAmount > 0) { state.playerStars -= state.betAmount;
-                    saveState();
-                    saveProfileToCloud();
-                    updateProfileUI(); }
-                state.yourCash = state.startCash;
-                state.oppCash = state.startCash;
-                state.yourPortfolio = {};
-                state.oppPortfolio = {};
-                state.marketPrices = {};
-                state.fairValues = {};
-                state.currentRound = 0;
-                state.gameActive = true;
-                state.isFinal = false;
-                state.usedCases = [];
-                state.waitPressed = false;
-                state.waitCount = 0;
-                state.totalPlayers = 2;
-                document.getElementById('waitBtn').classList.remove('held');
-                document.getElementById('waitCounter').textContent = '';
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('gameScreen').style.display = 'block';
-                ['resultOverlay', 'finalOverlay'].forEach(id => document.getElementById(id).classList.remove('show'));
-                updatePortfolioTable();
-                updatePlayersRow();
-                nextRound(); }
-
-            function loadCases() { fetch('cases.json').then(r => r.json()).then(cases => { state.allCasesLoaded = cases;
-                    state.casesReady = true;
-                    document.getElementById('loadingScreen').style.display = 'none';
-                    document.getElementById('menuScreen').style.display = 'block'; }).catch(() => { document.getElementById('loadingScreen').textContent = 'Ошибка cases.json'; }); }
-
-            // АДМИН-ПАНЕЛЬ
-            document.getElementById('adminBtn').addEventListener('click', () => { const p = document.getElementById('adminPanel');
-                p.classList.toggle('show');
-                document.getElementById('adminStats').innerHTML = `ID: ${tg?.initDataUnsafe?.user?.id||'—'}<br>Звёзд: ${state.playerStars}<br>Кейсов: ${state.allCasesLoaded.length}<br>Игрок: ${state.playerName}`; });
-
-            // СОБЫТИЯ
-            document.getElementById('soloBtn').addEventListener('click', () => { state.betAmount = 0;
-                startGame(); });
+            // ========== СОБЫТИЯ ==========
+            document.getElementById('soloBtn').addEventListener('click', () => { state.isMultiplayer=false; state.betAmount=0; startGame(); });
             document.getElementById('buyBtn').addEventListener('click', playerBuy);
             document.getElementById('waitBtn').addEventListener('click', toggleWait);
-            document.getElementById('qtyMinus').addEventListener('click', () => { const i = document.getElementById('buyQty');
-                i.value = Math.max(1, +i.value - 1);
-                updateBuyBtn(); });
-            document.getElementById('qtyPlus').addEventListener('click', () => { const i = document.getElementById('buyQty');
-                i.value = Math.min(1000, +i.value + 1);
-                updateBuyBtn(); });
+            document.getElementById('qtyMinus').addEventListener('click', () => { const i=document.getElementById('buyQty'); i.value=Math.max(1,+i.value-1); updateBuyBtn(); });
+            document.getElementById('qtyPlus').addEventListener('click', () => { const i=document.getElementById('buyQty'); i.value=Math.min(1000,+i.value+1); updateBuyBtn(); });
             document.getElementById('buyQty').addEventListener('input', updateBuyBtn);
-            document.getElementById('menuBtn').addEventListener('click', () => { clearInterval(state.roundTimer);
-                clearInterval(state.finalInterval);
-                ['resultOverlay', 'finalOverlay'].forEach(id => document.getElementById(id).classList.remove('show'));
-                document.getElementById('gameScreen').style.display = 'none';
-                document.getElementById('menuScreen').style.display = 'block';
-                state.gameActive = false;
-                state.isFinal = false;
-                saveState(); });
-            document.getElementById('shareBtn').addEventListener('click', () => { const t = `🏆 InvestBattle: ${fmt(state.yourCash)}\nСыграем? 💰`;
-                navigator.share ? navigator.share({ title: 'InvestBattle', text: t }) : (navigator.clipboard.writeText(t), alert('Скопировано!')); });
-            document.getElementById('sellAllFinalBtn').addEventListener('click', () => { sellAll();
-                endGame(); });
+            document.getElementById('menuBtn').addEventListener('click', () => { clearInterval(state.roundTimer);clearInterval(state.finalInterval);['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';state.gameActive=false;state.isFinal=false; });
+            document.getElementById('shareBtn').addEventListener('click', () => { const t=`🏆 InvestBattle: ${fmt(state.yourCash)}\nСыграем? 💰`; navigator.share?navigator.share({title:'InvestBattle',text:t}):(navigator.clipboard.writeText(t),alert('Скопировано!')); });
+            document.getElementById('sellAllFinalBtn').addEventListener('click', () => { sellAll(); endGame(); });
             document.getElementById('editProfileBtn').addEventListener('click', () => document.getElementById('profileModal').classList.add('show'));
             document.getElementById('closeProfileBtn').addEventListener('click', () => document.getElementById('profileModal').classList.remove('show'));
-            document.getElementById('saveProfileBtn').addEventListener('click', () => { state.playerName = document.getElementById('editName').value.trim() || 'Трейдер';
-                state.playerAvatar = document.querySelector('#avatarChips .selected')?.dataset?.avatar || 'icons/avatar1.png';
-                saveProfileToCloud();
-                updateProfileUI();
-                document.getElementById('profileModal').classList.remove('show'); });
-            document.querySelectorAll('#avatarChips .chip').forEach(c => c.addEventListener('click', function() { document.querySelectorAll('#avatarChips .chip').forEach(x => x.classList.remove('selected'));
-                this.classList.add('selected'); }));
-            document.getElementById('createRoomBtn').addEventListener('click', () => { updateProfileUI();
-                document.getElementById('createRoomModal').classList.add('show'); });
+            document.getElementById('saveProfileBtn').addEventListener('click', () => { state.playerName=document.getElementById('editName').value.trim()||'Трейдер'; state.playerAvatar=document.querySelector('#avatarChips .selected')?.dataset?.avatar||'icons/avatar1.png'; saveProfileToCloud(); updateProfileUI(); document.getElementById('profileModal').classList.remove('show'); });
+            document.querySelectorAll('#avatarChips .chip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('#avatarChips .chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));
+            document.getElementById('createRoomBtn').addEventListener('click', () => { updateProfileUI(); document.getElementById('createRoomModal').classList.add('show'); });
             document.getElementById('cancelCreateRoomBtn').addEventListener('click', () => document.getElementById('createRoomModal').classList.remove('show'));
-            document.getElementById('confirmCreateRoomBtn').addEventListener('click', () => { state.betAmount = parseInt(document.getElementById('starInput').value) || 0; if (state.betAmount > state.playerStars) { alert(`❌ Недостаточно Stars!\nНужно ${state.betAmount} ⭐, у вас ${state.playerStars} ⭐`); return; }
+            document.getElementById('confirmCreateRoomBtn').addEventListener('click', () => {
+                state.betAmount = parseInt(document.getElementById('starInput').value) || 0;
+                if (state.betAmount > state.playerStars) { alert(`❌ Недостаточно Stars! Нужно ${state.betAmount} ⭐, у вас ${state.playerStars} ⭐`); return; }
                 state.roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
                 state.roomName = document.getElementById('roomNameInput').value || 'Комната';
                 state.roomType = document.querySelector('#roomTypeChips .selected')?.dataset?.type || 'hard';
@@ -515,31 +319,27 @@
                 state.totalRounds = parseInt(document.querySelector('#roomRoundsChips .selected')?.dataset?.rounds || 10);
                 state.roundTime = parseInt(document.querySelector('#roomTimeChips2 .selected')?.dataset?.time || 30);
                 state.lobbyPlayers = [{ name: state.playerName, avatar: state.playerAvatar, host: true }];
+                state.isMultiplayer = false;
                 showLobby();
                 document.getElementById('createRoomModal').classList.remove('show');
-                saveState(); });
-            function showLobby() { document.getElementById('lobbyContent').innerHTML = `<h3>🏆 ${state.roomName}</h3><div style="font-size:24px;font-weight:900;color:var(--gold);">${state.roomCode}</div><div class="room-link">https://t.me/InvestBattleBot?start=${state.roomCode}</div><p style="font-size:11px;">${state.roomType==='hard'?'🎯 Жёсткая':'🎲 Произвольная'} | Игроков: ${state.lobbyPlayers.length}/${state.maxPlayers} | Ставка: ${state.betAmount} ⭐</p>${state.lobbyPlayers.map(p=>`<div class="lobby-player"><span class="avatar">${avatarHTML(p.avatar)}</span>${p.name}${p.host?' (Владелец)':''}${p.host?`<button class="kick-btn self-kick">Выйти</button>`:''}</div>`).join('')}<button class="btn gold" id="startLobbyBtn" style="width:100%;margin-top:10px;" ${state.lobbyPlayers.length<2?'disabled':''}>🚀 НАЧАТЬ</button><button class="btn" id="closeLobbyBtn" style="width:100%;margin-top:6px;">Закрыть</button>`; document.getElementById('lobbyModal').classList.add('show');
-                setTimeout(() => { document.getElementById('startLobbyBtn')?.addEventListener('click', () => { document.getElementById('lobbyModal').classList.remove('show');
-                        startGame(); });
-                    document.getElementById('closeLobbyBtn')?.addEventListener('click', () => { state.lobbyPlayers = [];
-                        document.getElementById('lobbyModal').classList.remove('show');
-                        saveState(); });
-                    document.querySelectorAll('.self-kick').forEach(b => b.addEventListener('click', () => { state.lobbyPlayers = [];
-                        document.getElementById('lobbyModal').classList.remove('show');
-                        saveState(); })); }, 100); }
+                saveState();
+            });
             document.getElementById('joinRoomBtn').addEventListener('click', () => document.getElementById('joinModal').classList.add('show'));
             document.getElementById('cancelJoinBtn').addEventListener('click', () => document.getElementById('joinModal').classList.remove('show'));
-            document.getElementById('confirmJoinBtn').addEventListener('click', () => { const code = document.getElementById('joinCodeInput').value.trim().toUpperCase(); if (!code) { alert('Введи код'); return; }
+            document.getElementById('confirmJoinBtn').addEventListener('click', () => {
+                const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+                if (!code) { alert('Введи код комнаты'); return; }
+                if (state.betAmount > state.playerStars) { alert(`❌ Недостаточно Stars!`); return; }
                 document.getElementById('joinModal').classList.remove('show');
-                startGame(); });
-            ['roomTypeChips', 'maxPlayersChips', 'roomCashChips', 'roomRoundsChips', 'roomTimeChips2'].forEach(id => { document.querySelectorAll('#' + id + ' .chip').forEach(c => c.addEventListener('click', function() { document.querySelectorAll('#' + id + ' .chip').forEach(x => x.classList.remove('selected'));
-                    this.classList.add('selected'); })); });
+                joinRoom(code);
+            });
+            ['roomTypeChips','maxPlayersChips','roomCashChips','roomRoundsChips','roomTimeChips2'].forEach(id=>{document.querySelectorAll('#'+id+' .chip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('#'+id+' .chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));});
 
             // СТАРТ
             loadState();
             loadProfileFromCloud();
             loadCases();
-            console.log('✅ InvestBattle v2.3 готов');
+            console.log('✅ InvestBattle v3.0 готов');
         })();
     </script>
 </body>
