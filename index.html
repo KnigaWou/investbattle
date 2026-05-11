@@ -156,6 +156,7 @@
                             if (items.ib_name) state.playerName = items.ib_name;
                             if (items.ib_avatar) state.playerAvatar = items.ib_avatar;
                             if (items.ib_stars) state.playerStars = parseInt(items.ib_stars) || 0;
+                            alert('5909465804 ' + (tg?.initDataUnsafe?.user?.id || 'не определён'));
                         }
                         updateProfileUI();
                         const uid2 = tg?.initDataUnsafe?.user?.id || null;
