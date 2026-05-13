@@ -3,748 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v10.1 Stable</title>
+    <title>InvestBattle v10.2</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
-        :root {
-            --bg: #080812;
-            --surface: #111128;
-            --gold: #f0a030;
-            --green: #00e070;
-            --red: #f03050;
-            --blue: #4090ff;
-            --orange: #ff6b35;
-            --text: #d8d8e0;
-            --text2: #888;
-            --border: #2a2a3a;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            background: var(--bg);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .app {
-            width: 100%;
-            max-width: 500px;
-            background: #0c0c1c;
-            min-height: 100vh;
-            padding: 14px;
-            position: relative;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            color: #fff;
-        }
-        
-        .logo span {
-            color: var(--gold);
-        }
-        
-        .timer {
-            font-size: 30px;
-            font-weight: 900;
-            color: var(--gold);
-            transition: color 0.3s;
-        }
-        
-        .timer.urgent {
-            color: var(--red);
-            animation: shake 0.35s infinite;
-        }
-        
-        @keyframes shake {
-            50% {
-                transform: translateX(4px);
-            }
-        }
-        
-        @keyframes dealPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); background: rgba(0,224,112,0.3); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes sellPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); background: rgba(240,48,80,0.3); }
-            100% { transform: scale(1); }
-        }
-        
-        .badge {
-            padding: 5px 12px;
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 11px;
-            background: rgba(64, 144, 255, 0.2);
-            color: var(--blue);
-        }
-        
-        .vs-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .player-card {
-            flex: 1;
-            min-width: 80px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 10px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .player-card.you {
-            border-color: var(--green);
-        }
-        
-        .player-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-2px);
-        }
-        
-        .player-card.you:hover {
-            border-color: var(--gold);
-        }
-        
-        .player-card .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            margin: 0 auto 6px;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #1a1a2e;
-            overflow: hidden;
-        }
-        
-        .player-card .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .player-card .name {
-            font-weight: 700;
-            font-size: 11px;
-            margin-bottom: 3px;
-        }
-        
-        .player-card .cash {
-            font-size: 14px;
-            font-weight: 900;
-            color: var(--green);
-        }
-        
-        .player-card .cash.updated {
-            animation: dealPulse 0.5s;
-        }
-        
-        .section-title {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text2);
-            margin: 10px 0 6px;
-        }
-        
-        table.portfolio {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-            margin-bottom: 10px;
-        }
-        
-        table.portfolio th {
-            color: var(--text2);
-            font-weight: 600;
-            padding: 6px 4px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 9px;
-        }
-        
-        table.portfolio td {
-            padding: 6px 4px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        
-        table.portfolio .sym {
-            font-weight: 700;
-            color: #fff;
-        }
-        
-        table.portfolio .up {
-            color: var(--green);
-        }
-        
-        table.portfolio .down {
-            color: var(--red);
-        }
-        
-        .qty-input {
-            width: 36px;
-            padding: 4px 2px;
-            background: #000;
-            border: 1px solid var(--border);
-            color: #fff;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        
-        .btn-sm {
-            padding: 5px 10px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: #fff;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 700;
-            transition: all 0.15s;
-            white-space: nowrap;
-        }
-        
-        .btn-sm.sell {
-            border-color: var(--red);
-            color: var(--red);
-        }
-        
-        .btn-sm:active {
-            transform: scale(0.92);
-        }
-        
-        .case-box {
-            background: var(--surface);
-            border: 2px solid var(--gold);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 12px;
-        }
-        
-        .case-box .case-title {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--gold);
-            margin-bottom: 6px;
-        }
-        
-        .case-box .case-desc {
-            font-size: 12px;
-            color: var(--text2);
-            line-height: 1.6;
-        }
-        
-        .case-box .case-price {
-            font-weight: 700;
-            font-size: 13px;
-            color: #fff;
-            margin-top: 8px;
-        }
-        
-        .action-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .qty-control {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .qty-control button {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .qty-control button:active {
-            background: var(--gold);
-            color: #000;
-        }
-        
-        .qty-control input {
-            width: 50px;
-            padding: 8px;
-            background: #000;
-            border: 1px solid var(--border);
-            color: #fff;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 14px;
-        }
-        
-        .btn {
-            padding: 14px 20px;
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-            transition: all 0.08s;
-            background: var(--surface);
-            color: #fff;
-            text-align: center;
-            min-height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            margin-bottom: 6px;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        
-        .btn:active {
-            transform: scale(0.94);
-        }
-        
-        .btn:disabled {
-            opacity: 0.3;
-            pointer-events: none;
-        }
-        
-        .btn.gold {
-            background: var(--gold);
-            color: #000;
-            border: none;
-            font-weight: 800;
-        }
-        
-        .btn.green {
-            background: var(--green);
-            color: #000;
-            border: 2px solid var(--green);
-            font-weight: 800;
-        }
-        
-        .btn.red {
-            background: var(--red);
-            color: #fff;
-            border: 2px solid var(--red);
-            font-weight: 800;
-        }
-        
-        .btn.orange {
-            background: var(--orange);
-            color: #fff;
-            border: none;
-            font-weight: 800;
-        }
-        
-        .btn-inline {
-            width: auto;
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.94);
-            z-index: 100;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .overlay.show {
-            display: flex;
-        }
-        
-        .overlay .inner {
-            max-width: 400px;
-            width: 100%;
-        }
-        
-        .chip-row {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 6px 0;
-        }
-        
-        .chip {
-            padding: 8px 14px;
-            border: 1.5px solid var(--border);
-            background: var(--surface);
-            color: #fff;
-            border-radius: 18px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 11px;
-            transition: all 0.2s;
-            min-width: 44px;
-            text-align: center;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        .chip.selected {
-            border-color: var(--gold);
-            background: rgba(240, 160, 48, 0.2);
-            box-shadow: 0 0 12px rgba(240, 160, 48, 0.1);
-        }
-        
-        .input {
-            width: 100%;
-            padding: 12px;
-            background: #000;
-            border: 1px solid var(--border);
-            color: #fff;
-            border-radius: 10px;
-            font-size: 14px;
-            text-align: center;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 250;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal.show {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: #0c0c1c;
-            border: 2px solid var(--gold);
-            border-radius: 18px;
-            padding: 20px;
-            width: 92%;
-            max-width: 420px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        
-        .modal-content h3 {
-            color: var(--gold);
-            margin-bottom: 12px;
-            text-align: center;
-            font-size: 16px;
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 14px;
-            font-size: 20px;
-            color: var(--gold);
-            cursor: pointer;
-            z-index: 5;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-        }
-        
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-            padding: 12px;
-            background: var(--surface);
-            border-radius: 14px;
-        }
-        
-        .profile-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #1a1a2e;
-            border: 2px solid var(--gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .profile-btn {
-            padding: 12px 18px;
-            background: var(--surface);
-            border: 2px solid var(--gold);
-            border-radius: 14px;
-            color: var(--gold);
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
-        .music-btn,
-        .admin-btn {
-            position: fixed;
-            bottom: 20px;
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            background: var(--surface);
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .music-btn {
-            right: 20px;
-        }
-        
-        .admin-btn {
-            left: 20px;
-            border-color: var(--green);
-            color: var(--green);
-            display: none;
-        }
-        
-        .admin-stat {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 10px;
-            margin: 6px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .admin-stat .value {
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--gold);
-        }
-        
-        .lobby-player {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            background: var(--surface);
-            border-radius: 10px;
-            margin-bottom: 4px;
-            font-size: 11px;
-        }
-        
-        .lobby-player .avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #1a1a2e;
-            font-size: 14px;
-            margin-right: 6px;
-        }
-        
-        .room-link {
-            background: #000;
-            border: 1px solid var(--gold);
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 10px;
-            color: var(--gold);
-            word-break: break-all;
-            text-align: center;
-            margin: 6px 0;
-            cursor: pointer;
-        }
-        
-        .loading-screen {
-            text-align: center;
-            padding: 40px;
-            color: var(--gold);
-            font-weight: 700;
-            font-size: 14px;
-        }
-        
-        .sell-all-btn {
-            width: 100%;
-            padding: 8px;
-            background: rgba(240, 48, 80, 0.1);
-            border: 1px solid var(--red);
-            color: var(--red);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        
-        .chat-box {
-            max-height: 200px;
-            overflow-y: auto;
-            margin: 8px 0;
-            padding: 6px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-        }
-        
-        .chat-msg {
-            font-size: 10px;
-            margin: 4px 0;
-            padding: 4px 8px;
-            border-radius: 8px;
-            background: var(--surface);
-            display: inline-block;
-            max-width: 80%;
-        }
-        
-        .chat-msg .author {
-            font-weight: 700;
-            color: var(--gold);
-            font-size: 9px;
-        }
-        
-        .chat-input-row {
-            display: flex;
-            gap: 6px;
-        }
-        
-        .chat-input-row input {
-            flex: 1;
-            padding: 8px;
-            background: #000;
-            border: 1px solid var(--border);
-            color: #fff;
-            border-radius: 8px;
-            font-size: 11px;
-        }
-        
-        .copied-toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--green);
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 12px;
-            z-index: 999;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        
-        .copied-toast.show {
-            opacity: 1;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 8px;
-            background: #000;
-            border: 1px solid var(--border);
-            color: #fff;
-            border-radius: 8px;
-            font-size: 11px;
-            margin-bottom: 8px;
-        }
-        
-        .history-item {
-            background: var(--surface);
-            border-radius: 8px;
-            padding: 8px;
-            margin: 4px 0;
-            font-size: 10px;
-        }
-        
-        .trade-offer {
-            background: var(--surface);
-            border: 2px solid var(--orange);
-            border-radius: 12px;
-            padding: 10px;
-            margin: 8px 0;
-        }
-        
-        .trade-offer .offer-title {
-            color: var(--orange);
-            font-weight: 700;
-            font-size: 12px;
-        }
+        :root{--bg:#080812;--surface:#111128;--gold:#f0a030;--green:#00e070;--red:#f03050;--blue:#4090ff;--orange:#ff6b35;--text:#d8d8e0;--text2:#888;--border:#2a2a3a}
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text);display:flex;justify-content:center;align-items:flex-start;min-height:100vh;overflow-x:hidden}
+        .app{width:100%;max-width:500px;background:#0c0c1c;min-height:100vh;padding:14px;position:relative}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+        .logo{font-size:20px;font-weight:800;color:#fff}.logo span{color:var(--gold)}
+        .timer{font-size:30px;font-weight:900;color:var(--gold);transition:color 0.3s}.timer.urgent{color:var(--red);animation:shake 0.35s infinite}
+        @keyframes shake{50%{transform:translateX(4px)}}
+        @keyframes pulse{50%{transform:scale(1.05)}}
+        .badge{padding:5px 12px;border-radius:16px;font-weight:700;font-size:11px;background:rgba(64,144,255,0.2);color:var(--blue)}
+        .vs-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+        .player-card{flex:1;min-width:80px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px;text-align:center;transition:all 0.2s;cursor:pointer}
+        .player-card.you{border-color:var(--green)}.player-card:hover{border-color:var(--gold)}
+        .player-card .avatar{width:36px;height:36px;border-radius:50%;margin:0 auto 6px;font-size:18px;display:flex;align-items:center;justify-content:center;background:#1a1a2e;overflow:hidden}
+        .player-card .avatar img{width:100%;height:100%;object-fit:cover}
+        .player-card .name{font-weight:700;font-size:11px;margin-bottom:3px}
+        .player-card .cash{font-size:14px;font-weight:900;color:var(--green)}
+        .section-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin:10px 0 6px}
+        table.portfolio{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:10px}
+        table.portfolio th{color:var(--text2);font-weight:600;padding:6px 4px;text-align:left;border-bottom:1px solid var(--border);font-size:9px}
+        table.portfolio td{padding:6px 4px;border-bottom:1px solid rgba(255,255,255,0.03)}
+        table.portfolio .sym{font-weight:700;color:#fff}table.portfolio .up{color:var(--green)}table.portfolio .down{color:var(--red)}
+        .qty-input{width:36px;padding:4px 2px;background:#000;border:1px solid var(--border);color:#fff;border-radius:5px;text-align:center;font-size:10px;font-weight:600}
+        .btn-sm{padding:5px 10px;border:1px solid var(--border);background:var(--surface);color:#fff;border-radius:12px;cursor:pointer;font-size:10px;font-weight:700;transition:all 0.15s;white-space:nowrap}
+        .btn-sm.sell{border-color:var(--red);color:var(--red)}.btn-sm:active{transform:scale(0.92)}
+        .case-box{background:var(--surface);border:2px solid var(--gold);border-radius:14px;padding:14px;margin-bottom:12px}
+        .case-box .case-title{font-weight:700;font-size:14px;color:var(--gold);margin-bottom:6px}
+        .case-box .case-desc{font-size:12px;color:var(--text2);line-height:1.6}
+        .case-box .case-price{font-weight:700;font-size:13px;color:#fff;margin-top:8px}
+        .action-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+        .qty-control{display:flex;align-items:center;gap:6px}
+        .qty-control button{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:#fff;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .qty-control button:active{background:var(--gold);color:#000}
+        .qty-control input{width:50px;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:10px;text-align:center;font-weight:700;font-size:14px}
+        .btn{padding:14px 20px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.08s;background:var(--surface);color:#fff;text-align:center;min-height:52px;display:flex;align-items:center;justify-content:center;width:100%;margin-bottom:6px}
+        .btn:active{transform:scale(0.94)}.btn:disabled{opacity:0.3;pointer-events:none}
+        .btn.gold{background:var(--gold);color:#000;border:none;font-weight:800}
+        .btn.green{background:var(--green);color:#000;border:2px solid var(--green);font-weight:800}
+        .btn.red{background:var(--red);color:#fff;border:2px solid var(--red);font-weight:800}
+        .btn.orange{background:var(--orange);color:#fff;border:none;font-weight:800}
+        .btn-inline{width:auto;flex:1;min-width:0}
+        .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.94);z-index:100;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+        .overlay.show{display:flex}.overlay .inner{max-width:400px;width:100%}
+        .chip-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+        .chip{padding:8px 14px;border:1.5px solid var(--border);background:var(--surface);color:#fff;border-radius:18px;cursor:pointer;font-weight:700;font-size:11px;transition:all 0.2s;min-width:44px;text-align:center}
+        .chip.selected{border-color:var(--gold);background:rgba(240,160,48,0.2);box-shadow:0 0 12px rgba(240,160,48,0.1)}
+        .input{width:100%;padding:12px;background:#000;border:1px solid var(--border);color:#fff;border-radius:10px;font-size:14px;text-align:center;font-weight:700;margin-bottom:8px}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:250;align-items:center;justify-content:center}
+        .modal.show{display:flex}
+        .modal-content{background:#0c0c1c;border:2px solid var(--gold);border-radius:18px;padding:20px;width:92%;max-width:420px;max-height:90vh;overflow-y:auto;position:relative}
+        .modal-content h3{color:var(--gold);margin-bottom:12px;text-align:center;font-size:16px}
+        .modal-close{position:absolute;top:10px;right:14px;font-size:20px;color:var(--gold);cursor:pointer;z-index:5;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:none;background:transparent}
+        .profile-section{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px;background:var(--surface);border-radius:14px}
+        .profile-avatar{width:50px;height:50px;border-radius:50%;background:#1a1a2e;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;cursor:pointer}
+        .profile-avatar img{width:100%;height:100%;object-fit:cover}
+        .profile-btn{padding:12px 18px;background:var(--surface);border:2px solid var(--gold);border-radius:14px;color:var(--gold);font-weight:700;font-size:14px;cursor:pointer}
+        .music-btn,.admin-btn{position:fixed;bottom:20px;width:46px;height:46px;border-radius:12px;background:var(--surface);border:2px solid var(--gold);color:var(--gold);font-size:20px;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center}
+        .music-btn{right:20px}.admin-btn{left:20px;border-color:var(--green);color:var(--green);display:none}
+        .admin-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center}
+        .admin-stat .value{font-size:24px;font-weight:900;color:var(--gold)}
+        .lobby-player{display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface);border-radius:10px;margin-bottom:4px;font-size:11px}
+        .lobby-player .avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#1a1a2e;font-size:14px;margin-right:6px}
+        .room-link{background:#000;border:1px solid var(--gold);padding:8px;border-radius:8px;font-size:10px;color:var(--gold);word-break:break-all;text-align:center;margin:6px 0;cursor:pointer}
+        .loading-screen{text-align:center;padding:40px;color:var(--gold);font-weight:700;font-size:14px}
+        .sell-all-btn{width:100%;padding:8px;background:rgba(240,48,80,0.1);border:1px solid var(--red);color:var(--red);border-radius:8px;cursor:pointer;font-size:10px;font-weight:700;margin-bottom:6px}
+        .chat-box{max-height:200px;overflow-y:auto;margin:8px 0;padding:6px;background:rgba(0,0,0,0.3);border-radius:10px}
+        .chat-msg{font-size:10px;margin:4px 0;padding:4px 8px;border-radius:8px;background:var(--surface);display:inline-block;max-width:80%}
+        .chat-msg .author{font-weight:700;color:var(--gold);font-size:9px}
+        .chat-input-row{display:flex;gap:6px}.chat-input-row input{flex:1;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:8px;font-size:11px}
+        .copied-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:10px 20px;border-radius:20px;font-weight:700;font-size:12px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+        .copied-toast.show{opacity:1}
+        .search-input{width:100%;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:8px;font-size:11px;margin-bottom:8px}
+        .history-item{background:var(--surface);border-radius:8px;padding:8px;margin:4px 0;font-size:10px}
+        .sync-box{background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:10px;margin:8px 0;text-align:center}
+        .sync-box .sync-code{font-size:20px;font-weight:900;color:var(--gold);letter-spacing:3px}
     </style>
 </head>
 <body>
@@ -752,25 +89,16 @@
         <div class="loading-screen" id="loadingScreen">Загрузка...</div>
         
         <div id="menuScreen" style="display:none;">
-            <div class="header">
-                <div class="logo">🏆 <span>InvestBattle</span></div>
-                <div class="badge">v10.1</div>
-            </div>
-            
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v10.2</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
-                <div style="flex:1;">
-                    <div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div>
-                    <div style="font-size:11px;color:var(--gold);">
-                        ⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span>
-                    </div>
-                </div>
+                <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
                 <button class="profile-btn" id="settingsBtn">⚙️</button>
             </div>
-            
             <button class="btn gold" id="playMenuBtn" style="font-size:18px;padding:20px;">🎮 ИГРАТЬ</button>
             <button class="btn" id="createCompanyBtn" style="margin-top:6px;">🏗 СОЗДАТЬ СВОЮ КОМПАНИЮ</button>
             <button class="btn" id="historyBtn" style="margin-top:6px;">📜 ИСТОРИЯ ИГР</button>
+            <button class="btn" id="syncBtn" style="margin-top:6px;border-color:var(--gold);color:var(--gold);">🔄 СИНХРОНИЗИРОВАТЬ УСТРОЙСТВА</button>
             
             <div id="playMenu" style="display:none;margin-top:10px;">
                 <button class="btn gold" id="soloBtn">🤖 Тренировка с ботом</button>
@@ -783,1962 +111,504 @@
             
             <div id="compMenu" style="display:none;margin-top:10px;">
                 <button class="btn orange" id="freelancerBtn">💼 Начинающий фрилансер</button>
-                <button class="btn" id="freelancerRatingBtn">📊 Рейтинг фрилансеров</button>
                 <button class="btn" id="compBackBtn">↩ Назад</button>
             </div>
         </div>
 
         <div id="copiedToast" class="copied-toast">✅ Скопировано!</div>
 
-        <!-- Модальные окна -->
-        <div class="modal" id="profileModal">
-            <div class="modal-content">
-                <button class="modal-close" id="profileCloseBtn">✕</button>
-                <h3>👤 Профиль</h3>
-                <div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">👤</div>
-                <input class="input" id="editName" placeholder="Никнейм" maxlength="20">
-                <div class="section-title">Аватар</div>
-                <div class="chip-row" id="avatarChips">
-                    <div class="chip selected" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div>
-                    <div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div>
-                    <div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div>
-                    <div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;"></div>
-                    <div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;"></div>
-                </div>
-                <button class="btn gold" id="saveProfileBtn" style="margin-top:10px;">💾 Сохранить</button>
-            </div>
-        </div>
+        <!-- Profile Modal -->
+        <div class="modal" id="profileModal"><div class="modal-content"><button class="modal-close" id="profileCloseBtn">✕</button><h3>👤 Профиль</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">👤</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;"></div></div><button class="btn gold" id="saveProfileBtn" style="margin-top:10px;">💾 Сохранить</button></div></div>
         
-        <div class="modal" id="settingsModal">
-            <div class="modal-content">
-                <button class="modal-close" id="settingsCloseBtn">✕</button>
-                <h3>⚙️ Настройки</h3>
-                <div class="section-title">Язык</div>
-                <div class="chip-row" id="langChips">
-                    <div class="chip" data-lang="ru">🇷🇺 RU</div>
-                    <div class="chip" data-lang="en">🇬🇧 EN</div>
-                </div>
-                <div class="section-title">Музыка</div>
-                <button class="btn" id="musicToggleBtn">🔊 Выкл</button>
-            </div>
-        </div>
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal"><div class="modal-content"><button class="modal-close" id="settingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Язык</div><div class="chip-row" id="langChips"><div class="chip" data-lang="ru">🇷🇺 RU</div><div class="chip" data-lang="en">🇬🇧 EN</div></div><div class="section-title">Музыка</div><button class="btn" id="musicToggleBtn">🔊 Выкл</button></div></div>
         
-        <div class="modal" id="soloModal">
-            <div class="modal-content">
-                <button class="modal-close" id="soloCloseBtn">✕</button>
-                <h3>🤖 Тренировка</h3>
-                <div class="section-title">💰 Капитал</div>
-                <div class="chip-row" id="sCashChips">
-                    <div class="chip" data-cash="1000">$1K</div>
-                    <div class="chip selected" data-cash="10000">$10K</div>
-                    <div class="chip" data-cash="50000">$50K</div>
-                </div>
-                <div class="section-title">📊 Раунды</div>
-                <div class="chip-row" id="sRoundsChips">
-                    <div class="chip" data-rounds="5">5</div>
-                    <div class="chip selected" data-rounds="10">10</div>
-                    <div class="chip" data-rounds="15">15</div>
-                </div>
-                <div class="section-title">⏱ Сек/раунд</div>
-                <div class="chip-row" id="sTimeChips">
-                    <div class="chip" data-time="15">15с</div>
-                    <div class="chip selected" data-time="30">30с</div>
-                    <div class="chip" data-time="45">45с</div>
-                </div>
-                <button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button>
-            </div>
-        </div>
+        <!-- Sync Modal -->
+        <div class="modal" id="syncModal"><div class="modal-content"><button class="modal-close" id="syncCloseBtn">✕</button><h3>🔄 Синхронизация устройств</h3><p style="text-align:center;font-size:11px;color:var(--text2);">Введите этот код на другом устройстве, чтобы синхронизировать аккаунты:</p><div class="sync-box"><div class="sync-code" id="syncCodeDisplay">------</div><button class="btn-sm" id="copySyncCode">📋 Копировать</button></div><div class="section-title">Или введите код с другого устройства:</div><input class="input" id="syncCodeInput" placeholder="Код синхронизации" maxlength="12"><button class="btn gold" id="confirmSyncBtn" style="margin-top:10px;">🔗 Синхронизировать</button></div></div>
         
-        <div class="modal" id="roomModal">
-            <div class="modal-content">
-                <button class="modal-close" id="roomCloseBtn">✕</button>
-                <h3>👥 Новая комната</h3>
-                <input class="input" id="roomNameInput" placeholder="Название" value="Комната">
-                <div class="section-title">🌍 Доступ</div>
-                <div class="chip-row" id="accessChips">
-                    <div class="chip selected" data-access="open">🌍 Открытая</div>
-                    <div class="chip" data-access="closed">🔒 Закрытая</div>
-                </div>
-                <div class="section-title">👥 Макс / 💰 Капитал</div>
-                <div class="chip-row" id="maxChips">
-                    <div class="chip selected" data-max="2">2</div>
-                    <div class="chip" data-max="4">4</div>
-                </div>
-                <div class="chip-row" id="cashChips">
-                    <div class="chip" data-cash="1000">$1K</div>
-                    <div class="chip selected" data-cash="10000">$10K</div>
-                </div>
-                <div class="section-title">📊 Раунды / ⏱ Сек</div>
-                <div class="chip-row" id="roundsChips">
-                    <div class="chip selected" data-rounds="5">5</div>
-                    <div class="chip" data-rounds="10">10</div>
-                </div>
-                <div class="chip-row" id="timeChips">
-                    <div class="chip" data-time="15">15с</div>
-                    <div class="chip selected" data-time="30">30с</div>
-                </div>
-                <button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button>
-            </div>
-        </div>
+        <!-- Solo Modal -->
+        <div class="modal" id="soloModal"><div class="modal-content"><button class="modal-close" id="soloCloseBtn">✕</button><h3>🤖 Тренировка</h3><div class="section-title">💰 Капитал</div><div class="chip-row" id="sCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="sRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="sTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div></div><button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button></div></div>
         
-        <div class="modal" id="lobbyModal">
-            <div class="modal-content">
-                <button class="modal-close" id="lobbyCloseX">✕</button>
-                <div id="lobbyContent"></div>
-            </div>
-        </div>
+        <!-- Room Modal -->
+        <div class="modal" id="roomModal"><div class="modal-content"><button class="modal-close" id="roomCloseBtn">✕</button><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">🌍 Доступ</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">👥 Макс / 💰 Капитал</div><div class="chip-row" id="maxChips"><div class="chip selected" data-max="2">2</div><div class="chip" data-max="4">4</div></div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div></div><div class="section-title">📊 Раунды / ⏱ Сек</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div></div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
         
-        <div class="modal" id="joinModal">
-            <div class="modal-content">
-                <button class="modal-close" id="joinCloseBtn">✕</button>
-                <h3>🔗 Подключиться</h3>
-                <input class="input" id="joinCodeInput" placeholder="Код комнаты">
-                <button class="btn gold" id="confirmJoinBtn" style="margin-top:10px;">Подключиться</button>
-            </div>
-        </div>
+        <!-- Lobby Modal -->
+        <div class="modal" id="lobbyModal"><div class="modal-content"><button class="modal-close" id="lobbyCloseX">✕</button><div id="lobbyContent"></div></div></div>
         
-        <div class="modal" id="adminModal">
-            <div class="modal-content" style="border-color:var(--green);">
-                <button class="modal-close" id="adminCloseBtn">✕</button>
-                <h3 style="color:var(--green);">🛡️ АДМИН</h3>
-                <input class="search-input" id="playerSearchInput" placeholder="🔍 Поиск игрока по ID...">
-                <div id="playerSearchResult"></div>
-                <div class="admin-stat"><span>🟢 Онлайн</span><span class="value" id="aOnline">0</span></div>
-                <div class="admin-stat"><span>👥 Всего</span><span class="value" id="aTotal">0</span></div>
-                <div class="admin-stat"><span>🎮 Игр</span><span class="value" id="aPlaying">0</span></div>
-                <div class="admin-stat"><span>💼 Фрилансеров</span><span class="value" id="aFreel">0</span></div>
-            </div>
-        </div>
+        <!-- Join Modal -->
+        <div class="modal" id="joinModal"><div class="modal-content"><button class="modal-close" id="joinCloseBtn">✕</button><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" placeholder="Код комнаты"><button class="btn gold" id="confirmJoinBtn" style="margin-top:10px;">Подключиться</button></div></div>
         
-        <div class="modal" id="freelancerIntroModal">
-            <div class="modal-content" style="border-color:var(--orange);">
-                <button class="modal-close" id="flCloseBtn">✕</button>
-                <h3 style="color:var(--orange);">💼 НАЧИНАЮЩИЙ ФРИЛАНСЕР</h3>
-                <div style="text-align:center;font-size:40px;">💼</div>
-                <p style="font-size:10px;color:var(--text2);text-align:center;line-height:1.5;">
-                    Ты — фрилансер с <b>$100</b>. Стань профи!<br>
-                    📉 Акции $1-15 | 🎢 ×2.5 волатильность<br>
-                    ♾️ Бесконечные уровни | 🏆 Топ-5 призы<br>
-                    💎 Вход: <b>5 000 💵</b> | Обновление: понедельник
-                </p>
-                <div style="font-size:10px;color:var(--gold);text-align:center;">🥇50% 🥈25% 🥉15% 4-5:5%</div>
-                <button class="btn orange" id="flEnterBtn" style="margin-top:10px;">💎 ВОЙТИ (5 000 💵)</button>
-                <button class="btn" id="flRatingViewBtn" style="margin-top:6px;">📊 Рейтинг</button>
-            </div>
-        </div>
+        <!-- Admin Modal -->
+        <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><button class="modal-close" id="adminCloseBtn">✕</button><h3 style="color:var(--green);">🛡️ АДМИН</h3><input class="search-input" id="playerSearchInput" placeholder="🔍 Поиск игрока по ID..."><div id="playerSearchResult"></div><div class="admin-stat"><span>🟢 Онлайн</span><span class="value" id="aOnline">0</span></div><div class="admin-stat"><span>👥 Всего</span><span class="value" id="aTotal">0</span></div><div class="admin-stat"><span>🎮 Игр</span><span class="value" id="aPlaying">0</span></div><div class="admin-stat"><span>💼 Фрилансеров</span><span class="value" id="aFreel">0</span></div></div></div>
         
-        <div class="modal" id="freelancerRatingModal">
-            <div class="modal-content" style="border-color:var(--orange);">
-                <button class="modal-close" id="flRatingCloseBtn">✕</button>
-                <h3 style="color:var(--orange);">🏆 РЕЙТИНГ ФРИЛАНСЕРОВ</h3>
-                <div id="ratingTimer" style="text-align:center;font-size:12px;color:var(--gold);margin-bottom:8px;"></div>
-                <div id="ratingList" style="max-height:300px;overflow-y:auto;"></div>
-            </div>
-        </div>
+        <!-- Freelancer Intro Modal -->
+        <div class="modal" id="freelancerIntroModal"><div class="modal-content" style="border-color:var(--orange);"><button class="modal-close" id="flCloseBtn">✕</button><h3 style="color:var(--orange);">💼 НАЧИНАЮЩИЙ ФРИЛАНСЕР</h3><div style="text-align:center;font-size:40px;">💼</div><p style="font-size:10px;color:var(--text2);text-align:center;line-height:1.5;">Ты — фрилансер с <b>$100</b>. Стань профи!<br>📉 Акции $1-15 | 🎢 ×2.5 волатильность<br>♾️ Бесконечные уровни | 🏆 Топ-5 призы<br>💎 Вход: <b>5 000 💵</b> | Обновление: понедельник</p><div style="font-size:10px;color:var(--gold);text-align:center;">🥇50% 🥈25% 🥉15% 4-5:5%</div><button class="btn orange" id="flEnterBtn" style="margin-top:10px;">💎 ВОЙТИ (5 000 💵)</button><button class="btn" id="flRatingViewBtn" style="margin-top:6px;">📊 Рейтинг</button></div></div>
         
-        <div class="modal" id="flConfirmModal">
-            <div class="modal-content" style="border-color:var(--orange);">
-                <button class="modal-close" id="flConfirmCloseBtn">✕</button>
-                <h3 style="color:var(--green);">✅ ВЫ УЧАСТВУЕТЕ!</h3>
-                <p style="text-align:center;color:var(--text);">Вы в соревновании «Начинающий фрилансер»!</p>
-                <button class="btn gold" id="flPlayBtn" style="margin-top:10px;">🎮 ИГРАТЬ</button>
-                <button class="btn" id="flRatingFromConfirmBtn" style="margin-top:6px;">📊 Рейтинг</button>
-            </div>
-        </div>
+        <!-- Freelancer Rating Modal -->
+        <div class="modal" id="freelancerRatingModal"><div class="modal-content" style="border-color:var(--orange);"><button class="modal-close" id="flRatingCloseBtn">✕</button><h3 style="color:var(--orange);">🏆 РЕЙТИНГ ФРИЛАНСЕРОВ</h3><div id="ratingTimer" style="text-align:center;font-size:12px;color:var(--gold);margin-bottom:8px;"></div><div id="ratingList" style="max-height:300px;overflow-y:auto;"></div></div></div>
         
-        <div class="modal" id="historyModal">
-            <div class="modal-content">
-                <button class="modal-close" id="historyCloseBtn">✕</button>
-                <h3>📜 ИСТОРИЯ ИГР</h3>
-                <div id="historyList" style="max-height:300px;overflow-y:auto;"></div>
-            </div>
-        </div>
+        <!-- Freelancer Confirm Modal -->
+        <div class="modal" id="flConfirmModal"><div class="modal-content" style="border-color:var(--orange);"><button class="modal-close" id="flConfirmCloseBtn">✕</button><h3 style="color:var(--green);">✅ ВЫ УЧАСТВУЕТЕ!</h3><p style="text-align:center;color:var(--text);">Вы в соревновании «Начинающий фрилансер»!</p><button class="btn gold" id="flPlayBtn" style="margin-top:10px;">🎮 ИГРАТЬ</button><button class="btn" id="flRatingFromConfirmBtn" style="margin-top:6px;">📊 Рейтинг</button></div></div>
         
-        <div class="modal" id="tradeOfferModal">
-            <div class="modal-content" style="border-color:var(--orange);">
-                <button class="modal-close" id="tradeOfferCloseBtn">✕</button>
-                <h3 style="color:var(--orange);">🤝 ПРЕДЛОЖЕНИЕ ОБМЕНА</h3>
-                <div id="tradeOfferContent"></div>
-            </div>
-        </div>
+        <!-- History Modal -->
+        <div class="modal" id="historyModal"><div class="modal-content"><button class="modal-close" id="historyCloseBtn">✕</button><h3>📜 ИСТОРИЯ ИГР</h3><div id="historyList" style="max-height:300px;overflow-y:auto;"></div></div></div>
 
-        <!-- Игровой экран -->
+        <!-- Game Screen -->
         <div id="gameScreen" style="display:none;">
-            <div class="header">
-                <div class="logo">🏆 <span>InvestBattle</span></div>
-                <div class="timer" id="timer">30</div>
-                <div class="badge" id="roundBadge">1/10</div>
-            </div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="timer" id="timer">30</div><div class="badge" id="roundBadge">1/10</div></div>
             <div class="vs-row" id="playersRow"></div>
             <button class="sell-all-btn" id="sellAllBtn">💰 ПРОДАТЬ ВСЁ</button>
-            <table class="portfolio">
-                <thead>
-                    <tr>
-                        <th>Актив</th>
-                        <th>Кол</th>
-                        <th>Цена</th>
-                        <th>Стоим</th>
-                        <th>±</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="portfolioBody"></tbody>
-            </table>
-            <div class="case-box">
-                <div class="case-title" id="caseTitle"></div>
-                <div class="case-desc" id="caseDesc"></div>
-                <div class="case-price" id="casePrice"></div>
-            </div>
-            <div class="action-row">
-                <div class="qty-control">
-                    <button id="qtyMinus">−</button>
-                    <input type="number" id="buyQty" value="1" min="1" max="1000">
-                    <button id="qtyPlus">+</button>
-                </div>
-                <button class="btn green btn-inline" id="buyBtn">BUY</button>
-                <button class="btn red btn-inline" id="waitBtn">NO</button>
-            </div>
+            <table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th>±</th><th></th></tr></thead><tbody id="portfolioBody"></tbody></table>
+            <div class="case-box"><div class="case-title" id="caseTitle"></div><div class="case-desc" id="caseDesc"></div><div class="case-price" id="casePrice"></div></div>
+            <div class="action-row"><div class="qty-control"><button id="qtyMinus">−</button><input type="number" id="buyQty" value="1" min="1" max="1000"><button id="qtyPlus">+</button></div><button class="btn green btn-inline" id="buyBtn">BUY</button><button class="btn red btn-inline" id="waitBtn">NO</button></div>
             <div id="readyStatus" style="text-align:center;font-size:11px;color:var(--gold);margin-top:6px;"></div>
         </div>
 
-        <!-- Финальный экран -->
-        <div class="overlay" id="finalOverlay">
-            <div class="inner">
-                <div style="font-size:32px;">🏁</div>
-                <div class="timer" id="finalTimer">90</div>
-                <table class="portfolio">
-                    <thead>
-                        <tr>
-                            <th>Актив</th>
-                            <th>Кол</th>
-                            <th>Цена</th>
-                            <th>Стоим</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="finalBody"></tbody>
-                </table>
-                <div style="font-weight:900;font-size:18px;color:var(--gold);margin:12px 0;" id="finalTotal">💰 $0</div>
-                <button class="btn gold" id="sellAllFinalBtn">💰 ПРОДАТЬ ВСЁ</button>
-            </div>
-        </div>
+        <!-- Final Overlay -->
+        <div class="overlay" id="finalOverlay"><div class="inner"><div style="font-size:32px;">🏁</div><div class="timer" id="finalTimer">90</div><table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th></th></tr></thead><tbody id="finalBody"></tbody></table><div style="font-weight:900;font-size:18px;color:var(--gold);margin:12px 0;" id="finalTotal">💰 $0</div><button class="btn gold" id="sellAllFinalBtn">💰 ПРОДАТЬ ВСЁ</button></div></div>
         
-        <!-- Экран результатов -->
-        <div class="overlay" id="resultOverlay">
-            <div class="inner">
-                <div style="font-size:52px;" id="resultEmoji">🏆</div>
-                <div style="font-size:24px;font-weight:900;" id="resultTitle"></div>
-                <div style="font-size:30px;font-weight:900;color:var(--gold);margin:10px 0;" id="resultCash"></div>
-                <div id="resultPrize" style="font-size:12px;color:var(--text2);"></div>
-                <button class="btn gold" id="shareBtn" style="margin-top:10px;">📤 ПОДЕЛИТЬСЯ</button>
-                <button class="btn" id="menuBtn" style="margin-top:6px;">↩ В МЕНЮ</button>
-            </div>
-        </div>
+        <!-- Result Overlay -->
+        <div class="overlay" id="resultOverlay"><div class="inner"><div style="font-size:52px;" id="resultEmoji">🏆</div><div style="font-size:24px;font-weight:900;" id="resultTitle"></div><div style="font-size:30px;font-weight:900;color:var(--gold);margin:10px 0;" id="resultCash"></div><div id="resultPrize" style="font-size:12px;color:var(--text2);"></div><button class="btn gold" id="shareBtn" style="margin-top:10px;">📤 ПОДЕЛИТЬСЯ</button><button class="btn" id="menuBtn" style="margin-top:6px;">↩ В МЕНЮ</button></div></div>
     </div>
     
     <button class="music-btn" id="musicFloatBtn">🎵</button>
     <button class="admin-btn" id="adminFloatBtn">🛡️</button>
 
     <script>
-        (function() {
-            // ===== FIREBASE INIT =====
-            const firebaseConfig = {
-                databaseURL: "https://investbattle-45545-default-rtdb.firebaseio.com",
-                projectId: "investbattle-45545"
-            };
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.database();
-            const tg = window.Telegram?.WebApp;
-            const ADMIN_ID = '5909465804';
+    (function(){
+        const fc={databaseURL:"https://investbattle-45545-default-rtdb.firebaseio.com",projectId:"investbattle-45545"};
+        firebase.initializeApp(fc);
+        const db=firebase.database(),tg=window.Telegram?.WebApp,ADMIN='5909465804';
+        if(tg){tg.ready();tg.expand();}
 
-            if (tg) {
-                tg.ready();
-                tg.expand();
-            }
+        let s={
+            pn:'Трейдер',pa:'icons/avatar1.png',ps:0,pd:0,sc:10000,rt:30,tr:10,mp:2,rc:null,rn:'Комната',
+            cr:0,yc:10000,oc:10000,yp:{},op:{},cc:null,ga:false,fi:false,ft:90,
+            uc:[],mk:{},fv:{},fi2:null,wp:false,rtimer:null,
+            lp:[],acl:[],crdy:false,im:false,on:'🤖 Бот-Трейдер',oa:'🤖',
+            pid:'',hid:'',cs:[],fa:false,fw:'',previewAvatar:null,lang:'ru',
+            gh:[],syncCode:''
+        };
 
-            // ===== STATE =====
-            const state = {
-                // Player
-                pid: '',
-                playerName: 'Трейдер',
-                playerAvatar: 'icons/avatar1.png',
-                playerStars: 0,
-                playerDollars: 0,
-                previewAvatar: null,
+        function pid(){if(tg?.initDataUnsafe?.user?.id)return'tg_'+tg.initDataUnsafe.user.id;let i=localStorage.getItem('ib_pid_v10');if(!i){i='web_'+Math.random().toString(36).substr(2,9);localStorage.setItem('ib_pid_v10',i);}return i;}
+        function isAdmin(){let raw=s.pid.replace(/^(tg_|web_)/,'');let tId=tg?.initDataUnsafe?.user?.id;return String(raw)===ADMIN||String(tId)===ADMIN||Number(tId)===Number(ADMIN);}
+        function av(a){return a&&a.startsWith('icons/')?`<img src="${a}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:(a||'👤');}
+        function fm(n){return n>=1e6?'$'+(n/1e6).toFixed(1)+'M':'$'+Math.round(n).toLocaleString('en-US');}
+        function gwk(){let n=new Date(),d=n.getDay();n.setDate(n.getDate()-(d===0?6:d-1));n.setHours(0,0,0,0);return'week_'+n.toISOString().split('T')[0];}
+        function toast(msg){let t=document.getElementById('copiedToast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500);}
+        function cp(tx){navigator.clipboard.writeText(tx).then(()=>toast('✅ Скопировано!')).catch(()=>{let t=document.createElement('textarea');t.value=tx;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('✅ Скопировано!');});}
 
-                // Game config
-                startCash: 10000,
-                roundTime: 30,
-                totalRounds: 10,
-                maxPlayers: 2,
-                roomCode: null,
-                roomName: 'Комната',
-                roomAccess: 'open',
-
-                // Game state
-                currentRound: 0,
-                yourCash: 10000,
-                opponentCash: 10000,
-                yourPortfolio: {},
-                opponentPortfolio: {},
-                currentCase: null,
-                gameActive: false,
-                finalPhase: false,
-                finalTimer: 90,
-                usedCases: [],
-                marketPrices: {},
-                fairValues: {},
-                finalInterval: null,
-                roundTimer: null,
-
-                // Multiplayer
-                lobbyPlayers: [],
-                activeCasesList: [],
-                currentReady: false,
-                isMultiplayer: false,
-                opponentName: '🤖 Бот-Трейдер',
-                opponentAvatar: '🤖',
-
-                // Cases
-                cases: [],
-                isFreelancer: false,
-                freelancerWeek: '',
-                waitPressed: false,
-
-                // Language
-                language: 'ru',
-
-                // Game history
-                gameHistory: []
-            };
-
-            // ===== HELPERS =====
-            function generatePlayerId() {
-                if (tg?.initDataUnsafe?.user?.id) {
-                    return 'tg_' + tg.initDataUnsafe.user.id;
+        function sf(){if(!s.pid)return;db.ref(`u/${s.pid}`).update({n:s.pn,a:s.pa,st:s.ps,do:s.pd,ls:firebase.database.ServerValue.TIMESTAMP});db.ref(`on/${s.pid}`).set({n:s.pn,ts:firebase.database.ServerValue.TIMESTAMP});db.ref(`on/${s.pid}`).onDisconnect().remove();}
+        
+        function lf(cb){
+            db.ref('u/'+s.pid).once('value',sn=>{
+                let d=sn.val();
+                if(d){
+                    // Firebase has priority over localStorage
+                    s.pn=d.n||'Трейдер';
+                    s.pa=d.a||'icons/avatar1.png';
+                    s.ps=typeof d.st==='number'?d.st:0;
+                    s.pd=typeof d.do==='number'?d.do:0;
                 }
-                let id = localStorage.getItem('ib_pid_v10');
-                if (!id) {
-                    id = 'web_' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('ib_pid_v10', id);
-                }
-                return id;
-            }
-
-            function isAdmin() {
-                const raw = state.pid.replace(/^(tg_|web_)/, '');
-                const tId = tg?.initDataUnsafe?.user?.id;
-                return String(raw) === ADMIN_ID || String(tId) === ADMIN_ID || Number(tId) === Number(ADMIN_ID);
-            }
-
-            function avatarHtml(avatar) {
-                if (avatar && avatar.startsWith('icons/')) {
-                    return `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-                }
-                return avatar || '👤';
-            }
-
-            function formatMoney(n) {
-                if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
-                return '$' + Math.round(n).toLocaleString('en-US');
-            }
-
-            function getCurrentWeek() {
-                const now = new Date();
-                const day = now.getDay();
-                now.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
-                now.setHours(0, 0, 0, 0);
-                return 'week_' + now.toISOString().split('T')[0];
-            }
-
-            function showToast(message) {
-                const toast = document.getElementById('copiedToast');
-                toast.textContent = message;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 1500);
-            }
-
-            function copyToClipboard(text) {
-                navigator.clipboard.writeText(text).then(() => showToast('✅ Скопировано!')).catch(() => {
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    showToast('✅ Скопировано!');
-                });
-            }
-
-            function safeClick(element, handler) {
-                let clicked = false;
-                element.addEventListener('click', (e) => {
-                    if (clicked) return;
-                    clicked = true;
-                    handler(e);
-                    setTimeout(() => { clicked = false; }, 200);
-                });
-                element.addEventListener('touchend', (e) => {
-                    if (clicked) return;
-                    clicked = true;
-                    handler(e);
-                    setTimeout(() => { clicked = false; }, 200);
-                });
-            }
-
-            // ===== FIREBASE SYNC =====
-            function syncToFirebase() {
-                if (!state.pid) return;
-                db.ref(`u/${state.pid}`).update({
-                    n: state.playerName,
-                    a: state.playerAvatar,
-                    st: state.playerStars,
-                    do: state.playerDollars,
-                    ls: firebase.database.ServerValue.TIMESTAMP
-                });
-                db.ref(`on/${state.pid}`).set({
-                    n: state.playerName,
-                    ts: firebase.database.ServerValue.TIMESTAMP
-                });
-                db.ref(`on/${state.pid}`).onDisconnect().remove();
-            }
-
-            function loadFromFirebase(callback) {
-                db.ref('u/' + state.pid).once('value', snapshot => {
-                    const data = snapshot.val();
-                    if (data) {
-                        state.playerName = data.n || 'Трейдер';
-                        state.playerAvatar = data.a || 'icons/avatar1.png';
-                        state.playerStars = typeof data.st === 'number' ? data.st : 0;
-                        state.playerDollars = typeof data.do === 'number' ? data.do : 0;
+                // Load from localStorage ONLY if Firebase didn't have data
+                try{
+                    let r=localStorage.getItem('ib_v15');
+                    if(r){
+                        let o=JSON.parse(r);
+                        if(s.pn==='Трейдер'&&o.playerName)s.pn=o.playerName;
+                        if(s.pa==='icons/avatar1.png'&&o.playerAvatar)s.pa=o.playerAvatar;
+                        if(!s.ps&&o.playerStars)s.ps=o.playerStars;
+                        if(!s.pd&&o.playerDollars)s.pd=o.playerDollars;
                     }
-                    callback();
-                });
+                }catch(e){}
+                // Load history
+                try{let h=localStorage.getItem('ib_history');if(h)s.gh=JSON.parse(h);}catch(e){s.gh=[];}
+                // Load language
+                let sl=localStorage.getItem('ib_lang');if(sl)s.lang=sl;
+                // Load sync code
+                let sc=localStorage.getItem('ib_sync');if(sc)s.syncCode=sc;
+                cb();
+            });
+        }
+        
+        function lS(){
+            s.pid=pid();
+            lf(()=>{
+                up();sf();
+                document.getElementById('adminFloatBtn').style.display=isAdmin()?'flex':'none';
+                if(isAdmin()){setInterval(upA,5000);upA();}
+            });
+        }
+        
+        function sS(){
+            localStorage.setItem('ib_v15',JSON.stringify({playerName:s.pn,playerAvatar:s.pa,playerStars:s.ps,playerDollars:s.pd}));
+            localStorage.setItem('ib_lang',s.lang);
+            localStorage.setItem('ib_history',JSON.stringify(s.gh.slice(0,50)));
+            if(s.syncCode)localStorage.setItem('ib_sync',s.syncCode);
+            if(tg?.CloudStorage)tg.CloudStorage.setItems([{key:'ib_name',value:s.pn},{key:'ib_avatar',value:s.pa},{key:'ib_stars',value:String(s.ps)},{key:'ib_dollars',value:String(s.pd)}]);
+            sf();
+        }
+        
+        function up(){
+            document.getElementById('profileName').textContent=s.pn;
+            document.getElementById('profileAvatar').innerHTML=av(s.pa);
+            document.getElementById('editAvatarBig').innerHTML=av(s.previewAvatar||s.pa);
+            document.getElementById('editName').value=s.pn;
+            document.getElementById('profileStars').textContent=s.ps;
+            document.getElementById('profileDollars').textContent=s.pd;
+            document.querySelectorAll('#avatarChips .chip').forEach(c=>c.classList.toggle('selected',c.dataset.avatar===(s.previewAvatar||s.pa)));
+            document.querySelectorAll('#langChips .chip').forEach(c=>c.classList.toggle('selected',c.dataset.lang===s.lang));
+            aL();
+        }
+        
+        function upA(){
+            if(!isAdmin())return;
+            db.ref('on').once('value',sn=>{document.getElementById('aOnline').textContent=sn.val()?Object.keys(sn.val()).length:0;});
+            db.ref('u').once('value',sn=>{document.getElementById('aTotal').textContent=sn.val()?Object.keys(sn.val()).length:0;});
+            db.ref('rooms').once('value',sn=>{let r=sn.val(),p=0;if(r)Object.values(r).forEach(x=>{if(x&&x.st==='playing')p++;});document.getElementById('aPlaying').textContent=p;});
+            db.ref('fr/'+gwk()).once('value',sn=>{let d=sn.val();document.getElementById('aFreel').textContent=d?Object.keys(d).length:0;});
+        }
+
+        const mt=['music/track1.mp3','music/track2.mp3','music/track3.mp3'];let ct=0,mo=false;const bm=new Audio();
+        function pnt(){if(!mo||!mt[ct])return;bm.src=mt[ct];bm.play().catch(()=>{});bm.onended=()=>{ct=(ct+1)%mt.length;pnt();};}
+
+        function ump(){
+            let cs=s.fa?s.acl.filter(c=>c&&c.price&&c.price>=1&&c.price<=15):s.acl;
+            for(let c of cs){
+                if(!c||!c.symbol||!c.price)continue;
+                if(!s.mk[c.symbol]){s.mk[c.symbol]=Number(c.price)||10;s.fv[c.symbol]=Number(c.price)||10;}
+                let cu=s.mk[c.symbol],fa=s.fv[c.symbol],vm=s.fa?2.5:1;
+                let tb=c.trend==='up'?0.5:c.trend==='down'?-0.4:c.trend==='volatile'?(Math.random()-0.5)*1.5:0;
+                let ft=Math.random()<0.667,bias=ft?tb:-tb;
+                let ch=(fa-cu)/fa*30*vm+(Math.random()-0.5+bias*0.4)*12*vm;
+                if(Math.random()<0.06*vm)ch=(Math.random()>0.5?1:-1)*(15+Math.random()*20);
+                ch=Math.max(-50,Math.min(50,ch));
+                s.mk[c.symbol]=Math.max(0.05,cu*(1+ch/100));
+                s.fv[c.symbol]=fa*(1+(Math.random()-0.49)*4/100);
             }
+        }
+        
+        function grc(){
+            let p=s.fa?s.acl.filter(c=>c&&c.symbol&&c.price&&c.price>=1&&c.price<=15):s.acl;
+            let v=p.filter(c=>c&&c.symbol&&c.price&&!s.uc.includes(c.id));
+            if(!v.length){s.uc=[];return p[Math.floor(Math.random()*p.length)];}
+            return v[Math.floor(Math.random()*v.length)];
+        }
 
-            function loadState() {
-                state.pid = generatePlayerId();
-                loadFromFirebase(() => {
-                    try {
-                        const saved = localStorage.getItem('ib_v15');
-                        if (saved) {
-                            const obj = JSON.parse(saved);
-                            if (state.playerName === 'Трейдер' && obj.playerName) state.playerName = obj.playerName;
-                            if (state.playerAvatar === 'icons/avatar1.png' && obj.playerAvatar) state.playerAvatar = obj.playerAvatar;
-                            if (!state.playerStars && obj.playerStars) state.playerStars = obj.playerStars;
-                            if (!state.playerDollars && obj.playerDollars) state.playerDollars = obj.playerDollars;
-                        }
-                    } catch (e) { /* ignore */ }
-                    
-                    // Load language
-                    const savedLang = localStorage.getItem('ib_lang');
-                    if (savedLang) state.language = savedLang;
-                    
-                    // Load game history
-                    try {
-                        const savedHistory = localStorage.getItem('ib_history');
-                        if (savedHistory) state.gameHistory = JSON.parse(savedHistory);
-                    } catch (e) { state.gameHistory = []; }
-                    
-                    updateUI();
-                    syncToFirebase();
-                    
-                    document.getElementById('adminFloatBtn').style.display = isAdmin() ? 'flex' : 'none';
-                    if (isAdmin()) {
-                        setInterval(updateAdminPanel, 5000);
-                        updateAdminPanel();
-                    }
-                });
-            }
-
-            function saveLocalState() {
-                localStorage.setItem('ib_v15', JSON.stringify({
-                    playerName: state.playerName,
-                    playerAvatar: state.playerAvatar,
-                    playerStars: state.playerStars,
-                    playerDollars: state.playerDollars
-                }));
-                localStorage.setItem('ib_lang', state.language);
-                
-                if (tg?.CloudStorage) {
-                    tg.CloudStorage.setItems([
-                        { key: 'ib_name', value: state.playerName },
-                        { key: 'ib_avatar', value: state.playerAvatar },
-                        { key: 'ib_stars', value: String(state.playerStars) },
-                        { key: 'ib_dollars', value: String(state.playerDollars) }
-                    ]);
-                }
-                syncToFirebase();
-            }
-
-            function saveGameHistory() {
-                localStorage.setItem('ib_history', JSON.stringify(state.gameHistory.slice(0, 50))); // Keep last 50 games
-            }
-
-            function updateUI() {
-                document.getElementById('profileName').textContent = state.playerName;
-                document.getElementById('profileAvatar').innerHTML = avatarHtml(state.playerAvatar);
-                document.getElementById('editAvatarBig').innerHTML = avatarHtml(state.previewAvatar || state.playerAvatar);
-                document.getElementById('editName').value = state.playerName;
-                document.getElementById('profileStars').textContent = state.playerStars;
-                document.getElementById('profileDollars').textContent = state.playerDollars;
-                
-                // Update avatar chips
-                document.querySelectorAll('#avatarChips .chip').forEach(chip => {
-                    chip.classList.toggle('selected', chip.dataset.avatar === (state.previewAvatar || state.playerAvatar));
-                });
-                
-                // Update language chips
-                document.querySelectorAll('#langChips .chip').forEach(chip => {
-                    chip.classList.toggle('selected', chip.dataset.lang === state.language);
-                });
-                
-                applyLanguage();
-            }
-
-            function updateAdminPanel() {
-                if (!isAdmin()) return;
-                db.ref('on').once('value', sn => {
-                    document.getElementById('aOnline').textContent = sn.val() ? Object.keys(sn.val()).length : 0;
-                });
-                db.ref('u').once('value', sn => {
-                    document.getElementById('aTotal').textContent = sn.val() ? Object.keys(sn.val()).length : 0;
-                });
-                db.ref('rooms').once('value', sn => {
-                    let rooms = sn.val(), playing = 0;
-                    if (rooms) Object.values(rooms).forEach(r => {
-                        if (r && r.st === 'playing') playing++;
-                    });
-                    document.getElementById('aPlaying').textContent = playing;
-                });
-                db.ref('fr/' + getCurrentWeek()).once('value', sn => {
-                    let data = sn.val();
-                    document.getElementById('aFreel').textContent = data ? Object.keys(data).length : 0;
-                });
-            }
-
-            // ===== MUSIC =====
-            const musicTracks = ['music/track1.mp3', 'music/track2.mp3', 'music/track3.mp3'];
-            let currentTrack = 0;
-            let musicOn = false;
-            const bgMusic = new Audio();
-
-            function playNextTrack() {
-                if (!musicOn || !musicTracks[currentTrack]) return;
-                bgMusic.src = musicTracks[currentTrack];
-                bgMusic.play().catch(() => {});
-                bgMusic.onended = () => {
-                    currentTrack = (currentTrack + 1) % musicTracks.length;
-                    playNextTrack();
+        function upt(){
+            let b=document.getElementById('portfolioBody'),as=Object.entries(s.yp);
+            b.innerHTML=as.length===0?'<tr><td colspan="6">Нет активов</td></tr>':as.map(([sym,d])=>{
+                let pr=s.mk[sym]||d.avgPrice,val=pr*d.qty,pc=d.avgPrice?((pr-d.avgPrice)/d.avgPrice*100).toFixed(1):0;
+                return`<tr><td class="sym">${sym}</td><td>${d.qty}</td><td>${fm(pr)}</td><td>${fm(val)}</td><td class="${+pc>=0?'up':'down'}">${+pc>=0?'▲':'▼'}${Math.abs(pc)}%</td><td><input class="qty-input" id="sq_${sym}" value="${d.qty}"><button class="btn-sm sell" id="sl_${sym}">Продать</button></td></tr>`;
+            }).join('');
+            as.forEach(([sym])=>{
+                let btn=document.getElementById('sl_'+sym);
+                if(btn)btn.onclick=()=>{
+                    let d=s.yp[sym];if(!d)return;
+                    let q=Math.max(1,Math.min(d.qty,parseInt(document.getElementById('sq_'+sym)?.value)||d.qty));
+                    s.yc+=(s.mk[sym]||d.avgPrice)*q;d.qty-=q;
+                    if(d.qty<=0)delete s.yp[sym];
+                    upt();upr();sy();
                 };
+            });
+        }
+        
+        function upr(){
+            let ps=s.im&&s.lp.length>0?s.lp.map(p=>({n:p.n,a:p.a,c:p.c||s.sc,you:p.id===s.pid})):[{n:s.pn,a:s.pa,c:s.yc,you:true},{n:s.on,a:s.oa,c:s.oc,you:false}];
+            document.getElementById('playersRow').innerHTML=ps.map(p=>`<div class="player-card ${p.you?'you':''}"><div class="avatar">${av(p.a)}</div><div class="name">${p.n}</div><div class="cash">${fm(p.c)}</div></div>`).join('');
+        }
+        
+        function shc(k){
+            if(!k||!k.symbol)return;s.cc=k;
+            if(!s.mk[k.symbol]){s.mk[k.symbol]=Number(k.price)||10;s.fv[k.symbol]=Number(k.price)||10;}
+            document.getElementById('caseTitle').textContent=k.symbol+' — '+(k.name||'');
+            document.getElementById('caseDesc').textContent=k.desc||'';
+            document.getElementById('casePrice').textContent='💰 '+fm(s.mk[k.symbol]);
+            document.getElementById('roundBadge').textContent=s.cr+'/'+s.tr;
+            upt();upr();ubb();
+        }
+        
+        function ubb(){let k=s.cc;if(!k)return;document.getElementById('buyBtn').disabled=s.yc<(s.mk[k.symbol]||k.price)*1;}
+        
+        function pBuy(){
+            if(!s.ga||s.fi||!s.cc)return;
+            let k=s.cc,pr=s.mk[k.symbol]||k.price,q=Math.max(1,parseInt(document.getElementById('buyQty')?.value)||1);
+            if(s.yc<pr*q)return;
+            s.yc-=pr*q;
+            if(!s.yp[k.symbol])s.yp[k.symbol]={qty:0,avgPrice:0};
+            let o=s.yp[k.symbol];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;
+            upt();upr();ubb();sy();
+        }
+        
+        function slA(){
+            if(Object.keys(s.yp).length===0)return;
+            if(!confirm('Вы уверены, что хотите продать ВСЕ активы?'))return;
+            for(let[sy,d]of Object.entries(s.yp))s.yc+=(s.mk[sy]||d.avgPrice)*d.qty;
+            s.yp={};upt();upr();sy();
+        }
+        
+        function tw(){
+            if(!s.im){nr();return;}
+            s.wp=!s.wp;document.getElementById('waitBtn').classList.toggle('held',s.wp);
+            if(s.rc)db.ref(`rooms/${s.rc}/rd/${s.pid}`).set(s.wp);
+        }
+        
+        function sy(){if(!s.rc)return;db.ref(`rooms/${s.rc}/pl/${s.pid}`).update({n:s.pn,a:s.pa,c:s.yc,p:s.yp});}
+        
+        function botA(){
+            if(!s.cc||s.im)return;
+            let sym=s.cc.symbol,pr=s.mk[sym]||s.cc.price,ip=s.op[sym],fair=s.fv[sym]||pr;
+            if(s.oc>=pr&&pr<fair*0.85){
+                let q=Math.floor(Math.random()*5)+3;
+                if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};let o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}
+            }else if(ip&&ip.qty>0&&(pr>ip.avgPrice*1.15||pr>fair*1.05)){
+                let q=Math.min(ip.qty,Math.ceil(ip.qty*0.8));s.oc+=pr*q;ip.qty-=q;if(ip.qty<=0)delete s.op[sym];
+            }else if(Math.random()<0.25&&s.oc>=pr*2){
+                let q=Math.floor(Math.random()*4)+1;
+                if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};let o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}
             }
+            upr();
+        }
 
-            // ===== MARKET LOGIC =====
-            function updateMarketPrices() {
-                let cases = state.isFreelancer ?
-                    state.cases.filter(c => c && c.price && c.price >= 1 && c.price <= 15) :
-                    state.cases;
+        function lR(){
+            if(!s.rc)return;
+            db.ref('rooms/'+s.rc).on('value',sn=>{
+                let r=sn.val();
+                if(!r){if(document.getElementById('lobbyModal').classList.contains('show')){document.getElementById('lobbyModal').classList.remove('show');alert('Комната удалена');}s.rc=null;s.im=false;return;}
+                s.hid=r.hid||'';
+                if(r.pl){s.lp=Object.entries(r.pl).map(([id,p])=>({id,n:p.n||'Игрок',a:p.a||'👤',c:p.c||s.sc}));}
+                if(r.st==='playing'&&!s.ga){s.cs=r.cs||[];document.getElementById('lobbyModal').classList.remove('show');smg();}
+                if(r.rd&&s.ga){let rc=Object.values(r.rd).filter(Boolean).length,tl=s.lp.length;document.getElementById('readyStatus').textContent=`NO: ${rc}/${tl}`;if(rc>=tl&&tl>=2){clearInterval(s.rtimer);let t=5;document.getElementById('timer').textContent=t;s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=0){clearInterval(s.rtimer);nr();}},1000);}}
+                if(document.getElementById('lobbyModal').classList.contains('show'))ulc(r);
+                if(r.ch&&document.getElementById('chatMsgs')){let ms=Object.values(r.ch).sort((a,b)=>a.t-b.t);let ch=document.getElementById('chatMsgs');ch.innerHTML=ms.map(m=>`<div class="chat-msg"><span class="author">${m.n}:</span> ${m.tx}</div>`).join('');ch.scrollTop=ch.scrollHeight;}
+            });
+        }
+        
+        function ulc(r){
+            let c=document.getElementById('lobbyContent'),isH=s.pid===r.hid;
+            let deep=`https://t.me/InvestBattleBot?start=${s.rc}`;
+            c.innerHTML=`<h3>🏆 ${r.rn||'Комната'}</h3><div class="room-link" onclick="cp('${s.rc}')">🆔 ${s.rc} (нажми скопировать)</div><div class="room-link" onclick="cp('${deep}')">🔗 Ссылка (нажми скопировать)</div><p>👥 ${s.lp.length}/${r.mp||2} | 💰 ${fm(r.sc||10000)} | ⏱ ${r.rt||30}с | 📊 ${r.tr||10} раундов</p>${s.lp.map(p=>`<div class="lobby-player"><span class="avatar">${av(p.a)}</span>${p.n} ${p.id===s.pid?'(Вы)':''} ${p.id===r.hid?'👑':''}</div>`).join('')}<div class="chat-box" id="chatMsgs"></div><div class="chat-input-row"><input id="chatInput" placeholder="Сообщение..." maxlength="100"><button class="btn-sm" id="chatSend">✉️</button></div>${isH?`<button class="btn gold" id="startLobbyBtn" style="margin-top:10px;" ${s.lp.length<2?'disabled':''}>🚀 НАЧАТЬ (${s.lp.length}/${r.mp||2})</button>`:'<p style="text-align:center;color:var(--text2);">⏳ Ожидание хоста...</p>'}<button class="btn" id="leaveLobbyBtn" style="margin-top:6px;">🚪 Выйти</button>`;
+            setTimeout(()=>{
+                document.getElementById('startLobbyBtn')?.addEventListener('click',hsg);
+                document.getElementById('leaveLobbyBtn')?.addEventListener('click',lvR);
+                document.getElementById('chatSend')?.addEventListener('click',sdCh);
+                document.getElementById('chatInput')?.addEventListener('keypress',e=>{if(e.key==='Enter')sdCh();});
+            },100);
+        }
+        
+        function sdCh(){let inp=document.getElementById('chatInput');if(!inp||!inp.value.trim()||!s.rc)return;db.ref(`rooms/${s.rc}/ch`).push({n:s.pn,tx:inp.value.trim().substring(0,100),t:firebase.database.ServerValue.TIMESTAMP});inp.value='';}
+        function hsg(){if(!s.rc)return;let cs=[],ui=[];for(let i=0;i<s.tr;i++){let v=s.acl.filter(c=>c&&c.symbol&&!ui.includes(c.id));let k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1});}db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});}
+        function lvR(){if(!s.rc)return;if(s.pid===s.hid){if(s.lp.length>1){let nid=s.lp.find(p=>p.id!==s.pid)?.id;if(nid)db.ref(`rooms/${s.rc}/hid`).set(nid);else db.ref('rooms/'+s.rc).remove();}else db.ref('rooms/'+s.rc).remove();}else{db.ref(`rooms/${s.rc}/pl/${s.pid}`).remove();db.ref(`rooms/${s.rc}/rd/${s.pid}`).remove();}document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];}
+        function cR(){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();let pd={n:s.pn||'Игрок',a:s.pa||'👤',c:s.sc};db.ref('rooms/'+s.rc).set({hid:s.pid,rn:s.rn||'Комната',mp:s.mp||2,sc:s.sc||10000,tr:s.tr||10,rt:s.rt||30,pl:{[s.pid]:pd},st:'waiting'}).then(()=>{s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];lR();document.getElementById('lobbyModal').classList.add('show');}).catch(e=>{alert('Ошибка Firebase. Проверьте правила.');});}
+        
+        window._joinRoom=function(code){
+            code=code.toUpperCase().trim();
+            db.ref('rooms/'+code).once('value',sn=>{
+                let r=sn.val();if(!r){alert('Не найдена');return;}
+                if(r.st!=='waiting'){alert('Игра идёт');return;}
+                let pc=r.pl?Object.keys(r.pl).length:0;if(pc>=(r.mp||2)){alert('Комната заполнена');return;}
+                s.rc=code;s.hid=r.hid||'';s.mp=r.mp;s.sc=r.sc;s.tr=r.tr||10;s.rt=r.rt||30;
+                db.ref(`rooms/${code}/pl/${s.pid}`).set({n:s.pn,a:s.pa,c:s.sc});
+                s.im=true;lR();document.getElementById('lobbyModal').classList.add('show');
+            });
+        };
 
-                for (let c of cases) {
-                    if (!c || !c.symbol || !c.price) continue;
-                    
-                    if (!state.marketPrices[c.symbol]) {
-                        state.marketPrices[c.symbol] = Number(c.price) || 10;
-                        state.fairValues[c.symbol] = Number(c.price) || 10;
-                    }
-                    
-                    let currentPrice = state.marketPrices[c.symbol];
-                    let fairValue = state.fairValues[c.symbol];
-                    let volatilityMultiplier = state.isFreelancer ? 2.5 : 1;
-                    
-                    let trendBias = c.trend === 'up' ? 0.5 :
-                        c.trend === 'down' ? -0.4 :
-                        c.trend === 'volatile' ? (Math.random() - 0.5) * 1.5 : 0;
-                    
-                    let followTrend = Math.random() < 0.667;
-                    let bias = followTrend ? trendBias : -trendBias;
-                    
-                    let change = (fairValue - currentPrice) / fairValue * 30 * volatilityMultiplier +
-                        (Math.random() - 0.5 + bias * 0.4) * 12 * volatilityMultiplier;
-                    
-                    if (Math.random() < 0.06 * volatilityMultiplier) {
-                        change = (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random() * 20);
-                    }
-                    
-                    change = Math.max(-50, Math.min(50, change));
-                    state.marketPrices[c.symbol] = Math.max(0.05, currentPrice * (1 + change / 100));
-                    state.fairValues[c.symbol] = fairValue * (1 + (Math.random() - 0.49) * 4 / 100);
-                }
-            }
-
-            function getRandomCase() {
-                let pool = state.isFreelancer ?
-                    state.cases.filter(c => c && c.symbol && c.price && c.price >= 1 && c.price <= 15) :
-                    state.cases;
-                
-                let available = pool.filter(c => c && c.symbol && c.price && !state.usedCases.includes(c.id));
-                if (!available.length) {
-                    state.usedCases = [];
-                    return pool[Math.floor(Math.random() * pool.length)];
-                }
-                return available[Math.floor(Math.random() * available.length)];
-            }
-
-            // ===== UI UPDATES =====
-            function updatePortfolioTable() {
-                const body = document.getElementById('portfolioBody');
-                const assets = Object.entries(state.yourPortfolio);
-                
-                if (assets.length === 0) {
-                    body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text2);">Нет активов</td></tr>';
-                } else {
-                    body.innerHTML = assets.map(([symbol, data]) => {
-                        const price = state.marketPrices[symbol] || data.avgPrice;
-                        const value = price * data.qty;
-                        const change = data.avgPrice ? ((price - data.avgPrice) / data.avgPrice * 100).toFixed(1) : 0;
-                        const changeClass = +change >= 0 ? 'up' : 'down';
-                        const changeArrow = +change >= 0 ? '▲' : '▼';
-                        
-                        return `<tr>
-                            <td class="sym">${symbol}</td>
-                            <td>${data.qty}</td>
-                            <td>${formatMoney(price)}</td>
-                            <td>${formatMoney(value)}</td>
-                            <td class="${changeClass}">${changeArrow}${Math.abs(change)}%</td>
-                            <td>
-                                <input class="qty-input" id="sq_${symbol}" value="${data.qty}" min="1" max="${data.qty}">
-                                <button class="btn-sm sell" id="sl_${symbol}">Продать</button>
-                            </td>
-                        </tr>`;
-                    }).join('');
-                    
-                    // Attach sell handlers
-                    assets.forEach(([symbol]) => {
-                        const btn = document.getElementById('sl_' + symbol);
-                        if (btn) {
-                            safeClick(btn, () => {
-                                const data = state.yourPortfolio[symbol];
-                                if (!data) return;
-                                const input = document.getElementById('sq_' + symbol);
-                                const qty = Math.max(1, Math.min(data.qty, parseInt(input?.value) || data.qty));
-                                sellAsset(symbol, qty);
-                            });
-                        }
-                    });
-                }
-            }
-
-            function updatePlayersRow() {
-                let players;
-                if (state.isMultiplayer && state.lobbyPlayers.length > 0) {
-                    players = state.lobbyPlayers.map(p => ({
-                        name: p.n,
-                        avatar: p.a,
-                        cash: p.c || state.startCash,
-                        you: p.id === state.pid
-                    }));
-                } else {
-                    players = [
-                        { name: state.playerName, avatar: state.playerAvatar, cash: state.yourCash, you: true },
-                        { name: state.opponentName, avatar: state.opponentAvatar, cash: state.opponentCash, you: false }
-                    ];
-                }
-                
-                document.getElementById('playersRow').innerHTML = players.map(p => `
-                    <div class="player-card ${p.you ? 'you' : ''}" data-player="${p.name}">
-                        <div class="avatar">${avatarHtml(p.avatar)}</div>
-                        <div class="name">${p.name}</div>
-                        <div class="cash">${formatMoney(p.cash)}</div>
-                    </div>
-                `).join('');
-                
-                // Add click handlers for trading
-                if (state.isMultiplayer && state.gameActive) {
-                    document.querySelectorAll('.player-card:not(.you)').forEach(card => {
-                        card.addEventListener('click', () => {
-                            const playerName = card.dataset.player;
-                            showTradeOffer(playerName);
-                        });
-                    });
-                }
-            }
-
-            function showCase(c) {
-                if (!c || !c.symbol) return;
-                state.currentCase = c;
-                
-                if (!state.marketPrices[c.symbol]) {
-                    state.marketPrices[c.symbol] = Number(c.price) || 10;
-                    state.fairValues[c.symbol] = Number(c.price) || 10;
-                }
-                
-                document.getElementById('caseTitle').textContent = c.symbol + ' — ' + (c.name || '');
-                document.getElementById('caseDesc').textContent = c.desc || '';
-                document.getElementById('casePrice').textContent = '💰 ' + formatMoney(state.marketPrices[c.symbol]);
-                document.getElementById('roundBadge').textContent = state.currentRound + '/' + state.totalRounds;
-                
-                updatePortfolioTable();
-                updatePlayersRow();
-                updateBuyButton();
-            }
-
-            function updateBuyButton() {
-                if (!state.currentCase) return;
-                const price = state.marketPrices[state.currentCase.symbol] || state.currentCase.price;
-                const qty = Math.max(1, parseInt(document.getElementById('buyQty')?.value) || 1);
-                document.getElementById('buyBtn').disabled = state.yourCash < price * qty;
-            }
-
-            function sellAsset(symbol, qty) {
-                const data = state.yourPortfolio[symbol];
-                if (!data || qty <= 0) return;
-                
-                qty = Math.min(data.qty, qty);
-                const price = state.marketPrices[symbol] || data.avgPrice;
-                
-                state.yourCash += price * qty;
-                data.qty -= qty;
-                
-                if (data.qty <= 0) {
-                    delete state.yourPortfolio[symbol];
-                }
-                
-                updatePortfolioTable();
-                updatePlayersRow();
-                updateBuyButton();
-                syncGameState();
-                
-                // Animate cash update
-                const cashEl = document.querySelector('.player-card.you .cash');
-                if (cashEl) {
-                    cashEl.classList.add('updated');
-                    setTimeout(() => cashEl.classList.remove('updated'), 500);
-                }
-            }
-
-            function sellAllAssets() {
-                if (Object.keys(state.yourPortfolio).length === 0) return;
-                
-                if (!confirm('Вы уверены, что хотите продать ВСЕ активы?')) return;
-                
-                for (let [symbol, data] of Object.entries(state.yourPortfolio)) {
-                    state.yourCash += (state.marketPrices[symbol] || data.avgPrice) * data.qty;
-                }
-                state.yourPortfolio = {};
-                
-                updatePortfolioTable();
-                updatePlayersRow();
-                syncGameState();
-            }
-
-            function performBuy() {
-                if (!state.gameActive || state.finalPhase || !state.currentCase) return;
-                
-                const k = state.currentCase;
-                const price = state.marketPrices[k.symbol] || k.price;
-                const qty = Math.max(1, Math.min(1000, parseInt(document.getElementById('buyQty')?.value) || 1));
-                
-                if (state.yourCash < price * qty) {
-                    showToast('❌ Недостаточно денег!');
-                    return;
-                }
-                
-                state.yourCash -= price * qty;
-                
-                if (!state.yourPortfolio[k.symbol]) {
-                    state.yourPortfolio[k.symbol] = { qty: 0, avgPrice: 0 };
-                }
-                
-                const existing = state.yourPortfolio[k.symbol];
-                existing.avgPrice = (existing.qty * existing.avgPrice + price * qty) / (existing.qty + qty);
-                existing.qty += qty;
-                
-                updatePortfolioTable();
-                updatePlayersRow();
-                updateBuyButton();
-                syncGameState();
-                
-                showToast(`✅ Куплено ${qty} ${k.symbol} по ${formatMoney(price)}`);
-            }
-
-            function toggleWait() {
-                if (!state.isMultiplayer) {
-                    nextRound();
-                    return;
-                }
-                state.waitPressed = !state.waitPressed;
-                document.getElementById('waitBtn').classList.toggle('held', state.waitPressed);
-                if (state.roomCode) {
-                    db.ref(`rooms/${state.roomCode}/rd/${state.pid}`).set(state.waitPressed);
-                }
-            }
-
-            function syncGameState() {
-                if (!state.roomCode || !state.isMultiplayer) return;
-                db.ref(`rooms/${state.roomCode}/pl/${state.pid}`).update({
-                    n: state.playerName,
-                    a: state.playerAvatar,
-                    c: state.yourCash,
-                    p: state.yourPortfolio
-                });
-            }
-
-            function botAction() {
-                if (!state.currentCase || state.isMultiplayer) return;
-                
-                const symbol = state.currentCase.symbol;
-                const price = state.marketPrices[symbol] || state.currentCase.price;
-                const existingPosition = state.opponentPortfolio[symbol];
-                const fairValue = state.fairValues[symbol] || price;
-                
-                // Improved bot logic - more aggressive
-                if (state.opponentCash >= price && price < fairValue * 0.85) {
-                    // Buy when undervalued
-                    const qty = Math.floor(Math.random() * 5) + 3; // More aggressive
-                    if (state.opponentCash >= price * qty) {
-                        state.opponentCash -= price * qty;
-                        if (!state.opponentPortfolio[symbol]) {
-                            state.opponentPortfolio[symbol] = { qty: 0, avgPrice: 0 };
-                        }
-                        const pos = state.opponentPortfolio[symbol];
-                        pos.avgPrice = (pos.qty * pos.avgPrice + price * qty) / (pos.qty + qty);
-                        pos.qty += qty;
-                    }
-                } else if (existingPosition && existingPosition.qty > 0 && 
-                           (price > existingPosition.avgPrice * 1.15 || price > fairValue * 1.05)) {
-                    // Sell when overvalued
-                    const qty = Math.min(existingPosition.qty, Math.ceil(existingPosition.qty * 0.8));
-                    state.opponentCash += price * qty;
-                    existingPosition.qty -= qty;
-                    if (existingPosition.qty <= 0) {
-                        delete state.opponentPortfolio[symbol];
-                    }
-                } else if (Math.random() < 0.25 && state.opponentCash >= price * 2) {
-                    // Random trade sometimes
-                    const qty = Math.floor(Math.random() * 4) + 1;
-                    if (state.opponentCash >= price * qty) {
-                        state.opponentCash -= price * qty;
-                        if (!state.opponentPortfolio[symbol]) {
-                            state.opponentPortfolio[symbol] = { qty: 0, avgPrice: 0 };
-                        }
-                        const pos = state.opponentPortfolio[symbol];
-                        pos.avgPrice = (pos.qty * pos.avgPrice + price * qty) / (pos.qty + qty);
-                        pos.qty += qty;
-                    }
-                }
-                
-                updatePlayersRow();
-            }
-
-            function showTradeOffer(playerName) {
-                if (!state.gameActive || state.finalPhase) return;
-                
-                const modal = document.getElementById('tradeOfferModal');
-                const content = document.getElementById('tradeOfferContent');
-                
-                content.innerHTML = `
-                    <p>Предложить обмен игроку <b>${playerName}</b></p>
-                    <div class="section-title">Ваши активы:</div>
-                    ${Object.entries(state.yourPortfolio).map(([sym, data]) => `
-                        <div class="trade-offer">
-                            <div class="offer-title">${sym} (${data.qty} шт.)</div>
-                            <div>Цена: ${formatMoney(state.marketPrices[sym] || data.avgPrice)}</div>
-                            <button class="btn-sm" onclick="offerTrade('${sym}', '${playerName}')">Предложить</button>
-                        </div>
-                    `).join('') || '<p style="color:var(--text2);">У вас нет активов для обмена</p>'}
-                `;
-                
-                modal.classList.add('show');
-            }
-
-            window.offerTrade = function(symbol, playerName) {
-                // Simple trade offer - can be expanded
-                showToast(`📨 Предложение отправлено игроку ${playerName}`);
-                document.getElementById('tradeOfferModal').classList.remove('show');
-            };
-
-            // ===== GAME FLOW =====
-            function startGame() {
-                state.yourCash = state.startCash;
-                state.opponentCash = state.startCash;
-                state.yourPortfolio = {};
-                state.opponentPortfolio = {};
-                state.marketPrices = {};
-                state.fairValues = {};
-                state.currentRound = 0;
-                state.gameActive = true;
-                state.finalPhase = false;
-                state.usedCases = [];
-                state.waitPressed = false;
-                
-                document.getElementById('menuScreen').style.display = 'none';
-                document.getElementById('gameScreen').style.display = 'block';
-                ['resultOverlay', 'finalOverlay'].forEach(id => {
-                    document.getElementById(id).classList.remove('show');
-                });
-                
-                if (!state.isMultiplayer) {
-                    state.opponentName = '🤖 Бот-Трейдер';
-                    state.opponentAvatar = '🤖';
-                }
-                
-                updatePortfolioTable();
-                updatePlayersRow();
-                nextRound();
-            }
-
-            function nextRound() {
-                if (state.currentRound >= state.totalRounds) {
-                    startFinalPhase();
-                    return;
-                }
-                
-                state.currentRound++;
-                updateMarketPrices();
-                state.waitPressed = false;
-                document.getElementById('waitBtn').classList.remove('held');
-                
-                if (state.roomCode) {
-                    db.ref(`rooms/${state.roomCode}/rd`).remove();
-                }
-                
-                const nextCase = getRandomCase();
-                if (!nextCase) {
-                    nextRound();
-                    return;
-                }
-                
-                state.usedCases.push(nextCase.id);
-                showCase(nextCase);
-                
-                if (!state.isMultiplayer) {
-                    botAction();
-                }
-                
-                startRoundTimer();
-            }
-
-            function startRoundTimer() {
-                let time = state.roundTime;
-                const timerEl = document.getElementById('timer');
-                timerEl.textContent = time;
-                timerEl.classList.remove('urgent');
-                
-                clearInterval(state.roundTimer);
-                state.roundTimer = setInterval(() => {
-                    time--;
-                    timerEl.textContent = time;
-                    
-                    if (time <= 5) {
-                        timerEl.classList.add('urgent');
-                    }
-                    
-                    if (time <= 0) {
-                        clearInterval(state.roundTimer);
-                        nextRound();
-                    }
-                }, 1000);
-            }
-
-            function startFinalPhase() {
-                state.finalPhase = true;
-                state.finalTimer = 90;
-                
-                document.getElementById('gameScreen').style.display = 'none';
-                document.getElementById('finalOverlay').classList.add('show');
-                
-                updateFinalTable();
-                
-                clearInterval(state.finalInterval);
-                state.finalInterval = setInterval(() => {
-                    state.finalTimer -= 5;
-                    if (state.finalTimer < 0) state.finalTimer = 0;
-                    
-                    document.getElementById('finalTimer').textContent = state.finalTimer;
-                    
-                    // Market still moves in final phase
-                    for (let symbol of Object.keys(state.marketPrices)) {
-                        state.marketPrices[symbol] = Math.max(0.02, 
-                            state.marketPrices[symbol] * (1 + (Math.random() - 0.46) * 14 / 100));
-                    }
-                    
-                    updateFinalTable();
-                    
-                    if (state.finalTimer <= 0) {
-                        clearInterval(state.finalInterval);
-                        liquidatePortfolio();
-                        endGame();
-                    }
-                }, 5000);
-            }
-
-            function updateFinalTable() {
-                const body = document.getElementById('finalBody');
-                const assets = Object.entries(state.yourPortfolio);
-                
-                if (assets.length === 0) {
-                    body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text2);">Нет активов</td></tr>';
-                } else {
-                    body.innerHTML = assets.map(([symbol, data]) => {
-                        const price = state.marketPrices[symbol] || data.avgPrice;
-                        const value = price * data.qty;
-                        return `<tr>
-                            <td class="sym">${symbol}</td>
-                            <td>${data.qty}</td>
-                            <td>${formatMoney(price)}</td>
-                            <td>${formatMoney(value)}</td>
-                            <td>
-                                <input class="qty-input" id="fsq_${symbol}" value="${data.qty}" min="1" max="${data.qty}">
-                                <button class="btn-sm sell" id="fsl_${symbol}">Продать</button>
-                            </td>
-                        </tr>`;
-                    }).join('');
-                    
-                    assets.forEach(([symbol]) => {
-                        const btn = document.getElementById('fsl_' + symbol);
-                        if (btn) {
-                            safeClick(btn, () => {
-                                const data = state.yourPortfolio[symbol];
-                                if (!data) return;
-                                const input = document.getElementById('fsq_' + symbol);
-                                const qty = Math.max(1, Math.min(data.qty, parseInt(input?.value) || data.qty));
-                                sellAsset(symbol, qty);
-                                updateFinalTable();
-                            });
-                        }
-                    });
-                }
-                
-                const totalValue = state.yourCash + Object.entries(state.yourPortfolio).reduce(
-                    (sum, [sym, data]) => sum + (state.marketPrices[sym] || data.avgPrice) * data.qty, 0
-                );
-                document.getElementById('finalTotal').textContent = '💰 ' + formatMoney(totalValue);
-            }
-
-            function liquidatePortfolio() {
-                for (let [symbol, data] of Object.entries(state.yourPortfolio)) {
-                    state.yourCash += (state.marketPrices[symbol] || data.avgPrice) * data.qty;
-                }
-                state.yourPortfolio = {};
-            }
-
-            function endGame() {
-                state.gameActive = false;
-                state.finalPhase = false;
-                clearInterval(state.finalInterval);
-                
-                document.getElementById('finalOverlay').classList.remove('show');
-                
-                if (state.isFreelancer) {
-                    handleFreelancerEnd();
-                    return;
-                }
-                
-                const youWin = state.yourCash > state.opponentCash;
-                
+        function smg(){s.yc=s.sc;s.yp={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));upt();upr();nr();}
+        function nr(){if(s.cr>=s.tr){stF();return;}s.cr++;ump();s.wp=false;if(s.rc)db.ref(`rooms/${s.rc}/rd`).remove();document.getElementById('waitBtn').classList.remove('held');let k=grc();if(!k){nr();return;}s.uc.push(k.id);shc(k);if(!s.im)botA();stT();}
+        function stT(){let t=s.rt;document.getElementById('timer').textContent=t;document.getElementById('timer').classList.remove('urgent');clearInterval(s.rtimer);s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=5)document.getElementById('timer').classList.add('urgent');if(t<=0){clearInterval(s.rtimer);nr();}},1000);}
+        function sG(){if(!s.crdy){alert('Загрузка...');return;}s.yc=s.sc;s.oc=s.sc;s.yp={};s.op={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));if(!s.im){s.on='🤖 Бот-Трейдер';s.oa='🤖';}upt();upr();nr();}
+        function stF(){s.fi=true;s.ft=90;clearInterval(s.fi2);document.getElementById('gameScreen').style.display='none';document.getElementById('finalOverlay').classList.add('show');upF();s.fi2=setInterval(()=>{s.ft-=5;if(s.ft<0)s.ft=0;document.getElementById('finalTimer').textContent=s.ft;for(let sy of Object.keys(s.mk))s.mk[sy]=Math.max(0.02,s.mk[sy]*(1+(Math.random()-0.46)*14/100));upF();if(s.ft<=0){clearInterval(s.fi2);slL();eG();}},5000);}
+        function upF(){let b=document.getElementById('finalBody'),as=Object.entries(s.yp);b.innerHTML=as.length===0?'<tr><td colspan="5">Нет</td></tr>':as.map(([sym,d])=>{let pr=s.mk[sym]||d.avgPrice,val=pr*d.qty;return`<tr><td class="sym">${sym}</td><td>${d.qty}</td><td>${fm(pr)}</td><td>${fm(val)}</td><td><input class="qty-input" id="fsq_${sym}" value="${d.qty}"><button class="btn-sm sell" id="fsl_${sym}">Продать</button></td></tr>`;}).join('');as.forEach(([sym])=>{let btn=document.getElementById('fsl_'+sym);if(btn)btn.onclick=()=>{let d=s.yp[sym];if(!d)return;let q=Math.max(1,Math.min(d.qty,parseInt(document.getElementById('fsq_'+sym)?.value)||d.qty));s.yc+=(s.mk[sym]||d.avgPrice)*q;d.qty-=q;if(d.qty<=0)delete s.yp[sym];upF();};});document.getElementById('finalTotal').textContent='💰 '+fm(s.yc+Object.entries(s.yp).reduce((sum,[sym,d])=>sum+(s.mk[sym]||d.avgPrice)*d.qty,0));}
+        function slL(){for(let[sy,d]of Object.entries(s.yp))s.yc+=(s.mk[sy]||d.avgPrice)*d.qty;s.yp={};}
+        
+        function eG(){
+            s.ga=false;s.fi=false;clearInterval(s.fi2);document.getElementById('finalOverlay').classList.remove('show');
+            if(s.fa){
+                let er=s.yc-100;
+                if(s.fw){db.ref(`fr/${s.fw}/${s.pid}`).update({te:firebase.database.ServerValue.increment(er>0?er:-er),lb:s.yc,gp:firebase.database.ServerValue.increment(1),lu:firebase.database.ServerValue.TIMESTAMP});}
                 document.getElementById('resultOverlay').classList.add('show');
-                document.getElementById('resultEmoji').textContent = youWin ? '🏆' : '💀';
-                document.getElementById('resultTitle').textContent = youWin ? 'ПОБЕДА!' : 'ПОРАЖЕНИЕ';
-                document.getElementById('resultCash').textContent = formatMoney(state.yourCash);
-                
-                if (youWin) {
-                    state.playerDollars += 100;
-                }
-                
-                // Save to history
-                state.gameHistory.push({
-                    date: new Date().toISOString(),
-                    cash: state.yourCash,
-                    result: youWin ? 'win' : 'lose',
-                    rounds: state.totalRounds,
-                    opponent: state.opponentName
-                });
-                saveGameHistory();
-                
-                saveLocalState();
-                updateUI();
-                
-                if (state.roomCode) {
-                    db.ref('rooms/' + state.roomCode).remove();
-                    state.roomCode = null;
-                    state.isMultiplayer = false;
-                }
+                document.getElementById('resultEmoji').textContent=er>0?'📈':'📉';
+                document.getElementById('resultTitle').textContent=er>0?'ПРИБЫЛЬ!':'УБЫТОК';
+                document.getElementById('resultCash').textContent=fm(s.yc);
+                s.fa=false;sS();up();
+                setTimeout(()=>{document.getElementById('resultOverlay').classList.remove('show');document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';},2000);
+                return;
             }
+            let win=s.yc>s.oc;
+            document.getElementById('resultOverlay').classList.add('show');
+            document.getElementById('resultEmoji').textContent=win?'🏆':'💀';
+            document.getElementById('resultTitle').textContent=win?'ПОБЕДА!':'ПОРАЖЕНИЕ';
+            document.getElementById('resultCash').textContent=fm(s.yc);
+            if(win)s.pd+=100;
+            // Save to history
+            s.gh.push({date:new Date().toISOString(),cash:s.yc,result:win?'win':'lose',rounds:s.tr,opponent:s.on});
+            sS();up();
+            if(s.rc){db.ref('rooms/'+s.rc).remove();s.rc=null;s.im=false;}
+        }
 
-            function handleFreelancerEnd() {
-                const earned = state.yourCash - 100;
-                
-                if (state.freelancerWeek) {
-                    db.ref(`fr/${state.freelancerWeek}/${state.pid}`).update({
-                        te: firebase.database.ServerValue.increment(earned > 0 ? earned : -earned),
-                        lb: state.yourCash,
-                        gp: firebase.database.ServerValue.increment(1),
-                        lu: firebase.database.ServerValue.TIMESTAMP
-                    });
-                }
-                
-                document.getElementById('resultOverlay').classList.add('show');
-                document.getElementById('resultEmoji').textContent = earned > 0 ? '📈' : '📉';
-                document.getElementById('resultTitle').textContent = earned > 0 ? 'ПРИБЫЛЬ!' : 'УБЫТОК';
-                document.getElementById('resultCash').textContent = formatMoney(state.yourCash);
-                
-                state.isFreelancer = false;
-                saveLocalState();
-                updateUI();
-                
-                setTimeout(() => {
-                    document.getElementById('resultOverlay').classList.remove('show');
-                    document.getElementById('gameScreen').style.display = 'none';
-                    document.getElementById('menuScreen').style.display = 'block';
-                }, 2000);
-            }
+        function eF(){
+            if(s.pd<5000){alert('❌ Недостаточно 💵! Нужно 5 000');return;}
+            if(!s.crdy){alert('Загрузка...');return;}
+            s.pd-=5000;s.fw=gwk();s.fa=true;s.sc=100;s.yc=100;s.oc=100;s.tr=10;s.rt=30;s.yp={};s.op={};s.mk={};s.fv={};s.cr=0;s.im=false;s.on='🤖 Бот-Фрилансер';s.oa='💼';s.ga=false;s.fi=false;s.uc=[];s.wp=false;s.cs=[];
+            sS();up();
+            document.getElementById('freelancerIntroModal').classList.remove('show');
+            document.getElementById('flConfirmModal').classList.add('show');
+            db.ref(`fr/${s.fw}/${s.pid}`).set({n:s.pn,a:s.pa,te:0,gp:0,lu:firebase.database.ServerValue.TIMESTAMP});
+        }
+        
+        function shFR(){
+            document.getElementById('freelancerRatingModal').classList.add('show');
+            let wk=gwk();let now=new Date(),day=now.getDay(),nm=new Date(now);
+            nm.setDate(now.getDate()+(day===0?1:8-day));nm.setHours(0,0,0,0);
+            let diff=nm-now,ds=Math.floor(diff/86400000),hs=Math.floor((diff%86400000)/3600000);
+            document.getElementById('ratingTimer').textContent=`⏱ До конца: ${ds}д ${hs}ч`;
+            db.ref('fr/'+wk).orderByChild('te').limitToLast(20).once('value',sn=>{
+                let r=sn.val();let l=document.getElementById('ratingList');
+                if(!r){l.innerHTML='<p style="text-align:center;color:var(--text2);">Нет игроков</p>';return;}
+                let so=Object.entries(r).sort((a,b)=>(b[1].te||0)-(a[1].te||0));
+                l.innerHTML=so.map(([id,rd],i)=>{let m=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;return`<div class="lobby-player"><span>${m}</span><span class="avatar">${av(rd.a)}</span><span>${rd.n||'Игрок'}</span><span style="margin-left:auto;color:var(--gold);">$${(rd.te||0).toFixed(0)}</span></div>`;}).join('');
+            });
+        }
 
-            function enterFreelancer() {
-                if (state.playerDollars < 5000) {
-                    alert('❌ Недостаточно 💵! Нужно 5 000');
-                    return;
-                }
-                if (!state.cases.length) {
-                    alert('⏳ Загрузка данных...');
-                    return;
-                }
-                
-                state.playerDollars -= 5000;
-                state.freelancerWeek = getCurrentWeek();
-                state.isFreelancer = true;
-                state.startCash = 100;
-                state.yourCash = 100;
-                state.opponentCash = 100;
-                state.totalRounds = 10;
-                state.roundTime = 30;
-                state.yourPortfolio = {};
-                state.opponentPortfolio = {};
-                state.marketPrices = {};
-                state.fairValues = {};
-                state.currentRound = 0;
-                state.gameActive = false;
-                state.finalPhase = false;
-                state.usedCases = [];
-                state.waitPressed = false;
-                state.isMultiplayer = false;
-                state.opponentName = '🤖 Бот-Фрилансер';
-                state.opponentAvatar = '💼';
-                
-                saveLocalState();
-                updateUI();
-                
-                document.getElementById('freelancerIntroModal').classList.remove('show');
-                document.getElementById('flConfirmModal').classList.add('show');
-                
-                db.ref(`fr/${state.freelancerWeek}/${state.pid}`).set({
-                    n: state.playerName,
-                    a: state.playerAvatar,
-                    te: 0,
-                    gp: 0,
-                    lu: firebase.database.ServerValue.TIMESTAMP
-                });
-            }
+        function shGH(){
+            document.getElementById('historyModal').classList.add('show');
+            let l=document.getElementById('historyList');
+            if(s.gh.length===0){l.innerHTML='<p style="text-align:center;color:var(--text2);">Нет истории игр</p>';return;}
+            l.innerHTML=s.gh.slice().reverse().map(g=>`<div class="history-item"><div style="color:${g.result==='win'?'var(--green)':'var(--red)'};font-weight:700;">${g.result==='win'?'🏆 Победа':'💀 Поражение'}</div><div>💰 ${fm(g.cash)} | 📊 ${g.rounds} раундов</div><div>🤖 ${g.opponent}</div><div style="color:var(--text2);font-size:9px;">${new Date(g.date).toLocaleString()}</div></div>`).join('');
+        }
 
-            function showFreelancerRating() {
-                document.getElementById('freelancerRatingModal').classList.add('show');
-                const week = getCurrentWeek();
-                const now = new Date();
-                const day = now.getDay();
-                const nextMonday = new Date(now);
-                nextMonday.setDate(now.getDate() + (day === 0 ? 1 : 8 - day));
-                nextMonday.setHours(0, 0, 0, 0);
-                
-                const diff = nextMonday - now;
-                const days = Math.floor(diff / 86400000);
-                const hours = Math.floor((diff % 86400000) / 3600000);
-                
-                document.getElementById('ratingTimer').textContent = `⏱ До конца: ${days}д ${hours}ч`;
-                
-                db.ref('fr/' + week).orderByChild('te').limitToLast(20).once('value', snapshot => {
-                    const data = snapshot.val();
-                    const list = document.getElementById('ratingList');
-                    
-                    if (!data) {
-                        list.innerHTML = '<p style="text-align:center;color:var(--text2);">Нет игроков</p>';
-                        return;
-                    }
-                    
-                    const sorted = Object.entries(data).sort((a, b) => (b[1].te || 0) - (a[1].te || 0));
-                    
-                    list.innerHTML = sorted.map(([id, playerData], index) => {
-                        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
-                        return `<div class="lobby-player">
-                            <span>${medal}</span>
-                            <span class="avatar">${avatarHtml(playerData.a)}</span>
-                            <span>${playerData.n || 'Игрок'}</span>
-                            <span style="margin-left:auto;color:var(--gold);">$${(playerData.te || 0).toFixed(0)}</span>
-                        </div>`;
-                    }).join('');
-                });
-            }
+        function genSync(){
+            if(!s.syncCode)s.syncCode=Math.random().toString(36).substring(2,8).toUpperCase();
+            localStorage.setItem('ib_sync',s.syncCode);
+            db.ref(`sync/${s.syncCode}`).set({pid:s.pid,n:s.pn,a:s.pa,st:s.ps,do:s.pd,ts:firebase.database.ServerValue.TIMESTAMP});
+            document.getElementById('syncCodeDisplay').textContent=s.syncCode;
+            document.getElementById('syncModal').classList.add('show');
+        }
 
-            // ===== MULTIPLAYER =====
-            function createRoom() {
-                state.roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-                
-                const playerData = {
-                    n: state.playerName || 'Игрок',
-                    a: state.playerAvatar || '👤',
-                    c: state.startCash
-                };
-                
-                db.ref('rooms/' + state.roomCode).set({
-                    hid: state.pid,
-                    rn: state.roomName || 'Комната',
-                    mp: state.maxPlayers || 2,
-                    sc: state.startCash || 10000,
-                    tr: state.totalRounds || 10,
-                    rt: state.roundTime || 30,
-                    pl: { [state.pid]: playerData },
-                    st: 'waiting',
-                    access: state.roomAccess || 'open'
-                }).then(() => {
-                    state.isMultiplayer = true;
-                    state.lobbyPlayers = [{ id: state.pid, n: playerData.n, a: playerData.a, c: state.startCash }];
-                    listenToRoom();
-                    showLobby();
-                }).catch(e => {
-                    alert('Ошибка Firebase. Проверьте правила безопасности.');
-                    console.error(e);
-                });
-            }
+        function doSync(){
+            let code=document.getElementById('syncCodeInput').value.trim().toUpperCase();
+            if(!code){alert('Введите код');return;}
+            db.ref('sync/'+code).once('value',sn=>{
+                let d=sn.val();if(!d){alert('Код не найден');return;}
+                s.pn=d.n||s.pn;s.pa=d.a||s.pa;s.ps=d.st||s.ps;s.pd=d.do||s.pd;
+                s.syncCode=code;localStorage.setItem('ib_sync',code);
+                sS();up();sf();
+                document.getElementById('syncModal').classList.remove('show');
+                toast('✅ Устройства синхронизированы!');
+            });
+        }
 
-            function joinRoom(code) {
-                code = code.toUpperCase().trim();
-                
-                db.ref('rooms/' + code).once('value', snapshot => {
-                    const room = snapshot.val();
-                    
-                    if (!room) {
-                        alert('❌ Комната не найдена');
-                        return;
-                    }
-                    
-                    if (room.st !== 'waiting') {
-                        alert('❌ Игра уже идет');
-                        return;
-                    }
-                    
-                    const playerCount = room.pl ? Object.keys(room.pl).length : 0;
-                    if (playerCount >= (room.mp || 2)) {
-                        alert('❌ Комната заполнена');
-                        return;
-                    }
-                    
-                    state.roomCode = code;
-                    state.startCash = room.sc || 10000;
-                    state.totalRounds = room.tr || 10;
-                    state.roundTime = room.rt || 30;
-                    
-                    db.ref(`rooms/${code}/pl/${state.pid}`).set({
-                        n: state.playerName,
-                        a: state.playerAvatar,
-                        c: state.startCash
-                    });
-                    
-                    state.isMultiplayer = true;
-                    listenToRoom();
-                    showLobby();
-                });
-            }
+        function searchPlayer(){
+            let q=document.getElementById('playerSearchInput')?.value?.trim();
+            let r=document.getElementById('playerSearchResult');
+            if(!q||!r)return;
+            db.ref('u').orderByChild('n').startAt(q).endAt(q+'\uf8ff').limitToFirst(5).once('value',sn=>{
+                let u=sn.val();
+                if(!u){r.innerHTML='<p style="color:var(--text2);">Ничего не найдено</p>';return;}
+                r.innerHTML=Object.entries(u).map(([id,ud])=>`<div class="lobby-player"><span class="avatar">${av(ud.a)}</span><span>${ud.n||'Игрок'}</span><span style="color:var(--text2);font-size:9px;">ID: ${id}</span><span style="margin-left:auto;color:var(--gold);">⭐${ud.st||0}</span></div>`).join('');
+            });
+        }
 
-            function listenToRoom() {
-                if (!state.roomCode) return;
-                
-                db.ref('rooms/' + state.roomCode).on('value', snapshot => {
-                    const room = snapshot.val();
-                    if (!room) {
-                        if (document.getElementById('lobbyModal').classList.contains('show')) {
-                            document.getElementById('lobbyModal').classList.remove('show');
-                            alert('Комната удалена');
-                        }
-                        state.roomCode = null;
-                        state.isMultiplayer = false;
-                        return;
-                    }
-                    
-                    // Update lobby players
-                    if (room.pl) {
-                        state.lobbyPlayers = Object.entries(room.pl).map(([id, p]) => ({
-                            id,
-                            n: p.n || 'Игрок',
-                            a: p.a || '👤',
-                            c: p.c || state.startCash
-                        }));
-                    }
-                    
-                    // Auto-start game
-                    if (room.st === 'playing' && !state.gameActive) {
-                        document.getElementById('lobbyModal').classList.remove('show');
-                        startGame();
-                    }
-                    
-                    // Handle ready status
-                    if (room.rd && state.gameActive) {
-                        const readyCount = Object.values(room.rd).filter(Boolean).length;
-                        const totalPlayers = state.lobbyPlayers.length;
-                        document.getElementById('readyStatus').textContent = `NO: ${readyCount}/${totalPlayers}`;
-                        
-                        if (readyCount >= totalPlayers && totalPlayers >= 2) {
-                            clearInterval(state.roundTimer);
-                            let countdown = 5;
-                            document.getElementById('timer').textContent = countdown;
-                            state.roundTimer = setInterval(() => {
-                                countdown--;
-                                document.getElementById('timer').textContent = countdown;
-                                if (countdown <= 0) {
-                                    clearInterval(state.roundTimer);
-                                    nextRound();
-                                }
-                            }, 1000);
-                        }
-                    }
-                    
-                    // Update lobby UI
-                    if (document.getElementById('lobbyModal').classList.contains('show')) {
-                        updateLobbyContent(room);
-                    }
-                    
-                    // Update chat
-                    if (room.ch && document.getElementById('chatMsgs')) {
-                        const messages = Object.values(room.ch).sort((a, b) => a.t - b.t);
-                        const chatBox = document.getElementById('chatMsgs');
-                        chatBox.innerHTML = messages.map(m => 
-                            `<div class="chat-msg"><span class="author">${m.n}:</span> ${m.tx}</div>`
-                        ).join('');
-                        chatBox.scrollTop = chatBox.scrollHeight;
-                    }
-                    
-                    // Update opponent data in real-time
-                    if (room.pl && state.gameActive) {
-                        const opponentEntry = Object.entries(room.pl).find(([id]) => id !== state.pid);
-                        if (opponentEntry) {
-                            const [_, oppData] = opponentEntry;
-                            state.opponentCash = oppData.c || state.startCash;
-                            state.opponentPortfolio = oppData.p || {};
-                            updatePlayersRow();
-                        }
-                    }
-                });
-            }
+        function L(k){let en={play:'🎮 PLAY',solo:'🤖 Bot Training',create:'👥 Create Room',join:'🔗 Join Room',open:'🌍 Open Rooms',comp:'🏆 Competitions',fl:'💼 Freelancer',compBack:'↩ Back',back:'↩ Back',settings:'⚙️ Settings',profile:'👤 Profile',save:'💾 Save',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Off',musicOn:'🔇 On',history:'📜 HISTORY',sync:'🔄 SYNC'};return s.lang==='en'?(en[k]||k):{play:'🎮 ИГРАТЬ',solo:'🤖 Тренировка с ботом',create:'👥 Создать комнату',join:'🔗 Подключиться',open:'🌍 Открытые комнаты',comp:'🏆 Соревнования',fl:'💼 Начинающий фрилансер',compBack:'↩ Назад',back:'↩ Назад',settings:'⚙️ Настройки',profile:'👤 Профиль',save:'💾 Сохранить',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Выкл',musicOn:'🔇 Вкл',history:'📜 ИСТОРИЯ ИГР',sync:'🔄 СИНХРОНИЗАЦИЯ'}[k]||k;}
+        
+        function aL(){
+            let btns={playMenuBtn:'play',soloBtn:'solo',createRoomBtn:'create',joinRoomBtn:'join',openRoomsBtn:'open',compBtn:'comp',freelancerBtn:'fl',compBackBtn:'compBack',backMenuBtn:'back',settingsBtn:'settings',saveProfileBtn:'save',historyBtn:'history',syncBtn:'sync'};
+            for(let[id,key]of Object.entries(btns)){let el=document.getElementById(id);if(el)el.textContent=L(key);}
+            document.getElementById('buyBtn').textContent=L('buy');
+            document.getElementById('waitBtn').textContent=L('wait');
+        }
 
-            function updateLobbyContent(room) {
-                const container = document.getElementById('lobbyContent');
-                const isHost = state.pid === room.hid;
-                const deepLink = `https://t.me/InvestBattleBot?start=${state.roomCode}`;
-                
-                container.innerHTML = `
-                    <h3>🏆 ${room.rn || 'Комната'}</h3>
-                    <div class="room-link" onclick="copyToClipboard('${state.roomCode}')">🆔 ${state.roomCode} (нажми скопировать)</div>
-                    <div class="room-link" onclick="copyToClipboard('${deepLink}')">🔗 Ссылка (нажми скопировать)</div>
-                    <p>👥 ${state.lobbyPlayers.length}/${room.mp || 2} | 💰 ${formatMoney(room.sc || 10000)} | ⏱ ${room.rt || 30}с | 📊 ${room.tr || 10} раундов</p>
-                    ${state.lobbyPlayers.map(p => `
-                        <div class="lobby-player">
-                            <span class="avatar">${avatarHtml(p.a)}</span>
-                            ${p.n} ${p.id === state.pid ? '(Вы)' : ''} ${p.id === room.hid ? '👑' : ''}
-                        </div>
-                    `).join('')}
-                    <div class="chat-box" id="chatMsgs"></div>
-                    <div class="chat-input-row">
-                        <input id="chatInput" placeholder="Сообщение..." maxlength="100">
-                        <button class="btn-sm" id="chatSend">✉️</button>
-                    </div>
-                    ${isHost ? `
-                        <button class="btn gold" id="startLobbyBtn" style="margin-top:10px;" ${state.lobbyPlayers.length < 2 ? 'disabled' : ''}>
-                            🚀 НАЧАТЬ (${state.lobbyPlayers.length}/${room.mp || 2})
-                        </button>
-                    ` : '<p style="text-align:center;color:var(--text2);">⏳ Ожидание хоста...</p>'}
-                    <button class="btn" id="leaveLobbyBtn" style="margin-top:6px;">🚪 Выйти</button>
-                `;
-                
-                // Attach event handlers
-                setTimeout(() => {
-                    const startBtn = document.getElementById('startLobbyBtn');
-                    const leaveBtn = document.getElementById('leaveLobbyBtn');
-                    const chatSend = document.getElementById('chatSend');
-                    const chatInput = document.getElementById('chatInput');
-                    
-                    if (startBtn) {
-                        safeClick(startBtn, () => {
-                            if (!state.roomCode) return;
-                            const cases = [];
-                            const usedIds = [];
-                            
-                            for (let i = 0; i < state.totalRounds; i++) {
-                                const available = state.cases.filter(c => c && c.symbol && !usedIds.includes(c.id));
-                                const selected = available.length > 0 ? 
-                                    available[Math.floor(Math.random() * available.length)] : 
-                                    state.cases[0];
-                                
-                                if (!selected) continue;
-                                usedIds.push(selected.id);
-                                cases.push({ id: selected.id, symbol: selected.symbol, round: i + 1 });
-                            }
-                            
-                            db.ref('rooms/' + state.roomCode).update({
-                                st: 'playing',
-                                cs: cases
-                            });
-                        });
-                    }
-                    
-                    if (leaveBtn) {
-                        safeClick(leaveBtn, leaveRoom);
-                    }
-                    
-                    if (chatSend && chatInput) {
-                        safeClick(chatSend, () => sendChatMessage(chatInput));
-                        chatInput.addEventListener('keypress', (e) => {
-                            if (e.key === 'Enter') sendChatMessage(chatInput);
-                        });
-                    }
-                }, 100);
-            }
+        function lC(){fetch('cases.json').then(r=>r.json()).then(cs=>{s.acl=cs.filter(c=>c&&c.symbol&&c.price);s.crdy=true;document.getElementById('loadingScreen').style.display='none';document.getElementById('menuScreen').style.display='block';}).catch(()=>{document.getElementById('loadingScreen').textContent='Ошибка cases.json';});}
 
-            function sendChatMessage(input) {
-                if (!input || !input.value.trim() || !state.roomCode) return;
-                db.ref(`rooms/${state.roomCode}/ch`).push({
-                    n: state.playerName,
-                    tx: input.value.trim().substring(0, 100),
-                    t: firebase.database.ServerValue.TIMESTAMP
-                });
-                input.value = '';
-            }
+        // ===== BIND EVENTS =====
+        function bind(){
+            document.getElementById('playMenuBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('createCompanyBtn').style.display='none';});
+            document.getElementById('backMenuBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='none';document.getElementById('playMenuBtn').style.display='block';document.getElementById('createCompanyBtn').style.display='block';});
+            document.getElementById('compBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='none';document.getElementById('compMenu').style.display='block';});
+            document.getElementById('compBackBtn').addEventListener('click',()=>{document.getElementById('compMenu').style.display='none';document.getElementById('playMenu').style.display='block';});
+            
+            // Freelancer: крестик → возврат в меню Соревнований
+            document.getElementById('freelancerBtn').addEventListener('click',()=>{document.getElementById('compMenu').style.display='none';document.getElementById('freelancerIntroModal').classList.add('show');});
+            document.getElementById('flCloseBtn').addEventListener('click',()=>{document.getElementById('freelancerIntroModal').classList.remove('show');document.getElementById('compMenu').style.display='block';});
+            
+            // Рейтинг: крестик → возврат в Начинающий фрилансер
+            document.getElementById('flRatingViewBtn').addEventListener('click',()=>{document.getElementById('freelancerIntroModal').classList.remove('show');shFR();});
+            document.getElementById('flRatingCloseBtn').addEventListener('click',()=>{document.getElementById('freelancerRatingModal').classList.remove('show');document.getElementById('freelancerIntroModal').classList.add('show');});
+            
+            document.getElementById('flEnterBtn').addEventListener('click',eF);
+            document.getElementById('flPlayBtn').addEventListener('click',()=>{document.getElementById('flConfirmModal').classList.remove('show');s.ga=true;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';upt();upr();nr();});
+            document.getElementById('flRatingFromConfirmBtn').addEventListener('click',()=>{document.getElementById('flConfirmModal').classList.remove('show');shFR();});
+            document.getElementById('flConfirmCloseBtn').addEventListener('click',()=>{document.getElementById('flConfirmModal').classList.remove('show');});
 
-            function leaveRoom() {
-                if (!state.roomCode) return;
-                
-                if (state.pid === document.getElementById('lobbyContent')?.querySelector?.('#startLobbyBtn')?.parentElement?.querySelector?.('.room-link')?.textContent?.includes?.(state.pid)) {
-                    // Host leaving
-                    if (state.lobbyPlayers.length > 1) {
-                        const newHost = state.lobbyPlayers.find(p => p.id !== state.pid)?.id;
-                        if (newHost) {
-                            db.ref(`rooms/${state.roomCode}/hid`).set(newHost);
-                        } else {
-                            db.ref('rooms/' + state.roomCode).remove();
-                        }
-                    } else {
-                        db.ref('rooms/' + state.roomCode).remove();
-                    }
-                } else {
-                    db.ref(`rooms/${state.roomCode}/pl/${state.pid}`).remove();
-                    db.ref(`rooms/${state.roomCode}/rd/${state.pid}`).remove();
-                }
-                
-                document.getElementById('lobbyModal').classList.remove('show');
-                state.roomCode = null;
-                state.isMultiplayer = false;
-                state.lobbyPlayers = [];
-            }
+            document.getElementById('profileAvatar').addEventListener('click',()=>{s.previewAvatar=s.pa;up();document.getElementById('profileModal').classList.add('show');});
+            document.getElementById('profileCloseBtn').addEventListener('click',()=>document.getElementById('profileModal').classList.remove('show'));
+            document.getElementById('settingsBtn').addEventListener('click',()=>document.getElementById('settingsModal').classList.add('show'));
+            document.getElementById('settingsCloseBtn').addEventListener('click',()=>document.getElementById('settingsModal').classList.remove('show'));
+            document.getElementById('saveProfileBtn').addEventListener('click',()=>{s.pn=document.getElementById('editName').value.trim()||'Трейдер';s.pa=s.previewAvatar||s.pa;s.previewAvatar=null;sS();up();document.getElementById('profileModal').classList.remove('show');});
+            
+            document.getElementById('soloBtn').addEventListener('click',()=>{s.fa=false;document.getElementById('soloModal').classList.add('show');});
+            document.getElementById('soloCloseBtn').addEventListener('click',()=>document.getElementById('soloModal').classList.remove('show'));
+            document.getElementById('startSoloBtn').addEventListener('click',()=>{s.sc=parseInt(document.querySelector('#sCashChips .selected')?.dataset?.cash||10000);s.tr=parseInt(document.querySelector('#sRoundsChips .selected')?.dataset?.rounds||10);s.rt=parseInt(document.querySelector('#sTimeChips .selected')?.dataset?.time||30);s.im=false;s.fa=false;document.getElementById('soloModal').classList.remove('show');sG();});
+            
+            document.getElementById('buyBtn').addEventListener('click',pBuy);
+            document.getElementById('waitBtn').addEventListener('click',tw);
+            document.getElementById('sellAllBtn').addEventListener('click',slA);
+            document.getElementById('sellAllFinalBtn').addEventListener('click',()=>{slL();eG();});
+            document.getElementById('qtyMinus').addEventListener('click',()=>{let i=document.getElementById('buyQty');i.value=Math.max(1,parseInt(i.value)-1);ubb();});
+            document.getElementById('qtyPlus').addEventListener('click',()=>{let i=document.getElementById('buyQty');i.value=Math.min(1000,parseInt(i.value)+1);ubb();});
+            document.getElementById('buyQty').addEventListener('input',ubb);
+            document.getElementById('menuBtn').addEventListener('click',()=>{clearInterval(s.rtimer);clearInterval(s.fi2);['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';s.ga=false;s.fi=false;s.fa=false;});
+            document.getElementById('shareBtn').addEventListener('click',()=>{let t='🏆 InvestBattle: '+fm(s.yc);navigator.share?navigator.share({title:'InvestBattle',text:t}):cp(t);});
 
-            function showLobby() {
-                document.getElementById('lobbyModal').classList.add('show');
-            }
+            document.getElementById('createRoomBtn').addEventListener('click',()=>document.getElementById('roomModal').classList.add('show'));
+            document.getElementById('roomCloseBtn').addEventListener('click',()=>document.getElementById('roomModal').classList.remove('show'));
+            document.getElementById('confirmRoomBtn').addEventListener('click',()=>{s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt(document.querySelector('#maxChips .selected')?.dataset?.max||2);s.sc=parseInt(document.querySelector('#cashChips .selected')?.dataset?.cash||10000);s.tr=parseInt(document.querySelector('#roundsChips .selected')?.dataset?.rounds||5);s.rt=parseInt(document.querySelector('#timeChips .selected')?.dataset?.time||30);document.getElementById('roomModal').classList.remove('show');cR();});
+            document.getElementById('joinRoomBtn').addEventListener('click',()=>document.getElementById('joinModal').classList.add('show'));
+            document.getElementById('joinCloseBtn').addEventListener('click',()=>document.getElementById('joinModal').classList.remove('show'));
+            document.getElementById('confirmJoinBtn').addEventListener('click',()=>{let code=document.getElementById('joinCodeInput').value.trim().toUpperCase();if(code){window._joinRoom(code);document.getElementById('joinModal').classList.remove('show');}});
+            
+            document.getElementById('openRoomsBtn').addEventListener('click',()=>{
+                let m=document.createElement('div');m.className='modal show';
+                m.innerHTML=`<div class="modal-content"><button class="modal-close">✕</button><h3>🌍 Открытые комнаты</h3><div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div></div>`;
+                document.body.appendChild(m);
+                m.querySelector('.modal-close').addEventListener('click',()=>document.body.removeChild(m));
+                db.ref('rooms').once('value',sn=>{
+                    let rooms=sn.val();let l=m.querySelector('#openRoomsList');
+                    if(!rooms){l.innerHTML='<p>Нет комнат</p>';return;}
+                    let openR=Object.entries(rooms).filter(([,r])=>r&&r.st==='waiting'&&r.access!=='closed');
+                    if(openR.length===0){l.innerHTML='<p>Нет комнат</p>';return;}
+                    l.innerHTML=openR.map(([c,r])=>`<div style="background:var(--surface);padding:10px;border-radius:10px;margin-bottom:6px;cursor:pointer;" id="rm_${c}"><b>${r.rn||'Комната'}</b> | 👥 ${r.pl?Object.keys(r.pl).length:0}/${r.mp||2}</div>`).join('');
+                    openR.forEach(([c])=>{let d=m.querySelector('#rm_'+c);if(d)d.addEventListener('click',()=>{document.body.removeChild(m);window._joinRoom(c);});});
+                });
+            });
+            
+            document.getElementById('createCompanyBtn').addEventListener('click',()=>alert('🏗 Скоро!'));
+            document.getElementById('historyBtn').addEventListener('click',shGH);
+            document.getElementById('historyCloseBtn').addEventListener('click',()=>document.getElementById('historyModal').classList.remove('show'));
+            
+            document.getElementById('syncBtn').addEventListener('click',genSync);
+            document.getElementById('syncCloseBtn').addEventListener('click',()=>document.getElementById('syncModal').classList.remove('show'));
+            document.getElementById('confirmSyncBtn').addEventListener('click',doSync);
+            document.getElementById('copySyncCode').addEventListener('click',()=>cp(s.syncCode||document.getElementById('syncCodeDisplay').textContent));
+            
+            document.getElementById('musicToggleBtn').addEventListener('click',function(){mo=!mo;this.textContent=mo?L('musicOff'):L('musicOn');if(mo)pnt();else bm.pause();});
+            document.getElementById('musicFloatBtn').addEventListener('click',function(){mo=!mo;this.textContent=mo?'🔊':'🔇';if(mo)pnt();else bm.pause();});
+            document.getElementById('adminFloatBtn').addEventListener('click',()=>{if(!isAdmin())return;document.getElementById('adminModal').classList.add('show');upA();});
+            document.getElementById('adminCloseBtn').addEventListener('click',()=>document.getElementById('adminModal').classList.remove('show'));
+            document.getElementById('playerSearchInput')?.addEventListener('input',searchPlayer);
+            
+            document.querySelectorAll('.chip-row').forEach(row=>{row.querySelectorAll('.chip').forEach(chip=>{chip.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');});});});
+            document.querySelectorAll('#avatarChips .chip').forEach(c=>c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');s.previewAvatar=this.dataset.avatar;document.getElementById('editAvatarBig').innerHTML=av(s.previewAvatar);}));
+            document.querySelectorAll('#langChips .chip').forEach(c=>c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');s.lang=this.dataset.lang;aL();localStorage.setItem('ib_lang',s.lang);}));
+            document.getElementById('lobbyCloseX').addEventListener('click',lvR);
 
-            function showOpenRooms() {
-                const modal = document.createElement('div');
-                modal.className = 'modal show';
-                modal.innerHTML = `
-                    <div class="modal-content">
-                        <button class="modal-close">✕</button>
-                        <h3>🌍 Открытые комнаты</h3>
-                        <div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-                
-                modal.querySelector('.modal-close').addEventListener('click', () => {
-                    document.body.removeChild(modal);
-                });
-                
-                db.ref('rooms').once('value', snapshot => {
-                    const rooms = snapshot.val();
-                    const list = modal.querySelector('#openRoomsList');
-                    
-                    if (!rooms) {
-                        list.innerHTML = '<p style="text-align:center;color:var(--text2);">Нет открытых комнат</p>';
-                        return;
-                    }
-                    
-                    const openRooms = Object.entries(rooms).filter(([_, r]) => r && r.st === 'waiting' && r.access !== 'closed');
-                    
-                    if (openRooms.length === 0) {
-                        list.innerHTML = '<p style="text-align:center;color:var(--text2);">Нет открытых комнат</p>';
-                        return;
-                    }
-                    
-                    list.innerHTML = openRooms.map(([code, room]) => `
-                        <div style="background:var(--surface);padding:10px;border-radius:10px;margin-bottom:6px;cursor:pointer;" 
-                             id="rm_${code}">
-                            <b>${room.rn || 'Комната'}</b> | 👥 ${room.pl ? Object.keys(room.pl).length : 0}/${room.mp || 2}
-                            <br><small style="color:var(--text2);">💰 ${formatMoney(room.sc || 10000)} | ⏱ ${room.rt || 30}с</small>
-                        </div>
-                    `).join('');
-                    
-                    openRooms.forEach(([code]) => {
-                        const roomDiv = modal.querySelector('#rm_' + code);
-                        if (roomDiv) {
-                            roomDiv.addEventListener('click', () => {
-                                document.body.removeChild(modal);
-                                joinRoom(code);
-                            });
-                        }
-                    });
-                });
-            }
+            if(tg?.initDataUnsafe?.start_param){let code=tg.initDataUnsafe.start_param.toUpperCase().trim();setTimeout(()=>{window._joinRoom(code);},1500);}
+            db.ref('rooms').on('value',sn=>{let r=sn.val();if(r)Object.entries(r).forEach(([code,room])=>{if(room&&room.pl&&Object.keys(room.pl).length===0){db.ref('rooms/'+code).remove();}});});
+        }
 
-            function showGameHistory() {
-                const modal = document.getElementById('historyModal');
-                const list = document.getElementById('historyList');
-                
-                if (state.gameHistory.length === 0) {
-                    list.innerHTML = '<p style="text-align:center;color:var(--text2);">Нет истории игр</p>';
-                } else {
-                    list.innerHTML = state.gameHistory.slice().reverse().map(game => `
-                        <div class="history-item">
-                            <div style="color:${game.result === 'win' ? 'var(--green)' : 'var(--red)'};font-weight:700;">
-                                ${game.result === 'win' ? '🏆 Победа' : '💀 Поражение'}
-                            </div>
-                            <div>💰 ${formatMoney(game.cash)} | 📊 ${game.rounds} раундов</div>
-                            <div>🤖 ${game.opponent}</div>
-                            <div style="color:var(--text2);font-size:9px;">${new Date(game.date).toLocaleString()}</div>
-                        </div>
-                    `).join('');
-                }
-                
-                modal.classList.add('show');
-            }
-
-            function searchPlayer() {
-                const input = document.getElementById('playerSearchInput');
-                const query = input?.value?.trim();
-                const result = document.getElementById('playerSearchResult');
-                
-                if (!query || !result) return;
-                
-                // Search by ID or name
-                db.ref('u').orderByChild('n').startAt(query).endAt(query + '\uf8ff').limitToFirst(5).once('value', snapshot => {
-                    const users = snapshot.val();
-                    
-                    if (!users) {
-                        result.innerHTML = '<p style="color:var(--text2);">Ничего не найдено</p>';
-                        return;
-                    }
-                    
-                    result.innerHTML = Object.entries(users).map(([id, user]) => `
-                        <div class="lobby-player">
-                            <span class="avatar">${avatarHtml(user.a)}</span>
-                            <span>${user.n || 'Игрок'}</span>
-                            <span style="color:var(--text2);font-size:9px;">ID: ${id}</span>
-                            <span style="margin-left:auto;color:var(--gold);">⭐${user.st || 0}</span>
-                        </div>
-                    `).join('');
-                });
-            }
-
-            // ===== LANGUAGE =====
-            function applyLanguage() {
-                const translations = {
-                    ru: {
-                        play: '🎮 ИГРАТЬ',
-                        solo: '🤖 Тренировка с ботом',
-                        create: '👥 Создать комнату',
-                        join: '🔗 Подключиться',
-                        open: '🌍 Открытые комнаты',
-                        comp: '🏆 Соревнования',
-                        fl: '💼 Начинающий фрилансер',
-                        flR: '📊 Рейтинг фрилансеров',
-                        compBack: '↩ Назад',
-                        back: '↩ Назад',
-                        settings: '⚙️ Настройки',
-                        profile: '👤 Профиль',
-                        save: '💾 Сохранить',
-                        buy: 'BUY',
-                        sell: 'SELL',
-                        wait: 'NO',
-                        musicOff: '🔊 Выкл',
-                        musicOn: '🔇 Вкл',
-                        history: '📜 ИСТОРИЯ ИГР'
-                    },
-                    en: {
-                        play: '🎮 PLAY',
-                        solo: '🤖 Bot Training',
-                        create: '👥 Create Room',
-                        join: '🔗 Join Room',
-                        open: '🌍 Open Rooms',
-                        comp: '🏆 Competitions',
-                        fl: '💼 Freelancer',
-                        flR: '📊 Rating',
-                        compBack: '↩ Back',
-                        back: '↩ Back',
-                        settings: '⚙️ Settings',
-                        profile: '👤 Profile',
-                        save: '💾 Save',
-                        buy: 'BUY',
-                        sell: 'SELL',
-                        wait: 'NO',
-                        musicOff: '🔊 Off',
-                        musicOn: '🔇 On',
-                        history: '📜 GAME HISTORY'
-                    }
-                };
-                
-                const t = translations[state.language] || translations.ru;
-                
-                const buttonMap = {
-                    playMenuBtn: 'play',
-                    soloBtn: 'solo',
-                    createRoomBtn: 'create',
-                    joinRoomBtn: 'join',
-                    openRoomsBtn: 'open',
-                    compBtn: 'comp',
-                    freelancerBtn: 'fl',
-                    freelancerRatingBtn: 'flR',
-                    compBackBtn: 'compBack',
-                    backMenuBtn: 'back',
-                    settingsBtn: 'settings',
-                    saveProfileBtn: 'save',
-                    historyBtn: 'history'
-                };
-                
-                Object.entries(buttonMap).forEach(([id, key]) => {
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = t[key];
-                });
-                
-                document.getElementById('buyBtn').textContent = t.buy;
-                document.getElementById('waitBtn').textContent = t.wait;
-            }
-
-            function loadCases() {
-                fetch('cases.json')
-                    .then(r => r.json())
-                    .then(cases => {
-                        state.cases = cases.filter(c => c && c.symbol && c.price);
-                        document.getElementById('loadingScreen').style.display = 'none';
-                        document.getElementById('menuScreen').style.display = 'block';
-                    })
-                    .catch(() => {
-                        document.getElementById('loadingScreen').textContent = 'Ошибка загрузки cases.json';
-                    });
-            }
-
-            // ===== EVENT BINDING =====
-            function bindEvents() {
-                // Menu navigation
-                safeClick(document.getElementById('playMenuBtn'), () => {
-                    document.getElementById('playMenu').style.display = 'block';
-                    document.getElementById('playMenuBtn').style.display = 'none';
-                    document.getElementById('createCompanyBtn').style.display = 'none';
-                });
-                
-                safeClick(document.getElementById('backMenuBtn'), () => {
-                    document.getElementById('playMenu').style.display = 'none';
-                    document.getElementById('playMenuBtn').style.display = 'block';
-                    document.getElementById('createCompanyBtn').style.display = 'block';
-                });
-                
-                safeClick(document.getElementById('compBtn'), () => {
-                    document.getElementById('playMenu').style.display = 'none';
-                    document.getElementById('compMenu').style.display = 'block';
-                });
-                
-                safeClick(document.getElementById('compBackBtn'), () => {
-                    document.getElementById('compMenu').style.display = 'none';
-                    document.getElementById('playMenu').style.display = 'block';
-                });
-
-                // Profile
-                safeClick(document.getElementById('profileAvatar'), () => {
-                    state.previewAvatar = state.playerAvatar;
-                    updateUI();
-                    document.getElementById('profileModal').classList.add('show');
-                });
-                
-                safeClick(document.getElementById('profileCloseBtn'), () => {
-                    document.getElementById('profileModal').classList.remove('show');
-                });
-                
-                safeClick(document.getElementById('settingsBtn'), () => {
-                    document.getElementById('settingsModal').classList.add('show');
-                });
-                
-                safeClick(document.getElementById('settingsCloseBtn'), () => {
-                    document.getElementById('settingsModal').classList.remove('show');
-                });
-                
-                safeClick(document.getElementById('saveProfileBtn'), () => {
-                    state.playerName = document.getElementById('editName').value.trim() || 'Трейдер';
-                    state.playerAvatar = state.previewAvatar || state.playerAvatar;
-                    state.previewAvatar = null;
-                    saveLocalState();
-                    updateUI();
-                    document.getElementById('profileModal').classList.remove('show');
-                });
-
-                // Solo game
-                safeClick(document.getElementById('soloBtn'), () => {
-                    state.isFreelancer = false;
-                    document.getElementById('soloModal').classList.add('show');
-                });
-                
-                safeClick(document.getElementById('soloCloseBtn'), () => {
-                    document.getElementById('soloModal').classList.remove('show');
-                });
-                
-                safeClick(document.getElementById('startSoloBtn'), () => {
-                    state.startCash = parseInt(document.querySelector('#sCashChips .selected')?.dataset?.cash || 10000);
-                    state.totalRounds = parseInt(document.querySelector('#sRoundsChips .selected')?.dataset?.rounds || 10);
-                    state.roundTime = parseInt(document.querySelector('#sTimeChips .selected')?.dataset?.time || 30);
-                    state.isMultiplayer = false;
-                    state.isFreelancer = false;
-                    document.getElementById('soloModal').classList.remove('show');
-                    startGame();
-                });
-
-                // Game actions
-                safeClick(document.getElementById('buyBtn'), performBuy);
-                safeClick(document.getElementById('waitBtn'), toggleWait);
-                safeClick(document.getElementById('sellAllBtn'), sellAllAssets);
-                safeClick(document.getElementById('sellAllFinalBtn'), () => {
-                    liquidatePortfolio();
-                    endGame();
-                });
-                
-                // Quantity controls
-                safeClick(document.getElementById('qtyMinus'), () => {
-                    const input = document.getElementById('buyQty');
-                    input.value = Math.max(1, parseInt(input.value) - 1);
-                    updateBuyButton();
-                });
-                
-                safeClick(document.getElementById('qtyPlus'), () => {
-                    const input = document.getElementById('buyQty');
-                    input.value = Math.min(1000, parseInt(input.value) + 1);
-                    updateBuyButton();
-                });
-                
-                document.getElementById('buyQty').addEventListener('input', updateBuyButton);
-
-                // Result
-                safeClick(document.getElementById('menuBtn'), () => {
-                    clearInterval(state.roundTimer);
-                    clearInterval(state.finalInterval);
-                    ['resultOverlay', 'finalOverlay'].forEach(id => {
-                        document.getElementById(id).classList.remove('show');
-                    });
-                    document.getElementById('gameScreen').style.display = 'none';
-                    document.getElementById('menuScreen').style.display = 'block';
-                    state.gameActive = false;
-                    state.finalPhase = false;
-                    state.isFreelancer = false;
-                });
-                
-                safeClick(document.getElementById('shareBtn'), () => {
-                    const text = '🏆 InvestBattle: ' + formatMoney(state.yourCash);
-                    if (navigator.share) {
-                        navigator.share({ title: 'InvestBattle', text });
-                    } else {
-                        copyToClipboard(text);
-                    }
-                });
-
-                // Multiplayer
-                safeClick(document.getElementById('createRoomBtn'), () => {
-                    document.getElementById('roomModal').classList.add('show');
-                });
-                
-                safeClick(document.getElementById('roomCloseBtn'), () => {
-                    document.getElementById('roomModal').classList.remove('show');
-                });
-                
-                safeClick(document.getElementById('confirmRoomBtn'), () => {
-                    state.roomName = document.getElementById('roomNameInput').value || 'Комната';
-                    state.maxPlayers = parseInt(document.querySelector('#maxChips .selected')?.dataset?.max || 2);
-                    state.startCash = parseInt(document.querySelector('#cashChips .selected')?.dataset?.cash || 10000);
-                    state.totalRounds = parseInt(document.querySelector('#roundsChips .selected')?.dataset?.rounds || 5);
-                    state.roundTime = parseInt(document.querySelector('#timeChips .selected')?.dataset?.time || 30);
-                    state.roomAccess = document.querySelector('#accessChips .selected')?.dataset?.access || 'open';
-                    document.getElementById('roomModal').classList.remove('show');
-                    createRoom();
-                });
-                
-                safeClick(document.getElementById('joinRoomBtn'), () => {
-                    document.getElementById('joinModal').classList.add('show');
-                });
-                
-                safeClick(document.getElementById('joinCloseBtn'), () => {
-                    document.getElementById('joinModal').classList.remove('show');
-                });
-                
-                safeClick(document.getElementById('confirmJoinBtn'), () => {
-                    const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
-                    if (code) {
-                        joinRoom(code);
-                        document.getElementById('joinModal').classList.remove('show');
-                    }
-                });
-                
-                safeClick(document.getElementById('openRoomsBtn'), showOpenRooms);
-                
-                // Lobby
-                safeClick(document.getElementById('lobbyCloseX'), leaveRoom);
-
-                // Freelancer
-                safeClick(document.getElementById('freelancerBtn'), () => {
-                    document.getElementById('compMenu').style.display = 'none';
-                    document.getElementById('freelancerIntroModal').classList.add('show');
-                });
-                
-                safeClick(document.getElementById('flCloseBtn'), () => {
-                    document.getElementById('freelancerIntroModal').classList.remove('show');
-                });
-                
-                safeClick(document.getElementById('freelancerRatingBtn'), () => {
-                    document.getElementById('compMenu').style.display = 'none';
-                    showFreelancerRating();
-                });
-                
-                safeClick(document.getElementById('flEnterBtn'), enterFreelancer);
-                
-                safeClick(document.getElementById('flRatingViewBtn'), () => {
-                    document.getElementById('freelancerIntroModal').classList.remove('show');
-                    showFreelancerRating();
-                });
-                
-                safeClick(document.getElementById('flPlayBtn'), () => {
-                    document.getElementById('flConfirmModal').classList.remove('show');
-                    state.gameActive = true;
-                    document.getElementById('menuScreen').style.display = 'none';
-                    document.getElementById('gameScreen').style.display = 'block';
-                    updatePortfolioTable();
-                    updatePlayersRow();
-                    nextRound();
-                });
-                
-                safeClick(document.getElementById('flConfirmCloseBtn'), () => {
-                    document.getElementById('flConfirmModal').classList.remove('show');
-                });
-                
-                safeClick(document.getElementById('flRatingFromConfirmBtn'), () => {
-                    document.getElementById('flConfirmModal').classList.remove('show');
-                    showFreelancerRating();
-                });
-                
-                safeClick(document.getElementById('flRatingCloseBtn'), () => {
-                    document.getElementById('freelancerRatingModal').classList.remove('show');
-                });
-
-                // History
-                safeClick(document.getElementById('historyBtn'), showGameHistory);
-                safeClick(document.getElementById('historyCloseBtn'), () => {
-                    document.getElementById('historyModal').classList.remove('show');
-                });
-
-                // Trade offer
-                safeClick(document.getElementById('tradeOfferCloseBtn'), () => {
-                    document.getElementById('tradeOfferModal').classList.remove('show');
-                });
-
-                // Create company (placeholder)
-                safeClick(document.getElementById('createCompanyBtn'), () => {
-                    alert('🏗 Скоро будет доступно!');
-                });
-
-                // Music
-                safeClick(document.getElementById('musicToggleBtn'), function() {
-                    musicOn = !musicOn;
-                    this.textContent = state.language === 'en' ? 
-                        (musicOn ? '🔊 Off' : '🔇 On') : 
-                        (musicOn ? '🔊 Выкл' : '🔇 Вкл');
-                    if (musicOn) playNextTrack();
-                    else bgMusic.pause();
-                });
-                
-                safeClick(document.getElementById('musicFloatBtn'), function() {
-                    musicOn = !musicOn;
-                    this.textContent = musicOn ? '🔊' : '🔇';
-                    if (musicOn) playNextTrack();
-                    else bgMusic.pause();
-                });
-
-                // Admin
-                safeClick(document.getElementById('adminFloatBtn'), () => {
-                    if (!isAdmin()) return;
-                    document.getElementById('adminModal').classList.add('show');
-                    updateAdminPanel();
-                });
-                
-                safeClick(document.getElementById('adminCloseBtn'), () => {
-                    document.getElementById('adminModal').classList.remove('show');
-                });
-
-                // Admin search
-                document.getElementById('playerSearchInput')?.addEventListener('input', searchPlayer);
-
-                // Chip selection
-                document.querySelectorAll('.chip-row').forEach(row => {
-                    row.querySelectorAll('.chip').forEach(chip => {
-                        chip.addEventListener('click', function() {
-                            this.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-                            this.classList.add('selected');
-                        });
-                    });
-                });
-
-                // Avatar chips
-                document.querySelectorAll('#avatarChips .chip').forEach(chip => {
-                    chip.addEventListener('click', function() {
-                        state.previewAvatar = this.dataset.avatar;
-                        document.getElementById('editAvatarBig').innerHTML = avatarHtml(state.previewAvatar);
-                    });
-                });
-
-                // Language chips
-                document.querySelectorAll('#langChips .chip').forEach(chip => {
-                    chip.addEventListener('click', function() {
-                        state.language = this.dataset.lang;
-                        updateUI();
-                        saveLocalState();
-                    });
-                });
-            }
-
-            // ===== INITIALIZATION =====
-            function init() {
-                loadState();
-                loadCases();
-                bindEvents();
-                applyLanguage();
-                
-                // Handle deep link
-                if (tg?.initDataUnsafe?.start_param) {
-                    const code = tg.initDataUnsafe.start_param.toUpperCase().trim();
-                    setTimeout(() => joinRoom(code), 1500);
-                }
-                
-                // Cleanup empty rooms
-                db.ref('rooms').on('value', snapshot => {
-                    const rooms = snapshot.val();
-                    if (rooms) {
-                        Object.entries(rooms).forEach(([code, room]) => {
-                            if (room && room.pl && Object.keys(room.pl).length === 0) {
-                                db.ref('rooms/' + code).remove();
-                            }
-                        });
-                    }
-                });
-                
-                console.log('✅ InvestBattle v10.1 — Ready');
-            }
-
-            init();
-        })();
+        lS();lC();bind();aL();
+        console.log('✅ InvestBattle v10.2 — Исправлена навигация и синхронизация');
+    })();
     </script>
 </body>
 </html>
