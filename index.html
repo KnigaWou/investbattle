@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v11.0 — Полный рефакторинг</title>
+    <title>InvestBattle v11.1 — Фикс</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -18,101 +18,49 @@
         .badge{padding:5px 12px;border-radius:16px;font-weight:700;font-size:11px;background:rgba(64,144,255,.2);color:var(--blue)}
         .vs-row{display:flex;gap:10px;margin-bottom:12px}
         .player-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px;text-align:center;cursor:pointer}
-        .player-card.you{border-color:var(--green)}
-        .player-card .avatar{width:36px;height:36px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;background:#1a1a2e;overflow:hidden;font-size:18px}
-        .player-card .avatar img{width:100%;height:100%;object-fit:cover}
-        .player-card .name{font-weight:700;font-size:11px}.player-card .cash{font-size:14px;font-weight:900;color:var(--green)}
+        .player-card.you{border-color:var(--green)}.player-card .avatar{width:36px;height:36px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;background:#1a1a2e;overflow:hidden;font-size:18px}.player-card .avatar img{width:100%;height:100%;object-fit:cover}.player-card .name{font-weight:700;font-size:11px}.player-card .cash{font-size:14px;font-weight:900;color:var(--green)}
         .section-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin:10px 0 6px}
-        table.portfolio{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:10px}
-        table.portfolio th{color:var(--text2);padding:6px 4px;text-align:left;border-bottom:1px solid var(--border);font-size:9px}
-        table.portfolio td{padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.03)}
-        .sym{font-weight:700;color:#fff}.up{color:var(--green)}.down{color:var(--red)}
+        table.portfolio{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:10px}table.portfolio th{color:var(--text2);padding:6px 4px;text-align:left;border-bottom:1px solid var(--border);font-size:9px}table.portfolio td{padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.03)}.sym{font-weight:700;color:#fff}.up{color:var(--green)}.down{color:var(--red)}
         .qty-input{width:36px;padding:4px;background:#000;border:1px solid var(--border);color:#fff;border-radius:5px;text-align:center;font-size:10px}
-        .btn-sm{padding:5px 10px;border:1px solid var(--border);background:var(--surface);color:#fff;border-radius:12px;cursor:pointer;font-size:10px;font-weight:700;white-space:nowrap}
-        .btn-sm.sell{border-color:var(--red);color:var(--red)}
-        .btn-sm.buy{border-color:var(--green);color:var(--green)}
-        .case-box{background:var(--surface);border:2px solid var(--gold);border-radius:14px;padding:14px;margin-bottom:12px}
-        .case-box .case-title{font-weight:700;font-size:14px;color:var(--gold)}
-        .case-box .case-desc{font-size:12px;color:var(--text2);line-height:1.5;margin:6px 0}
-        .case-box .case-price{font-weight:700;font-size:13px;color:#fff}
-        .action-row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
-        .qty-control{display:flex;align-items:center;gap:6px}
-        .qty-control button{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:#fff;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
-        .qty-control input{width:50px;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:10px;text-align:center;font-weight:700;font-size:14px}
-        .btn{padding:14px 20px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;background:var(--surface);color:#fff;text-align:center;min-height:52px;display:flex;align-items:center;justify-content:center;width:100%;margin-bottom:6px}
-        .btn:active{transform:scale(.94)}.btn:disabled{opacity:.3;pointer-events:none}
-        .btn.gold{background:var(--gold);color:#000;border:none}
-        .btn.green{background:var(--green);color:#000;border:2px solid var(--green)}
-        .btn.red{background:var(--red);color:#fff;border:2px solid var(--red)}
-        .btn.orange{background:var(--orange);color:#fff;border:none}
-        .btn-inline{width:auto;flex:1}
-        .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.94);z-index:100;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
-        .overlay.show{display:flex}.overlay .inner{max-width:400px;width:100%}
-        .chip-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0}
-        .chip{padding:8px 14px;border:1.5px solid var(--border);background:var(--surface);color:#fff;border-radius:18px;cursor:pointer;font-weight:700;font-size:11px}
-        .chip.selected{border-color:var(--gold);background:rgba(240,160,48,.2)}
+        .btn-sm{padding:5px 10px;border:1px solid var(--border);background:var(--surface);color:#fff;border-radius:12px;cursor:pointer;font-size:10px;font-weight:700;white-space:nowrap}.btn-sm.sell{border-color:var(--red);color:var(--red)}.btn-sm.buy{border-color:var(--green);color:var(--green)}
+        .case-box{background:var(--surface);border:2px solid var(--gold);border-radius:14px;padding:14px;margin-bottom:12px}.case-box .case-title{font-weight:700;font-size:14px;color:var(--gold)}.case-box .case-desc{font-size:12px;color:var(--text2);line-height:1.5;margin:6px 0}.case-box .case-price{font-weight:700;font-size:13px;color:#fff}
+        .action-row{display:flex;gap:10px;align-items:center;margin-bottom:12px}.qty-control{display:flex;align-items:center;gap:6px}.qty-control button{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:#fff;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}.qty-control input{width:50px;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:10px;text-align:center;font-weight:700;font-size:14px}
+        .btn{padding:14px 20px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;background:var(--surface);color:#fff;text-align:center;min-height:52px;display:flex;align-items:center;justify-content:center;width:100%;margin-bottom:6px}.btn:active{transform:scale(.94)}.btn:disabled{opacity:.3;pointer-events:none}.btn.gold{background:var(--gold);color:#000;border:none}.btn.green{background:var(--green);color:#000;border:2px solid var(--green)}.btn.red{background:var(--red);color:#fff;border:2px solid var(--red)}.btn.orange{background:var(--orange);color:#fff;border:none}.btn-inline{width:auto;flex:1}
+        .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.94);z-index:100;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}.overlay.show{display:flex}.overlay .inner{max-width:400px;width:100%}
+        .chip-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0}.chip{padding:8px 14px;border:1.5px solid var(--border);background:var(--surface);color:#fff;border-radius:18px;cursor:pointer;font-weight:700;font-size:11px}.chip.selected{border-color:var(--gold);background:rgba(240,160,48,.2)}
         .input{width:100%;padding:12px;background:#000;border:1px solid var(--border);color:#fff;border-radius:10px;font-size:14px;text-align:center;font-weight:700;margin-bottom:8px}
-        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:250;align-items:center;justify-content:center}
-        .modal.show{display:flex}
-        .modal-content{background:#0c0c1c;border:2px solid var(--gold);border-radius:18px;padding:20px;width:92%;max-width:420px;max-height:90vh;overflow-y:auto;position:relative}
-        .modal-content h3{color:var(--gold);margin-bottom:12px;text-align:center;font-size:16px}
-        .modal-close{position:absolute;top:10px;right:14px;font-size:20px;color:var(--gold);cursor:pointer;z-index:5}
-        .profile-section{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px;background:var(--surface);border-radius:14px}
-        .profile-avatar{width:50px;height:50px;border-radius:50%;background:#1a1a2e;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;cursor:pointer}
-        .profile-avatar img{width:100%;height:100%;object-fit:cover}
-        .music-btn,.admin-btn{position:fixed;bottom:20px;width:46px;height:46px;border-radius:12px;background:var(--surface);border:2px solid var(--gold);color:var(--gold);font-size:20px;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center}
-        .music-btn{right:20px}.admin-btn{left:20px;border-color:var(--green);color:var(--green);display:none}
-        .admin-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center}
-        .admin-stat .value{font-size:24px;font-weight:900;color:var(--gold)}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:250;align-items:center;justify-content:center}.modal.show{display:flex}.modal-content{background:#0c0c1c;border:2px solid var(--gold);border-radius:18px;padding:20px;width:92%;max-width:420px;max-height:90vh;overflow-y:auto;position:relative}.modal-content h3{color:var(--gold);margin-bottom:12px;text-align:center;font-size:16px}.modal-close{position:absolute;top:10px;right:14px;font-size:20px;color:var(--gold);cursor:pointer;z-index:5}
+        .profile-section{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px;background:var(--surface);border-radius:14px}.profile-avatar{width:50px;height:50px;border-radius:50%;background:#1a1a2e;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;cursor:pointer}.profile-avatar img{width:100%;height:100%;object-fit:cover}
+        .music-btn,.admin-btn{position:fixed;bottom:20px;width:46px;height:46px;border-radius:12px;background:var(--surface);border:2px solid var(--gold);color:var(--gold);font-size:20px;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center}.music-btn{right:20px}.admin-btn{left:20px;border-color:var(--green);color:var(--green);display:none}
+        .admin-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center}.admin-stat .value{font-size:24px;font-weight:900;color:var(--gold)}
         .lobby-player{display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface);border-radius:10px;margin-bottom:4px;font-size:11px}
         .room-link{background:#000;border:1px solid var(--gold);padding:8px;border-radius:8px;font-size:10px;color:var(--gold);text-align:center;margin:6px 0;cursor:pointer;word-break:break-all}
-        .chat-box{max-height:180px;overflow-y:auto;margin:8px 0;padding:6px;background:rgba(0,0,0,.3);border-radius:10px}
-        .chat-msg{font-size:10px;margin:4px 0;padding:4px 8px;border-radius:8px;background:var(--surface);display:inline-block;max-width:80%}
-        .chat-msg .author{font-weight:700;color:var(--gold);font-size:9px}
-        .chat-input-row{display:flex;gap:6px}.chat-input-row input{flex:1;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:8px;font-size:11px}
-        .loading-screen{text-align:center;padding:40px;color:var(--gold);font-weight:700}
-        .sell-all-btn{width:100%;padding:8px;background:rgba(240,48,80,.1);border:1px solid var(--red);color:var(--red);border-radius:8px;cursor:pointer;font-size:10px;font-weight:700;margin-bottom:6px}
-        .copied-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:10px 20px;border-radius:20px;font-weight:700;font-size:12px;z-index:999;opacity:0;transition:opacity .3s}
-        .copied-toast.show{opacity:1}
+        .chat-box{max-height:180px;overflow-y:auto;margin:8px 0;padding:6px;background:rgba(0,0,0,.3);border-radius:10px}.chat-msg{font-size:10px;margin:4px 0;padding:4px 8px;border-radius:8px;background:var(--surface);display:inline-block;max-width:80%}.chat-msg .author{font-weight:700;color:var(--gold);font-size:9px}.chat-input-row{display:flex;gap:6px}.chat-input-row input{flex:1;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:8px;font-size:11px}
+        .loading-screen{text-align:center;padding:40px;color:var(--gold);font-weight:700}.sell-all-btn{width:100%;padding:8px;background:rgba(240,48,80,.1);border:1px solid var(--red);color:var(--red);border-radius:8px;cursor:pointer;font-size:10px;font-weight:700;margin-bottom:6px}
+        .copied-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:10px 20px;border-radius:20px;font-weight:700;font-size:12px;z-index:999;opacity:0;transition:opacity .3s}.copied-toast.show{opacity:1}
     </style>
 </head>
 <body>
     <div class="app" id="app">
-        <div class="loading-screen" id="loadingScreen">Загрузка InvestBattle v11.0...</div>
+        <div class="loading-screen" id="loadingScreen">Загрузка v11.1...</div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v11.0</div></div>
-            <div class="profile-section">
-                <div class="profile-avatar" id="profileAvatar">👤</div>
-                <div style="flex:1;"><div style="font-weight:700;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
-                <button class="btn-sm" id="settingsBtn">⚙️</button>
-            </div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v11.1</div></div>
+            <div class="profile-section"><div class="profile-avatar" id="profileAvatar">👤</div><div style="flex:1;"><div style="font-weight:700;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div><button class="btn-sm" id="settingsBtn">⚙️</button></div>
             <button class="btn gold" id="playMenuBtn" style="font-size:18px;padding:20px;">🎮 ИГРАТЬ</button>
             <button class="btn" id="createCompanyBtn" style="margin-top:6px;">🏗 СОЗДАТЬ СВОЮ КОМПАНИЮ</button>
-            <div id="playMenu" style="display:none;margin-top:10px;">
-                <button class="btn gold" id="soloBtn">🤖 Тренировка с ботом</button>
-                <button class="btn" id="createRoomBtn">👥 Создать комнату</button>
-                <button class="btn" id="joinRoomBtn">🔗 Подключиться</button>
-                <button class="btn" id="openRoomsBtn">🌍 Открытые комнаты</button>
-                <button class="btn orange" id="compBtn">🏆 Соревнования</button>
-                <button class="btn" id="backMenuBtn">↩ Назад</button>
-            </div>
-            <div id="compMenu" style="display:none;margin-top:10px;">
-                <button class="btn orange" id="freelancerBtn">💼 Начинающий фрилансер</button>
-                <button class="btn" id="freelancerRatingBtn">📊 Рейтинг фрилансеров</button>
-                <button class="btn" id="compBackBtn">↩ Назад</button>
-            </div>
+            <div id="playMenu" style="display:none;margin-top:10px;"><button class="btn gold" id="soloBtn">🤖 Тренировка с ботом</button><button class="btn" id="createRoomBtn">👥 Создать комнату</button><button class="btn" id="joinRoomBtn">🔗 Подключиться</button><button class="btn" id="openRoomsBtn">🌍 Открытые комнаты</button><button class="btn orange" id="compBtn">🏆 Соревнования</button><button class="btn" id="backMenuBtn">↩ Назад</button></div>
+            <div id="compMenu" style="display:none;margin-top:10px;"><button class="btn orange" id="freelancerBtn">💼 Начинающий фрилансер</button><button class="btn" id="freelancerRatingBtn">📊 Рейтинг фрилансеров</button><button class="btn" id="compBackBtn">↩ Назад</button></div>
         </div>
 
         <div id="copiedToast" class="copied-toast">✅ Скопировано!</div>
 
-        <!-- МОДАЛКИ -->
         <div class="modal" id="profileModal"><div class="modal-content"><span class="modal-close" onclick="M('profileModal')">✕</span><h3>👤 Профиль</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">👤</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip selected" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;"></div></div><button class="btn gold" id="saveProfileBtn" style="margin-top:10px;">💾 Сохранить</button></div></div>
         <div class="modal" id="settingsModal"><div class="modal-content"><span class="modal-close" onclick="M('settingsModal')">✕</span><h3>⚙️ Настройки</h3><div class="section-title">Язык</div><div class="chip-row" id="langChips"><div class="chip selected" data-lang="ru">🇷🇺 RU</div><div class="chip" data-lang="en">🇬🇧 EN</div></div><div class="section-title">Музыка</div><button class="btn" id="musicToggleBtn">🔊 Выкл</button></div></div>
         <div class="modal" id="soloModal"><div class="modal-content"><span class="modal-close" onclick="M('soloModal')">✕</span><h3>🤖 Тренировка</h3><div class="section-title">💰 Капитал</div><div class="chip-row" id="sCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="sRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="sTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div></div><button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button></div></div>
         <div class="modal" id="roomModal"><div class="modal-content"><span class="modal-close" onclick="M('roomModal')">✕</span><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">🌍 Доступ</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">👥 Макс / 💰 Капитал</div><div class="chip-row" id="maxChips"><div class="chip selected" data-max="2">2</div><div class="chip" data-max="4">4</div></div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div></div><div class="section-title">📊 Раунды / ⏱ Сек</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div></div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
-        <div class="modal" id="lobbyModal"><div class="modal-content"><span class="modal-close" id="lobbyCloseX">✕</span><div id="lobbyContent"></div></div></div>
+        <div class="modal" id="lobbyModal"><div class="modal-content"><span class="modal-close" onclick="lvR()">✕</span><div id="lobbyContent"></div></div></div>
         <div class="modal" id="joinModal"><div class="modal-content"><span class="modal-close" onclick="M('joinModal')">✕</span><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" placeholder="Код комнаты"><button class="btn gold" id="confirmJoinBtn" style="margin-top:10px;">Подключиться</button></div></div>
-        <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><span class="modal-close" onclick="M('adminModal')">✕</span><h3 style="color:var(--green);">🛡️ АДМИН v11.0</h3><div class="admin-stat"><span>🟢 Онлайн</span><span class="value" id="aOnline">0</span></div><div class="admin-stat"><span>👥 Всего</span><span class="value" id="aTotal">0</span></div><div class="admin-stat"><span>🎮 Игр</span><span class="value" id="aPlaying">0</span></div><div class="admin-stat"><span>💼 Фрилансеров</span><span class="value" id="aFreel">0</span></div><div class="section-title">🔍 Поиск по ID</div><input class="input" id="adminSearchId" placeholder="ID игрока"><button class="btn green" id="adminSearchBtn" style="margin-top:6px;">🔍 Найти</button><div id="adminSearchResult" style="margin-top:8px;font-size:11px;"></div><p style="font-size:9px;color:var(--text2);text-align:center;margin-top:10px;">Обновление: 5 сек</p></div></div>
+        <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><span class="modal-close" onclick="M('adminModal')">✕</span><h3 style="color:var(--green);">🛡️ АДМИН v11.1</h3><div class="admin-stat"><span>🟢 Онлайн</span><span class="value" id="aOnline">0</span></div><div class="admin-stat"><span>👥 Всего</span><span class="value" id="aTotal">0</span></div><div class="admin-stat"><span>🎮 Игр</span><span class="value" id="aPlaying">0</span></div><div class="admin-stat"><span>💼 Фрилансеров</span><span class="value" id="aFreel">0</span></div><div class="section-title">🔍 Поиск по ID</div><input class="input" id="adminSearchId" placeholder="ID игрока"><button class="btn green" id="adminSearchBtn" style="margin-top:6px;">🔍 Найти</button><div id="adminSearchResult" style="margin-top:8px;font-size:11px;"></div></div></div>
         <div class="modal" id="freelancerIntroModal"><div class="modal-content" style="border-color:var(--orange);"><span class="modal-close" onclick="M('freelancerIntroModal')">✕</span><h3 style="color:var(--orange);">💼 НАЧИНАЮЩИЙ ФРИЛАНСЕР</h3><div style="text-align:center;font-size:40px;">💼</div><p style="font-size:10px;color:var(--text2);text-align:center;line-height:1.5;">Ты — фрилансер с <b>$100</b>. Стань профи!<br>📉 Акции $1-15 | 🎢 ×2.5 волатильность<br>♾️ Бесконечные уровни | 🏆 Топ-5 призы<br>💎 Вход: <b>5 000 💵</b> | Обновление: понедельник</p><div style="font-size:10px;color:var(--gold);text-align:center;">🥇50% 🥈25% 🥉15% 4-5:5%</div><button class="btn orange" id="flEnterBtn" style="margin-top:10px;">💎 ВОЙТИ (5 000 💵)</button><button class="btn" id="flRatingViewBtn" style="margin-top:6px;">📊 Рейтинг</button></div></div>
         <div class="modal" id="freelancerRatingModal"><div class="modal-content" style="border-color:var(--orange);"><span class="modal-close" onclick="M('freelancerRatingModal')">✕</span><h3 style="color:var(--orange);">🏆 РЕЙТИНГ ФРИЛАНСЕРОВ</h3><div id="ratingTimer" style="text-align:center;font-size:12px;color:var(--gold);margin-bottom:8px;"></div><div id="ratingList" style="max-height:300px;overflow-y:auto;"></div></div></div>
         <div class="modal" id="flConfirmModal"><div class="modal-content" style="border-color:var(--orange);"><span class="modal-close" onclick="M('flConfirmModal')">✕</span><h3 style="color:var(--green);">✅ ВЫ УЧАСТВУЕТЕ!</h3><p style="text-align:center;color:var(--text);">Вы в соревновании «Начинающий фрилансер»!</p><button class="btn gold" id="flPlayBtn" style="margin-top:10px;">🎮 ИГРАТЬ</button><button class="btn" id="flRatingFromConfirmBtn" style="margin-top:6px;">📊 Рейтинг</button></div></div>
@@ -139,7 +87,9 @@
         const fc={databaseURL:"https://investbattle-45545-default-rtdb.firebaseio.com",projectId:"investbattle-45545"};
         firebase.initializeApp(fc);const db=firebase.database(),tg=window.Telegram?.WebApp,ADMIN='5909465804';
         if(tg){tg.ready();tg.expand();}
-        function M(id){document.getElementById(id).classList.remove('show');}
+
+        // ФУНКЦИЯ ЗАКРЫТИЯ МОДАЛОК (ФИКС)
+        window.M=function(id){if(!id)return;let el=document.getElementById(id);if(el)el.classList.remove('show');};
 
         let s={pn:'Трейдер',pa:'icons/avatar1.png',ps:0,pd:0,sc:10000,rt:30,tr:10,mp:2,rc:null,cr:0,yc:10000,oc:10000,yp:{},op:{},cc:null,ga:false,fi:false,ft:90,uc:[],mk:{},fv:{},fi2:null,wp:false,rtimer:null,lp:[],acl:[],crdy:false,im:false,on:'🤖 Бот',oa:'🤖',pid:'',hid:'',cs:[],fa:false,fw:'',previewAvatar:null,lang:'ru',friends:{}};
 
@@ -151,7 +101,6 @@
         function toast(){let t=document.getElementById('copiedToast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500);}
         function cp(txt){navigator.clipboard.writeText(txt).then(toast).catch(()=>{let t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast();});}
 
-        // FIREBASE
         function sf(){if(!s.pid)return;db.ref(`u/${s.pid}`).update({n:s.pn,a:s.pa,st:s.ps,do:s.pd,ls:firebase.database.ServerValue.TIMESTAMP});db.ref(`on/${s.pid}`).set({n:s.pn,ts:firebase.database.ServerValue.TIMESTAMP});db.ref(`on/${s.pid}`).onDisconnect().remove();}
         function lf(cb){db.ref('u/'+s.pid).once('value',sn=>{let d=sn.val();if(d){s.pn=d.n||'Трейдер';s.pa=d.a||'icons/avatar1.png';s.ps=typeof d.st==='number'?d.st:0;s.pd=typeof d.do==='number'?d.do:0;s.friends=d.fr||{};}cb();});}
         function lS(){s.pid=pid();lf(()=>{try{let r=localStorage.getItem('ib_v16');if(r){let o=JSON.parse(r);if(s.pn==='Трейдер')s.pn=o.pn||'Трейдер';if(s.pa==='icons/avatar1.png')s.pa=o.pa||'icons/avatar1.png';if(!s.ps)s.ps=o.ps||0;if(!s.pd)s.pd=o.pd||0;}}catch(e){}up();sf();document.getElementById('adminFloatBtn').style.display=isAdmin()?'flex':'none';if(isAdmin()){setInterval(upA,5000);upA();}});}
@@ -174,15 +123,13 @@
         function tw(){if(!s.im){nr();return;}s.wp=!s.wp;document.getElementById('waitBtn').classList.toggle('held',s.wp);if(s.rc)db.ref(`rooms/${s.rc}/rd/${s.pid}`).set(s.wp);}
         function sy(){if(!s.rc)return;db.ref(`rooms/${s.rc}/pl/${s.pid}`).update({n:s.pn,a:s.pa,c:s.yc,p:s.yp});}
 
-        // БОТ АГРЕССИВНЫЙ
         function botA(){if(!s.cc||s.im)return;let sym=s.cc.symbol,pr=s.mk[sym]||s.cc.price,ip=s.op[sym],fair=s.fv[sym]||pr;if(s.oc>=pr*3&&pr<fair*0.8){let q=Math.floor(Math.random()*8)+3;if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};let o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}}else if(ip&&ip.qty>0&&(pr>ip.avgPrice*1.15||pr>fair*1.05)){let q=Math.min(ip.qty,Math.ceil(ip.qty*0.8));s.oc+=pr*q;ip.qty-=q;if(ip.qty<=0)delete s.op[sym];}else if(s.oc>=pr&&pr<fair*0.9){let q=Math.floor(Math.random()*5)+1;if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};let o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}}upr();}
 
-        // ТОРГОВЛЯ МЕЖДУ ИГРОКАМИ
         window.showTradeOffer=function(targetId,targetName){
             if(!s.im||!s.rc||targetId===s.pid)return;
             let myAssets=Object.entries(s.yp).filter(([,d])=>d.qty>0);
-            if(!myAssets.length){alert('У вас нет акций для продажи');return;}
-            let html=`<p>Предложить игроку <b>${targetName}</b>:</p>`;
+            if(!myAssets.length){alert('У вас нет акций');return;}
+            let html=`<p>Предложить <b>${targetName}</b>:</p>`;
             myAssets.forEach(([sym,d])=>{let pr=s.mk[sym]||d.avgPrice;html+=`<div class="lobby-player"><span>${sym}</span><span>${d.qty} шт</span><span>${fm(pr)}</span><input class="qty-input" id="tq_${sym}" value="1" min="1" max="${d.qty}"><button class="btn-sm buy" id="tb_${sym}">Предложить</button></div>`;});
             html+=`<button class="btn" onclick="M('tradeModal')" style="margin-top:10px;">Закрыть</button>`;
             document.getElementById('tradeContent').innerHTML=html;
@@ -191,7 +138,6 @@
 
         function listenTrades(){if(!s.rc)return;db.ref(`rooms/${s.rc}/trades`).on('child_added',sn=>{let t=sn.val();if(!t||t.to!==s.pid||t.status!=='pending')return;let ans=confirm(`📩 ${t.fromName} предлагает купить ${t.qty} ${t.sym} за ${fm(t.price*t.qty)}?`);if(ans){if(s.yc<t.price*t.qty){alert('❌ Недостаточно денег!');db.ref(`rooms/${s.rc}/trades/${sn.key}`).update({status:'rejected'});return;}s.yc-=t.price*t.qty;if(!s.yp[t.sym])s.yp[t.sym]={qty:0,avgPrice:0};let o=s.yp[t.sym];o.avgPrice=(o.qty*o.avgPrice+t.price*t.qty)/(o.qty+t.qty);o.qty+=t.qty;db.ref(`rooms/${s.rc}/trades/${sn.key}`).update({status:'accepted'});db.ref(`rooms/${s.rc}/pl/${s.pid}`).update({c:s.yc,p:s.yp});upt();upr();}else{db.ref(`rooms/${s.rc}/trades/${sn.key}`).update({status:'rejected'});}});}
 
-        // КОМНАТЫ
         function lR(){if(!s.rc)return;db.ref('rooms/'+s.rc).on('value',sn=>{let r=sn.val();if(!r){if(document.getElementById('lobbyModal').classList.contains('show')){M('lobbyModal');alert('Комната удалена');}s.rc=null;s.im=false;return;}s.hid=r.hid||'';if(r.pl){s.lp=Object.entries(r.pl).map(([id,p])=>({id,n:p.n||'Игрок',a:p.a||'👤',c:p.c||s.sc}));}if(r.st==='playing'&&!s.ga){s.cs=r.cs||[];M('lobbyModal');smg();}if(r.rd&&s.ga){let rc=Object.values(r.rd).filter(Boolean).length,tl=s.lp.length;document.getElementById('readyStatus').textContent=`NO: ${rc}/${tl}`;if(rc>=tl&&tl>=2){clearInterval(s.rtimer);let t=5;document.getElementById('timer').textContent=t;s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=0){clearInterval(s.rtimer);nr();}},1000);}}if(document.getElementById('lobbyModal').classList.contains('show'))ulc(r);if(r.ch&&document.getElementById('chatMsgs')){let ms=Object.values(r.ch).sort((a,b)=>a.t-b.t);let ch=document.getElementById('chatMsgs');ch.innerHTML=ms.map(m=>`<div class="chat-msg"><span class="author">${m.n}:</span> ${m.tx}</div>`).join('');ch.scrollTop=ch.scrollHeight;}});}
         function ulc(r){let c=document.getElementById('lobbyContent'),isH=s.pid===r.hid;let deep=`https://t.me/InvestBattleBot?start=${s.rc}`;c.innerHTML=`<h3>🏆 ${r.rn||'Комната'}</h3><div class="room-link" onclick="cp('${s.rc}')">🆔 ${s.rc} (нажми скопировать)</div><div class="room-link" onclick="cp('${deep}')">🔗 Ссылка (нажми скопировать)</div><p>👥 ${s.lp.length}/${r.mp||2} | 💰 ${fm(r.sc||10000)} | ⏱ ${r.rt||30}с | 📊 ${r.tr||10} раундов</p>${s.lp.map(p=>`<div class="lobby-player"><span class="avatar">${av(p.a)}</span>${p.n} ${p.id===s.pid?'(Вы)':''} ${p.id===r.hid?'👑':''}<button class="btn-sm" id="addFriend_${p.id}" style="margin-left:auto;">+👤</button></div>`).join('')}<div class="chat-box" id="chatMsgs"></div><div class="chat-input-row"><input id="chatInput" placeholder="Чат..." maxlength="100"><button class="btn-sm" id="chatSend">✉️</button></div>${isH?`<button class="btn gold" id="startLobbyBtn" style="margin-top:10px;" ${s.lp.length<2?'disabled':''}>🚀 НАЧАТЬ (${s.lp.length}/${r.mp||2})</button>`:'<p style="text-align:center;color:var(--text2);">⏳ Ожидание хоста...</p>'}<button class="btn" id="leaveLobbyBtn" style="margin-top:6px;">🚪 Выйти</button>`;setTimeout(()=>{document.getElementById('startLobbyBtn')?.addEventListener('click',hsg);document.getElementById('leaveLobbyBtn')?.addEventListener('click',lvR);document.getElementById('chatSend')?.addEventListener('click',sdCh);document.getElementById('chatInput')?.addEventListener('keypress',e=>{if(e.key==='Enter')sdCh();});s.lp.forEach(p=>{document.getElementById('addFriend_'+p.id)?.addEventListener('click',()=>addFriend(p.id,p.n));});},100);}
         function sdCh(){let inp=document.getElementById('chatInput');if(!inp||!inp.value.trim()||!s.rc)return;db.ref(`rooms/${s.rc}/ch`).push({n:s.pn,tx:inp.value.trim().substring(0,100),t:firebase.database.ServerValue.TIMESTAMP});inp.value='';}
@@ -200,10 +146,8 @@
         function cR(){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();let pd={n:s.pn||'Игрок',a:s.pa||'👤',c:s.sc};db.ref('rooms/'+s.rc).set({hid:s.pid,rn:s.rn||'Комната',mp:s.mp||2,sc:s.sc||10000,tr:s.tr||10,rt:s.rt||30,pl:{[s.pid]:pd},st:'waiting'}).then(()=>{s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];lR();listenTrades();document.getElementById('lobbyModal').classList.add('show');}).catch(e=>{alert('Ошибка Firebase. Проверьте правила.');});}
         window._joinRoom=function(code){code=code.toUpperCase().trim();db.ref('rooms/'+code).once('value',sn=>{let r=sn.val();if(!r){alert('Не найдена');return;}if(r.st!=='waiting'){alert('Игра идёт');return;}s.rc=code;s.hid=r.hid||'';s.mp=r.mp;s.sc=r.sc;s.tr=r.tr||10;s.rt=r.rt||30;db.ref(`rooms/${code}/pl/${s.pid}`).set({n:s.pn,a:s.pa,c:s.sc});s.im=true;lR();listenTrades();document.getElementById('lobbyModal').classList.add('show');});};
 
-        // ДРУЗЬЯ
-        function addFriend(fid,fn){if(!fid||fid===s.pid)return;s.friends[fid]={name:fn,added:Date.now()};sf();alert(`✅ ${fn} добавлен в друзья!`);}
+        function addFriend(fid,fn){if(!fid||fid===s.pid)return;s.friends[fid]={name:fn,added:Date.now()};sf();alert(`✅ ${fn} добавлен!`);}
 
-        // ИГРОВОЙ ЦИКЛ
         function smg(){s.yc=s.sc;s.yp={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));upt();upr();nr();}
         function nr(){if(s.cr>=s.tr){stF();return;}s.cr++;ump();s.wp=false;if(s.rc)db.ref(`rooms/${s.rc}/rd`).remove();document.getElementById('waitBtn').classList.remove('held');let k=grc();if(!k){nr();return;}s.uc.push(k.id);shc(k);if(!s.im)botA();stT();}
         function stT(){let t=s.rt;document.getElementById('timer').textContent=t;document.getElementById('timer').classList.remove('urgent');clearInterval(s.rtimer);s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=5)document.getElementById('timer').classList.add('urgent');if(t<=0){clearInterval(s.rtimer);nr();}},1000);}
@@ -221,7 +165,6 @@
         function L(k){let en={play:'🎮 PLAY',create:'👥 Create Room',join:'🔗 Join Room',open:'🌍 Open Rooms',back:'↩ Back',solo:'🤖 Bot Training',comp:'🏆 Competitions',fl:'💼 Freelancer',flR:'📊 Rating',compBack:'↩ Back',settings:'⚙️ Settings',profile:'👤 Profile',save:'💾 Save',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Off',musicOn:'🔇 On'};return s.lang==='en'?(en[k]||k):{play:'🎮 ИГРАТЬ',create:'👥 Создать комнату',join:'🔗 Подключиться',open:'🌍 Открытые комнаты',back:'↩ Назад',solo:'🤖 Тренировка с ботом',comp:'🏆 Соревнования',fl:'💼 Начинающий фрилансер',flR:'📊 Рейтинг фрилансеров',compBack:'↩ Назад',settings:'⚙️ Настройки',profile:'👤 Профиль',save:'💾 Сохранить',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Выкл',musicOn:'🔇 Вкл'}[k]||k;}
         function aL(){let btns={playMenuBtn:'play',soloBtn:'solo',createRoomBtn:'create',joinRoomBtn:'join',openRoomsBtn:'open',compBtn:'comp',freelancerBtn:'fl',freelancerRatingBtn:'flR',compBackBtn:'compBack',backMenuBtn:'back',settingsBtn:'settings',saveProfileBtn:'save'};for(let[id,key]of Object.entries(btns)){let el=document.getElementById(id);if(el)el.textContent=L(key);}document.getElementById('buyBtn').textContent=L('buy');document.getElementById('waitBtn').textContent=L('wait');}
 
-        // ОБРАБОТЧИКИ
         document.getElementById('playMenuBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('createCompanyBtn').style.display='none';});
         document.getElementById('backMenuBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='none';document.getElementById('playMenuBtn').style.display='block';document.getElementById('createCompanyBtn').style.display='block';});
         document.getElementById('compBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='none';document.getElementById('compMenu').style.display='block';});
@@ -259,13 +202,12 @@
         document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');}));
         document.querySelectorAll('#avatarChips .chip').forEach(c=>c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');s.previewAvatar=this.dataset.avatar;document.getElementById('editAvatarBig').innerHTML=av(s.previewAvatar);}));
         document.querySelectorAll('#langChips .chip').forEach(c=>c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');s.lang=this.dataset.lang;aL();}));
-        document.getElementById('lobbyCloseX').addEventListener('click',lvR);
 
         if(tg?.initDataUnsafe?.start_param){let code=tg.initDataUnsafe.start_param.toUpperCase().trim();setTimeout(()=>{window._joinRoom(code);},1500);}
         db.ref('rooms').on('value',sn=>{let r=sn.val();if(r)Object.entries(r).forEach(([code,room])=>{if(room&&room.pl&&Object.keys(room.pl).length===0){db.ref('rooms/'+code).remove();}});});
 
         lS();lC();aL();
-        console.log('✅ InvestBattle v11.0 — Полный рефакторинг');
+        console.log('✅ InvestBattle v11.1 — Крестики исправлены');
     })();
     </script>
 </body>
