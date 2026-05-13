@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v10.4</title>
+    <title>InvestBattle v10.5</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -86,9 +86,8 @@
 <body>
     <div class="app" id="app">
         <div class="loading-screen" id="loadingScreen">Загрузка...</div>
-        
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v10.4</div></div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v10.5</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
@@ -110,22 +109,19 @@
                 <button class="btn" id="compBackBtn">↩ Назад</button>
             </div>
         </div>
-
         <div id="copiedToast" class="copied-toast">✅ Скопировано!</div>
-
         <div class="modal" id="profileModal"><div class="modal-content"><button class="modal-close" id="profileCloseBtn">✕</button><h3>👤 Профиль</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">👤</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;"></div></div><button class="btn gold" id="saveProfileBtn" style="margin-top:10px;">💾 Сохранить</button></div></div>
         <div class="modal" id="settingsModal"><div class="modal-content"><button class="modal-close" id="settingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Язык</div><div class="chip-row" id="langChips"><div class="chip" data-lang="ru">🇷🇺 RU</div><div class="chip" data-lang="en">🇬🇧 EN</div></div><div class="section-title">Музыка</div><button class="btn" id="musicToggleBtn">🔊 Выкл</button></div></div>
         <div class="modal" id="syncModal"><div class="modal-content"><button class="modal-close" id="syncCloseBtn">✕</button><h3>🔄 Синхронизация устройств</h3><p style="text-align:center;font-size:11px;color:var(--text2);">Введите этот код на другом устройстве, чтобы синхронизировать аккаунты:</p><div class="sync-box"><div class="sync-code" id="syncCodeDisplay">------</div><button class="btn-sm" id="copySyncCode">📋 Копировать</button></div><div class="section-title">Или введите код с другого устройства:</div><input class="input" id="syncCodeInput" placeholder="Код синхронизации" maxlength="12"><button class="btn gold" id="confirmSyncBtn" style="margin-top:10px;">🔗 Синхронизировать</button></div></div>
         <div class="modal" id="soloModal"><div class="modal-content"><button class="modal-close" id="soloCloseBtn">✕</button><h3>🤖 Тренировка</h3><div class="section-title">💰 Капитал</div><div class="chip-row" id="sCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="sRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="sTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div></div><button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button></div></div>
         <div class="modal" id="roomModal"><div class="modal-content"><button class="modal-close" id="roomCloseBtn">✕</button><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">🌍 Доступ</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">👥 Макс / 💰 Капитал</div><div class="chip-row" id="maxChips"><div class="chip selected" data-max="2">2</div><div class="chip" data-max="4">4</div></div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div></div><div class="section-title">📊 Раунды / ⏱ Сек</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div></div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
-        <div class="modal" id="lobbyModal"><div class="modal-content"><button class="modal-close" id="lobbyCloseX">✕</button><div id="lobbyContent"><p style="text-align:center;color:var(--text2);">Загрузка...</p></div></div></div>
+        <div class="modal" id="lobbyModal"><div class="modal-content"><button class="modal-close" id="lobbyCloseX">✕</button><div id="lobbyContent"></div></div></div>
         <div class="modal" id="joinModal"><div class="modal-content"><button class="modal-close" id="joinCloseBtn">✕</button><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" placeholder="Код комнаты"><button class="btn gold" id="confirmJoinBtn" style="margin-top:10px;">Подключиться</button></div></div>
         <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><button class="modal-close" id="adminCloseBtn">✕</button><h3 style="color:var(--green);">🛡️ АДМИН</h3><input class="search-input" id="playerSearchInput" placeholder="🔍 Поиск игрока по ID..."><div id="playerSearchResult"></div><div class="admin-stat"><span>🟢 Онлайн</span><span class="value" id="aOnline">0</span></div><div class="admin-stat"><span>👥 Всего</span><span class="value" id="aTotal">0</span></div><div class="admin-stat"><span>🎮 Игр</span><span class="value" id="aPlaying">0</span></div><div class="admin-stat"><span>💼 Фрилансеров</span><span class="value" id="aFreel">0</span></div></div></div>
         <div class="modal" id="freelancerIntroModal"><div class="modal-content" style="border-color:var(--orange);"><button class="modal-close" id="flCloseBtn">✕</button><h3 style="color:var(--orange);">💼 НАЧИНАЮЩИЙ ФРИЛАНСЕР</h3><div style="text-align:center;font-size:40px;">💼</div><p style="font-size:10px;color:var(--text2);text-align:center;line-height:1.5;">Ты — фрилансер с <b>$100</b>. Стань профи!<br>📉 Акции $1-15 | 🎢 ×2.5 волатильность<br>♾️ Бесконечные уровни | 🏆 Топ-5 призы<br>💎 Вход: <b>5 000 💵</b> | Обновление: понедельник</p><div style="font-size:10px;color:var(--gold);text-align:center;">🥇50% 🥈25% 🥉15% 4-5:5%</div><button class="btn orange" id="flEnterBtn" style="margin-top:10px;">💎 ВОЙТИ (5 000 💵)</button><button class="btn" id="flRatingViewBtn" style="margin-top:6px;">📊 Рейтинг</button></div></div>
         <div class="modal" id="freelancerRatingModal"><div class="modal-content" style="border-color:var(--orange);"><button class="modal-close" id="flRatingCloseBtn">✕</button><h3 style="color:var(--orange);">🏆 РЕЙТИНГ ФРИЛАНСЕРОВ</h3><div id="ratingTimer" style="text-align:center;font-size:12px;color:var(--gold);margin-bottom:8px;"></div><div id="ratingList" style="max-height:300px;overflow-y:auto;"></div></div></div>
         <div class="modal" id="flConfirmModal"><div class="modal-content" style="border-color:var(--orange);"><button class="modal-close" id="flConfirmCloseBtn">✕</button><h3 style="color:var(--green);">✅ ВЫ УЧАСТВУЕТЕ!</h3><p style="text-align:center;color:var(--text);">Вы в соревновании «Начинающий фрилансер»!</p><button class="btn gold" id="flPlayBtn" style="margin-top:10px;">🎮 ИГРАТЬ</button><button class="btn" id="flRatingFromConfirmBtn" style="margin-top:6px;">📊 Рейтинг</button></div></div>
         <div class="modal" id="historyModal"><div class="modal-content"><button class="modal-close" id="historyCloseBtn">✕</button><h3>📜 ИСТОРИЯ ИГР</h3><div id="historyList" style="max-height:300px;overflow-y:auto;"></div></div></div>
-
         <div id="gameScreen" style="display:none;">
             <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="timer" id="timer">30</div><div class="badge" id="roundBadge">1/10</div></div>
             <div class="vs-row" id="playersRow"></div>
@@ -135,7 +131,6 @@
             <div class="action-row"><div class="qty-control"><button id="qtyMinus">−</button><input type="number" id="buyQty" value="1" min="1" max="1000"><button id="qtyPlus">+</button></div><button class="btn green btn-inline" id="buyBtn">BUY</button><button class="btn red btn-inline" id="waitBtn">NO</button></div>
             <div id="readyStatus" style="text-align:center;font-size:11px;color:var(--gold);margin-top:6px;"></div>
         </div>
-
         <div class="overlay" id="finalOverlay"><div class="inner"><div style="font-size:32px;">🏁</div><div class="timer" id="finalTimer">90</div><table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th></th></tr></thead><tbody id="finalBody"></tbody></table><div style="font-weight:900;font-size:18px;color:var(--gold);margin:12px 0;" id="finalTotal">💰 $0</div><button class="btn gold" id="sellAllFinalBtn">💰 ПРОДАТЬ ВСЁ</button></div></div>
         <div class="overlay" id="resultOverlay"><div class="inner"><div style="font-size:52px;" id="resultEmoji">🏆</div><div style="font-size:24px;font-weight:900;" id="resultTitle"></div><div style="font-size:30px;font-weight:900;color:var(--gold);margin:10px 0;" id="resultCash"></div><div id="resultPrize" style="font-size:12px;color:var(--text2);"></div><button class="btn gold" id="shareBtn" style="margin-top:10px;">📤 ПОДЕЛИТЬСЯ</button><button class="btn" id="menuBtn" style="margin-top:6px;">↩ В МЕНЮ</button></div></div>
     </div>
@@ -182,7 +177,6 @@
         function upr(){let ps=s.im&&s.lp.length>0?s.lp.map(p=>({n:p.n,a:p.a,c:p.c||s.sc,you:p.id===s.pid})):[{n:s.pn,a:s.pa,c:s.yc,you:true},{n:s.on,a:s.oa,c:s.oc,you:false}];document.getElementById('playersRow').innerHTML=ps.map(p=>`<div class="player-card ${p.you?'you':''}"><div class="avatar">${av(p.a)}</div><div class="name">${p.n}</div><div class="cash">${fm(p.c)}</div></div>`).join('');}
         function shc(k){if(!k||!k.symbol)return;s.cc=k;if(!s.mk[k.symbol]){s.mk[k.symbol]=Number(k.price)||10;s.fv[k.symbol]=Number(k.price)||10;}document.getElementById('caseTitle').textContent=k.symbol+' — '+(k.name||'');document.getElementById('caseDesc').textContent=k.desc||'';document.getElementById('casePrice').textContent='💰 '+fm(s.mk[k.symbol]);document.getElementById('roundBadge').textContent=s.cr+'/'+s.tr;upt();upr();ubb();}
         function ubb(){let k=s.cc;if(!k)return;let pr=s.mk[k.symbol]||k.price;let q=Math.max(1,parseInt(document.getElementById('buyQty')?.value)||1);document.getElementById('buyBtn').disabled=s.yc<pr*q;}
-
         function pBuy(){if(!s.ga||s.fi||!s.cc)return;let k=s.cc,pr=s.mk[k.symbol]||k.price,q=Math.max(1,parseInt(document.getElementById('buyQty')?.value)||1);if(s.yc<pr*q)return;s.yc-=pr*q;if(!s.yp[k.symbol])s.yp[k.symbol]={qty:0,avgPrice:0};let o=s.yp[k.symbol];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;upt();upr();ubb();sy();}
         function slA(){if(Object.keys(s.yp).length===0)return;if(!confirm('Продать ВСЕ активы?'))return;for(let[sy,d]of Object.entries(s.yp))s.yc+=(s.mk[sy]||d.avgPrice)*d.qty;s.yp={};upt();upr();sy();}
         function tw(){if(!s.im){nr();return;}s.wp=!s.wp;document.getElementById('waitBtn').classList.toggle('held',s.wp);if(s.rc)db.ref(`rooms/${s.rc}/rd/${s.pid}`).set(s.wp);}
@@ -191,7 +185,7 @@
 
         function startRoomListener(){
             if(!s.rc)return;
-            if(s.roomListener)db.ref('rooms/'+s.rc).off('value',s.roomListener);
+            if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}
             s.roomListener=sn=>{
                 let r=sn.val();
                 if(!r){if(document.getElementById('lobbyModal').classList.contains('show')){document.getElementById('lobbyModal').classList.remove('show');alert('Комната удалена');}s.rc=null;s.im=false;return;}
@@ -199,7 +193,7 @@
                 if(r.pl){s.lp=Object.entries(r.pl).map(([id,p])=>({id,n:p.n||'Игрок',a:p.a||'👤',c:p.c||s.sc}));}
                 if(r.st==='playing'&&!s.ga){document.getElementById('lobbyModal').classList.remove('show');smg();return;}
                 if(r.rd&&s.ga){let rc=Object.values(r.rd).filter(Boolean).length,tl=s.lp.length;document.getElementById('readyStatus').textContent=`NO: ${rc}/${tl}`;if(rc>=tl&&tl>=2){clearInterval(s.rtimer);let t=5;document.getElementById('timer').textContent=t;s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=0){clearInterval(s.rtimer);nr();}},1000);}}
-                if(document.getElementById('lobbyModal').classList.contains('show'))ulc(r);
+                if(document.getElementById('lobbyModal').classList.contains('show')){ulc(r);}
                 if(r.ch&&document.getElementById('chatMsgs')){let ms=Object.values(r.ch).sort((a,b)=>a.t-b.t);let ch=document.getElementById('chatMsgs');ch.innerHTML=ms.map(m=>`<div class="chat-msg"><span class="author">${m.n}:</span> ${m.tx}</div>`).join('');ch.scrollTop=ch.scrollHeight;}
             };
             db.ref('rooms/'+s.rc).on('value',s.roomListener);
@@ -208,20 +202,23 @@
         function ulc(r){
             let c=document.getElementById('lobbyContent'),isH=s.pid===r.hid,deep=`https://t.me/InvestBattleBot?start=${s.rc}`;
             c.innerHTML=`<h3>🏆 ${r.rn||'Комната'}</h3><div class="room-link" id="copyRoomCode">🆔 ${s.rc} (нажми скопировать)</div><div class="room-link" id="copyDeepLink">🔗 Ссылка (нажми скопировать)</div><p>👥 ${s.lp.length}/${r.mp||2} | 💰 ${fm(r.sc||10000)} | ⏱ ${r.rt||30}с | 📊 ${r.tr||10} раундов</p>${s.lp.map(p=>`<div class="lobby-player"><span class="avatar">${av(p.a)}</span>${p.n} ${p.id===s.pid?'(Вы)':''} ${p.id===r.hid?'👑':''}</div>`).join('')}<div class="chat-box" id="chatMsgs"></div><div class="chat-input-row"><input id="chatInput" placeholder="Сообщение..." maxlength="100"><button class="btn-sm" id="chatSend">✉️</button></div>${isH?`<button class="btn gold" id="startLobbyBtn" style="margin-top:10px;" ${s.lp.length<2?'disabled':''}>🚀 НАЧАТЬ (${s.lp.length}/${r.mp||2})</button>`:'<p style="text-align:center;color:var(--text2);">⏳ Ожидание хоста...</p>'}<button class="btn" id="leaveLobbyBtn" style="margin-top:6px;">🚪 Выйти</button>`;
-            document.getElementById('copyRoomCode')?.addEventListener('click',()=>cp(s.rc));
-            document.getElementById('copyDeepLink')?.addEventListener('click',()=>cp(deep));
-            document.getElementById('startLobbyBtn')?.addEventListener('click',hsg);
-            document.getElementById('leaveLobbyBtn')?.addEventListener('click',lvR);
-            document.getElementById('chatSend')?.addEventListener('click',sdCh);
-            document.getElementById('chatInput')?.addEventListener('keypress',e=>{if(e.key==='Enter')sdCh();});
+            setTimeout(()=>{
+                document.getElementById('copyRoomCode')?.addEventListener('click',()=>cp(s.rc));
+                document.getElementById('copyDeepLink')?.addEventListener('click',()=>cp(deep));
+                document.getElementById('startLobbyBtn')?.addEventListener('click',hsg);
+                document.getElementById('leaveLobbyBtn')?.addEventListener('click',lvR);
+                document.getElementById('chatSend')?.addEventListener('click',sdCh);
+                document.getElementById('chatInput')?.addEventListener('keypress',e=>{if(e.key==='Enter')sdCh();});
+            },50);
         }
 
         function sdCh(){let inp=document.getElementById('chatInput');if(!inp||!inp.value.trim()||!s.rc)return;db.ref(`rooms/${s.rc}/ch`).push({n:s.pn,tx:inp.value.trim().substring(0,100),t:firebase.database.ServerValue.TIMESTAMP});inp.value='';}
         function hsg(){if(!s.rc)return;let cs=[],ui=[];for(let i=0;i<s.tr;i++){let v=s.acl.filter(c=>c&&c.symbol&&!ui.includes(c.id));let k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1});}db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});}
+        
         function lvR(){
             if(!s.rc)return;
             if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}
-            if(s.pid===s.hid){if(s.lp.length>1){let nid=s.lp.find(p=>p.id!==s.pid)?.id;if(nid)db.ref(`rooms/${s.rc}/hid`).set(nid);else db.ref('rooms/'+s.rc).remove();}else db.ref('rooms/'+s.rc).remove();}
+            if(s.pid===s.hid){if(s.lp.length>1){let nid=s.lp.find(p=>p.id!==s.pid)?.id;if(nid)db.ref(`rooms/${s.rc}/hid`).set(nid);else db.ref('rooms/'+s.rc).remove();}else{db.ref('rooms/'+s.rc).remove();}}
             else{db.ref(`rooms/${s.rc}/pl/${s.pid}`).remove();db.ref(`rooms/${s.rc}/rd/${s.pid}`).remove();}
             document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];
         }
@@ -229,14 +226,11 @@
         function cR(){
             s.rc=Math.random().toString(36).substring(2,8).toUpperCase();
             let pd={n:s.pn||'Игрок',a:s.pa||'👤',c:s.sc};
-            let roomData={hid:s.pid,rn:s.rn||'Комната',mp:s.mp||2,sc:s.sc||10000,tr:s.tr||10,rt:s.rt||30,pl:{[s.pid]:pd},st:'waiting',access:s.ra||'open'};
-            db.ref('rooms/'+s.rc).set(roomData).then(()=>{
-                console.log('✅ Комната создана:',s.rc);
-                s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];
-                startRoomListener();
-                document.getElementById('lobbyModal').classList.add('show');
-                document.getElementById('lobbyContent').innerHTML='<p style="text-align:center;color:var(--gold);">Загрузка...</p>';
-            }).catch(e=>{alert('❌ Ошибка Firebase: '+e.message);console.error(e);});
+            s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];
+            document.getElementById('lobbyModal').classList.add('show');
+            document.getElementById('lobbyContent').innerHTML='<p style="text-align:center;color:var(--gold);">Создание...</p>';
+            startRoomListener();
+            db.ref('rooms/'+s.rc).set({hid:s.pid,rn:s.rn||'Комната',mp:s.mp||2,sc:s.sc||10000,tr:s.tr||10,rt:s.rt||30,pl:{[s.pid]:pd},st:'waiting',access:s.ra||'open'}).then(()=>{console.log('✅ Комната:',s.rc);}).catch(e=>{alert('❌ Ошибка Firebase: '+e.message);document.getElementById('lobbyModal').classList.remove('show');if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}s.rc=null;s.im=false;});
         }
 
         window._joinRoom=function(code){
@@ -246,11 +240,11 @@
                 if(r.st!=='waiting'){alert('❌ Игра уже идёт');return;}
                 let pc=r.pl?Object.keys(r.pl).length:0;if(pc>=(r.mp||2)){alert('❌ Комната заполнена');return;}
                 s.rc=code;s.hid=r.hid||'';s.sc=r.sc||10000;s.tr=r.tr||10;s.rt=r.rt||30;
-                db.ref(`rooms/${code}/pl/${s.pid}`).set({n:s.pn,a:s.pa,c:s.sc}).then(()=>{
-                    s.im=true;startRoomListener();
-                    document.getElementById('lobbyModal').classList.add('show');
-                    document.getElementById('lobbyContent').innerHTML='<p style="text-align:center;color:var(--gold);">Подключение...</p>';
-                }).catch(e=>{alert('❌ Ошибка: '+e.message);});
+                s.im=true;s.lp=[];
+                document.getElementById('lobbyModal').classList.add('show');
+                document.getElementById('lobbyContent').innerHTML='<p style="text-align:center;color:var(--gold);">Подключение...</p>';
+                startRoomListener();
+                db.ref(`rooms/${code}/pl/${s.pid}`).set({n:s.pn,a:s.pa,c:s.sc}).catch(e=>{alert('❌ Ошибка: '+e.message);});
             });
         };
 
@@ -331,7 +325,7 @@
         }
 
         lS();lC();bind();aL();
-        console.log('✅ InvestBattle v10.4 — Комнаты исправлены');
+        console.log('✅ InvestBattle v10.5 — Комнаты фикс');
     })();
     </script>
 </body>
