@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v10.2</title>
+    <title>InvestBattle v10.3</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -15,7 +15,6 @@
         .logo{font-size:20px;font-weight:800;color:#fff}.logo span{color:var(--gold)}
         .timer{font-size:30px;font-weight:900;color:var(--gold);transition:color 0.3s}.timer.urgent{color:var(--red);animation:shake 0.35s infinite}
         @keyframes shake{50%{transform:translateX(4px)}}
-        @keyframes pulse{50%{transform:scale(1.05)}}
         .badge{padding:5px 12px;border-radius:16px;font-weight:700;font-size:11px;background:rgba(64,144,255,0.2);color:var(--blue)}
         .vs-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
         .player-card{flex:1;min-width:80px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px;text-align:center;transition:all 0.2s;cursor:pointer}
@@ -88,18 +87,19 @@
     <div class="app" id="app">
         <div class="loading-screen" id="loadingScreen">Загрузка...</div>
         
+        <!-- ===== ГЛАВНОЕ МЕНЮ (только тут История и Синхронизация) ===== -->
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v10.2</div></div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v10.3</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
                 <button class="profile-btn" id="settingsBtn">⚙️</button>
             </div>
             <button class="btn gold" id="playMenuBtn" style="font-size:18px;padding:20px;">🎮 ИГРАТЬ</button>
-            <button class="btn" id="createCompanyBtn" style="margin-top:6px;">🏗 СОЗДАТЬ СВОЮ КОМПАНИЮ</button>
             <button class="btn" id="historyBtn" style="margin-top:6px;">📜 ИСТОРИЯ ИГР</button>
             <button class="btn" id="syncBtn" style="margin-top:6px;border-color:var(--gold);color:var(--gold);">🔄 СИНХРОНИЗИРОВАТЬ УСТРОЙСТВА</button>
             
+            <!-- Второе меню (без Истории и Синхронизации) -->
             <div id="playMenu" style="display:none;margin-top:10px;">
                 <button class="btn gold" id="soloBtn">🤖 Тренировка с ботом</button>
                 <button class="btn" id="createRoomBtn">👥 Создать комнату</button>
@@ -109,6 +109,7 @@
                 <button class="btn" id="backMenuBtn">↩ Назад</button>
             </div>
             
+            <!-- Меню Соревнований -->
             <div id="compMenu" style="display:none;margin-top:10px;">
                 <button class="btn orange" id="freelancerBtn">💼 Начинающий фрилансер</button>
                 <button class="btn" id="compBackBtn">↩ Назад</button>
@@ -203,51 +204,20 @@
         function lf(cb){
             db.ref('u/'+s.pid).once('value',sn=>{
                 let d=sn.val();
-                if(d){
-                    // Firebase has priority over localStorage
-                    s.pn=d.n||'Трейдер';
-                    s.pa=d.a||'icons/avatar1.png';
-                    s.ps=typeof d.st==='number'?d.st:0;
-                    s.pd=typeof d.do==='number'?d.do:0;
-                }
-                // Load from localStorage ONLY if Firebase didn't have data
+                if(d){s.pn=d.n||'Трейдер';s.pa=d.a||'icons/avatar1.png';s.ps=typeof d.st==='number'?d.st:0;s.pd=typeof d.do==='number'?d.do:0;}
                 try{
                     let r=localStorage.getItem('ib_v15');
-                    if(r){
-                        let o=JSON.parse(r);
-                        if(s.pn==='Трейдер'&&o.playerName)s.pn=o.playerName;
-                        if(s.pa==='icons/avatar1.png'&&o.playerAvatar)s.pa=o.playerAvatar;
-                        if(!s.ps&&o.playerStars)s.ps=o.playerStars;
-                        if(!s.pd&&o.playerDollars)s.pd=o.playerDollars;
-                    }
+                    if(r){let o=JSON.parse(r);if(s.pn==='Трейдер'&&o.playerName)s.pn=o.playerName;if(s.pa==='icons/avatar1.png'&&o.playerAvatar)s.pa=o.playerAvatar;if(!s.ps&&o.playerStars)s.ps=o.playerStars;if(!s.pd&&o.playerDollars)s.pd=o.playerDollars;}
                 }catch(e){}
-                // Load history
                 try{let h=localStorage.getItem('ib_history');if(h)s.gh=JSON.parse(h);}catch(e){s.gh=[];}
-                // Load language
                 let sl=localStorage.getItem('ib_lang');if(sl)s.lang=sl;
-                // Load sync code
                 let sc=localStorage.getItem('ib_sync');if(sc)s.syncCode=sc;
                 cb();
             });
         }
         
-        function lS(){
-            s.pid=pid();
-            lf(()=>{
-                up();sf();
-                document.getElementById('adminFloatBtn').style.display=isAdmin()?'flex':'none';
-                if(isAdmin()){setInterval(upA,5000);upA();}
-            });
-        }
-        
-        function sS(){
-            localStorage.setItem('ib_v15',JSON.stringify({playerName:s.pn,playerAvatar:s.pa,playerStars:s.ps,playerDollars:s.pd}));
-            localStorage.setItem('ib_lang',s.lang);
-            localStorage.setItem('ib_history',JSON.stringify(s.gh.slice(0,50)));
-            if(s.syncCode)localStorage.setItem('ib_sync',s.syncCode);
-            if(tg?.CloudStorage)tg.CloudStorage.setItems([{key:'ib_name',value:s.pn},{key:'ib_avatar',value:s.pa},{key:'ib_stars',value:String(s.ps)},{key:'ib_dollars',value:String(s.pd)}]);
-            sf();
-        }
+        function lS(){s.pid=pid();lf(()=>{up();sf();document.getElementById('adminFloatBtn').style.display=isAdmin()?'flex':'none';if(isAdmin()){setInterval(upA,5000);upA();}});}
+        function sS(){localStorage.setItem('ib_v15',JSON.stringify({playerName:s.pn,playerAvatar:s.pa,playerStars:s.ps,playerDollars:s.pd}));localStorage.setItem('ib_lang',s.lang);localStorage.setItem('ib_history',JSON.stringify(s.gh.slice(0,50)));if(s.syncCode)localStorage.setItem('ib_sync',s.syncCode);if(tg?.CloudStorage)tg.CloudStorage.setItems([{key:'ib_name',value:s.pn},{key:'ib_avatar',value:s.pa},{key:'ib_stars',value:String(s.ps)},{key:'ib_dollars',value:String(s.pd)}]);sf();}
         
         function up(){
             document.getElementById('profileName').textContent=s.pn;
@@ -353,7 +323,7 @@
             if(s.rc)db.ref(`rooms/${s.rc}/rd/${s.pid}`).set(s.wp);
         }
         
-        function sy(){if(!s.rc)return;db.ref(`rooms/${s.rc}/pl/${s.pid}`).update({n:s.pn,a:s.pa,c:s.yc,p:s.yp});}
+        function sy(){if(!s.rc||!s.im)return;db.ref(`rooms/${s.rc}/pl/${s.pid}`).update({n:s.pn,a:s.pa,c:s.yc,p:s.yp});}
         
         function botA(){
             if(!s.cc||s.im)return;
@@ -377,7 +347,7 @@
                 if(!r){if(document.getElementById('lobbyModal').classList.contains('show')){document.getElementById('lobbyModal').classList.remove('show');alert('Комната удалена');}s.rc=null;s.im=false;return;}
                 s.hid=r.hid||'';
                 if(r.pl){s.lp=Object.entries(r.pl).map(([id,p])=>({id,n:p.n||'Игрок',a:p.a||'👤',c:p.c||s.sc}));}
-                if(r.st==='playing'&&!s.ga){s.cs=r.cs||[];document.getElementById('lobbyModal').classList.remove('show');smg();}
+                if(r.st==='playing'&&!s.ga){document.getElementById('lobbyModal').classList.remove('show');smg();}
                 if(r.rd&&s.ga){let rc=Object.values(r.rd).filter(Boolean).length,tl=s.lp.length;document.getElementById('readyStatus').textContent=`NO: ${rc}/${tl}`;if(rc>=tl&&tl>=2){clearInterval(s.rtimer);let t=5;document.getElementById('timer').textContent=t;s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=0){clearInterval(s.rtimer);nr();}},1000);}}
                 if(document.getElementById('lobbyModal').classList.contains('show'))ulc(r);
                 if(r.ch&&document.getElementById('chatMsgs')){let ms=Object.values(r.ch).sort((a,b)=>a.t-b.t);let ch=document.getElementById('chatMsgs');ch.innerHTML=ms.map(m=>`<div class="chat-msg"><span class="author">${m.n}:</span> ${m.tx}</div>`).join('');ch.scrollTop=ch.scrollHeight;}
@@ -397,9 +367,30 @@
         }
         
         function sdCh(){let inp=document.getElementById('chatInput');if(!inp||!inp.value.trim()||!s.rc)return;db.ref(`rooms/${s.rc}/ch`).push({n:s.pn,tx:inp.value.trim().substring(0,100),t:firebase.database.ServerValue.TIMESTAMP});inp.value='';}
+        
         function hsg(){if(!s.rc)return;let cs=[],ui=[];for(let i=0;i<s.tr;i++){let v=s.acl.filter(c=>c&&c.symbol&&!ui.includes(c.id));let k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1});}db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});}
-        function lvR(){if(!s.rc)return;if(s.pid===s.hid){if(s.lp.length>1){let nid=s.lp.find(p=>p.id!==s.pid)?.id;if(nid)db.ref(`rooms/${s.rc}/hid`).set(nid);else db.ref('rooms/'+s.rc).remove();}else db.ref('rooms/'+s.rc).remove();}else{db.ref(`rooms/${s.rc}/pl/${s.pid}`).remove();db.ref(`rooms/${s.rc}/rd/${s.pid}`).remove();}document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];}
-        function cR(){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();let pd={n:s.pn||'Игрок',a:s.pa||'👤',c:s.sc};db.ref('rooms/'+s.rc).set({hid:s.pid,rn:s.rn||'Комната',mp:s.mp||2,sc:s.sc||10000,tr:s.tr||10,rt:s.rt||30,pl:{[s.pid]:pd},st:'waiting'}).then(()=>{s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];lR();document.getElementById('lobbyModal').classList.add('show');}).catch(e=>{alert('Ошибка Firebase. Проверьте правила.');});}
+        
+        function lvR(){
+            if(!s.rc)return;
+            if(s.pid===s.hid){
+                if(s.lp.length>1){let nid=s.lp.find(p=>p.id!==s.pid)?.id;if(nid)db.ref(`rooms/${s.rc}/hid`).set(nid);else db.ref('rooms/'+s.rc).remove();}
+                else db.ref('rooms/'+s.rc).remove();
+            }else{db.ref(`rooms/${s.rc}/pl/${s.pid}`).remove();db.ref(`rooms/${s.rc}/rd/${s.pid}`).remove();}
+            document.getElementById('lobbyModal').classList.remove('show');
+            s.rc=null;s.im=false;s.lp=[];
+        }
+        
+        function cR(){
+            s.rc=Math.random().toString(36).substring(2,8).toUpperCase();
+            let pd={n:s.pn||'Игрок',a:s.pa||'👤',c:s.sc};
+            db.ref('rooms/'+s.rc).set({
+                hid:s.pid,rn:s.rn||'Комната',mp:s.mp||2,sc:s.sc||10000,tr:s.tr||10,rt:s.rt||30,
+                pl:{[s.pid]:pd},st:'waiting',access:s.roomAccess||'open'
+            }).then(()=>{
+                s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];
+                lR();document.getElementById('lobbyModal').classList.add('show');
+            }).catch(e=>{alert('Ошибка Firebase: '+e.message);});
+        }
         
         window._joinRoom=function(code){
             code=code.toUpperCase().trim();
@@ -413,12 +404,40 @@
             });
         };
 
-        function smg(){s.yc=s.sc;s.yp={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));upt();upr();nr();}
-        function nr(){if(s.cr>=s.tr){stF();return;}s.cr++;ump();s.wp=false;if(s.rc)db.ref(`rooms/${s.rc}/rd`).remove();document.getElementById('waitBtn').classList.remove('held');let k=grc();if(!k){nr();return;}s.uc.push(k.id);shc(k);if(!s.im)botA();stT();}
-        function stT(){let t=s.rt;document.getElementById('timer').textContent=t;document.getElementById('timer').classList.remove('urgent');clearInterval(s.rtimer);s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=5)document.getElementById('timer').classList.add('urgent');if(t<=0){clearInterval(s.rtimer);nr();}},1000);}
-        function sG(){if(!s.crdy){alert('Загрузка...');return;}s.yc=s.sc;s.oc=s.sc;s.yp={};s.op={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));if(!s.im){s.on='🤖 Бот-Трейдер';s.oa='🤖';}upt();upr();nr();}
+        function smg(){
+            s.yc=s.sc;s.yp={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;
+            document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';
+            ['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));
+            upt();upr();nr();
+        }
+        
+        function nr(){
+            if(s.cr>=s.tr){stF();return;}
+            s.cr++;ump();s.wp=false;
+            if(s.rc)db.ref(`rooms/${s.rc}/rd`).remove();
+            document.getElementById('waitBtn').classList.remove('held');
+            let k=grc();if(!k){nr();return;}
+            s.uc.push(k.id);shc(k);if(!s.im)botA();stT();
+        }
+        
+        function stT(){
+            let t=s.rt;document.getElementById('timer').textContent=t;document.getElementById('timer').classList.remove('urgent');
+            clearInterval(s.rtimer);s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=5)document.getElementById('timer').classList.add('urgent');if(t<=0){clearInterval(s.rtimer);nr();}},1000);
+        }
+        
+        function sG(){
+            if(!s.crdy){alert('Загрузка...');return;}
+            s.yc=s.sc;s.oc=s.sc;s.yp={};s.op={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;
+            document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';
+            ['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));
+            if(!s.im){s.on='🤖 Бот-Трейдер';s.oa='🤖';}
+            upt();upr();nr();
+        }
+        
         function stF(){s.fi=true;s.ft=90;clearInterval(s.fi2);document.getElementById('gameScreen').style.display='none';document.getElementById('finalOverlay').classList.add('show');upF();s.fi2=setInterval(()=>{s.ft-=5;if(s.ft<0)s.ft=0;document.getElementById('finalTimer').textContent=s.ft;for(let sy of Object.keys(s.mk))s.mk[sy]=Math.max(0.02,s.mk[sy]*(1+(Math.random()-0.46)*14/100));upF();if(s.ft<=0){clearInterval(s.fi2);slL();eG();}},5000);}
+        
         function upF(){let b=document.getElementById('finalBody'),as=Object.entries(s.yp);b.innerHTML=as.length===0?'<tr><td colspan="5">Нет</td></tr>':as.map(([sym,d])=>{let pr=s.mk[sym]||d.avgPrice,val=pr*d.qty;return`<tr><td class="sym">${sym}</td><td>${d.qty}</td><td>${fm(pr)}</td><td>${fm(val)}</td><td><input class="qty-input" id="fsq_${sym}" value="${d.qty}"><button class="btn-sm sell" id="fsl_${sym}">Продать</button></td></tr>`;}).join('');as.forEach(([sym])=>{let btn=document.getElementById('fsl_'+sym);if(btn)btn.onclick=()=>{let d=s.yp[sym];if(!d)return;let q=Math.max(1,Math.min(d.qty,parseInt(document.getElementById('fsq_'+sym)?.value)||d.qty));s.yc+=(s.mk[sym]||d.avgPrice)*q;d.qty-=q;if(d.qty<=0)delete s.yp[sym];upF();};});document.getElementById('finalTotal').textContent='💰 '+fm(s.yc+Object.entries(s.yp).reduce((sum,[sym,d])=>sum+(s.mk[sym]||d.avgPrice)*d.qty,0));}
+        
         function slL(){for(let[sy,d]of Object.entries(s.yp))s.yc+=(s.mk[sy]||d.avgPrice)*d.qty;s.yp={};}
         
         function eG(){
@@ -440,7 +459,6 @@
             document.getElementById('resultTitle').textContent=win?'ПОБЕДА!':'ПОРАЖЕНИЕ';
             document.getElementById('resultCash').textContent=fm(s.yc);
             if(win)s.pd+=100;
-            // Save to history
             s.gh.push({date:new Date().toISOString(),cash:s.yc,result:win?'win':'lose',rounds:s.tr,opponent:s.on});
             sS();up();
             if(s.rc){db.ref('rooms/'+s.rc).remove();s.rc=null;s.im=false;}
@@ -509,29 +527,30 @@
             });
         }
 
-        function L(k){let en={play:'🎮 PLAY',solo:'🤖 Bot Training',create:'👥 Create Room',join:'🔗 Join Room',open:'🌍 Open Rooms',comp:'🏆 Competitions',fl:'💼 Freelancer',compBack:'↩ Back',back:'↩ Back',settings:'⚙️ Settings',profile:'👤 Profile',save:'💾 Save',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Off',musicOn:'🔇 On',history:'📜 HISTORY',sync:'🔄 SYNC'};return s.lang==='en'?(en[k]||k):{play:'🎮 ИГРАТЬ',solo:'🤖 Тренировка с ботом',create:'👥 Создать комнату',join:'🔗 Подключиться',open:'🌍 Открытые комнаты',comp:'🏆 Соревнования',fl:'💼 Начинающий фрилансер',compBack:'↩ Назад',back:'↩ Назад',settings:'⚙️ Настройки',profile:'👤 Профиль',save:'💾 Сохранить',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Выкл',musicOn:'🔇 Вкл',history:'📜 ИСТОРИЯ ИГР',sync:'🔄 СИНХРОНИЗАЦИЯ'}[k]||k;}
+        function L(k){let en={play:'🎮 PLAY',solo:'🤖 Bot Training',create:'👥 Create Room',join:'🔗 Join Room',open:'🌍 Open Rooms',comp:'🏆 Competitions',fl:'💼 Freelancer',compBack:'↩ Back',back:'↩ Back',settings:'⚙️ Settings',profile:'👤 Profile',save:'💾 Save',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Off',musicOn:'🔇 On',history:'📜 HISTORY',sync:'🔄 SYNC DEVICES'};return s.lang==='en'?(en[k]||k):{play:'🎮 ИГРАТЬ',solo:'🤖 Тренировка с ботом',create:'👥 Создать комнату',join:'🔗 Подключиться',open:'🌍 Открытые комнаты',comp:'🏆 Соревнования',fl:'💼 Начинающий фрилансер',compBack:'↩ Назад',back:'↩ Назад',settings:'⚙️ Настройки',profile:'👤 Профиль',save:'💾 Сохранить',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Выкл',musicOn:'🔇 Вкл',history:'📜 ИСТОРИЯ ИГР',sync:'🔄 СИНХРОНИЗАЦИЯ УСТРОЙСТВ'}[k]||k;}
         
         function aL(){
             let btns={playMenuBtn:'play',soloBtn:'solo',createRoomBtn:'create',joinRoomBtn:'join',openRoomsBtn:'open',compBtn:'comp',freelancerBtn:'fl',compBackBtn:'compBack',backMenuBtn:'back',settingsBtn:'settings',saveProfileBtn:'save',historyBtn:'history',syncBtn:'sync'};
             for(let[id,key]of Object.entries(btns)){let el=document.getElementById(id);if(el)el.textContent=L(key);}
-            document.getElementById('buyBtn').textContent=L('buy');
-            document.getElementById('waitBtn').textContent=L('wait');
+            document.getElementById('buyBtn').textContent=L('buy');document.getElementById('waitBtn').textContent=L('wait');
         }
 
         function lC(){fetch('cases.json').then(r=>r.json()).then(cs=>{s.acl=cs.filter(c=>c&&c.symbol&&c.price);s.crdy=true;document.getElementById('loadingScreen').style.display='none';document.getElementById('menuScreen').style.display='block';}).catch(()=>{document.getElementById('loadingScreen').textContent='Ошибка cases.json';});}
 
-        // ===== BIND EVENTS =====
         function bind(){
-            document.getElementById('playMenuBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('createCompanyBtn').style.display='none';});
-            document.getElementById('backMenuBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='none';document.getElementById('playMenuBtn').style.display='block';document.getElementById('createCompanyBtn').style.display='block';});
+            // Главное меню → второе меню
+            document.getElementById('playMenuBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';document.getElementById('syncBtn').style.display='none';});
+            document.getElementById('backMenuBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='none';document.getElementById('playMenuBtn').style.display='block';document.getElementById('historyBtn').style.display='block';document.getElementById('syncBtn').style.display='block';});
+            
+            // Соревнования
             document.getElementById('compBtn').addEventListener('click',()=>{document.getElementById('playMenu').style.display='none';document.getElementById('compMenu').style.display='block';});
             document.getElementById('compBackBtn').addEventListener('click',()=>{document.getElementById('compMenu').style.display='none';document.getElementById('playMenu').style.display='block';});
             
-            // Freelancer: крестик → возврат в меню Соревнований
+            // Фрилансер
             document.getElementById('freelancerBtn').addEventListener('click',()=>{document.getElementById('compMenu').style.display='none';document.getElementById('freelancerIntroModal').classList.add('show');});
             document.getElementById('flCloseBtn').addEventListener('click',()=>{document.getElementById('freelancerIntroModal').classList.remove('show');document.getElementById('compMenu').style.display='block';});
             
-            // Рейтинг: крестик → возврат в Начинающий фрилансер
+            // Рейтинг фрилансеров
             document.getElementById('flRatingViewBtn').addEventListener('click',()=>{document.getElementById('freelancerIntroModal').classList.remove('show');shFR();});
             document.getElementById('flRatingCloseBtn').addEventListener('click',()=>{document.getElementById('freelancerRatingModal').classList.remove('show');document.getElementById('freelancerIntroModal').classList.add('show');});
             
@@ -540,16 +559,19 @@
             document.getElementById('flRatingFromConfirmBtn').addEventListener('click',()=>{document.getElementById('flConfirmModal').classList.remove('show');shFR();});
             document.getElementById('flConfirmCloseBtn').addEventListener('click',()=>{document.getElementById('flConfirmModal').classList.remove('show');});
 
+            // Профиль
             document.getElementById('profileAvatar').addEventListener('click',()=>{s.previewAvatar=s.pa;up();document.getElementById('profileModal').classList.add('show');});
             document.getElementById('profileCloseBtn').addEventListener('click',()=>document.getElementById('profileModal').classList.remove('show'));
             document.getElementById('settingsBtn').addEventListener('click',()=>document.getElementById('settingsModal').classList.add('show'));
             document.getElementById('settingsCloseBtn').addEventListener('click',()=>document.getElementById('settingsModal').classList.remove('show'));
             document.getElementById('saveProfileBtn').addEventListener('click',()=>{s.pn=document.getElementById('editName').value.trim()||'Трейдер';s.pa=s.previewAvatar||s.pa;s.previewAvatar=null;sS();up();document.getElementById('profileModal').classList.remove('show');});
             
+            // Соло
             document.getElementById('soloBtn').addEventListener('click',()=>{s.fa=false;document.getElementById('soloModal').classList.add('show');});
             document.getElementById('soloCloseBtn').addEventListener('click',()=>document.getElementById('soloModal').classList.remove('show'));
             document.getElementById('startSoloBtn').addEventListener('click',()=>{s.sc=parseInt(document.querySelector('#sCashChips .selected')?.dataset?.cash||10000);s.tr=parseInt(document.querySelector('#sRoundsChips .selected')?.dataset?.rounds||10);s.rt=parseInt(document.querySelector('#sTimeChips .selected')?.dataset?.time||30);s.im=false;s.fa=false;document.getElementById('soloModal').classList.remove('show');sG();});
             
+            // Игровые кнопки
             document.getElementById('buyBtn').addEventListener('click',pBuy);
             document.getElementById('waitBtn').addEventListener('click',tw);
             document.getElementById('sellAllBtn').addEventListener('click',slA);
@@ -557,21 +579,32 @@
             document.getElementById('qtyMinus').addEventListener('click',()=>{let i=document.getElementById('buyQty');i.value=Math.max(1,parseInt(i.value)-1);ubb();});
             document.getElementById('qtyPlus').addEventListener('click',()=>{let i=document.getElementById('buyQty');i.value=Math.min(1000,parseInt(i.value)+1);ubb();});
             document.getElementById('buyQty').addEventListener('input',ubb);
-            document.getElementById('menuBtn').addEventListener('click',()=>{clearInterval(s.rtimer);clearInterval(s.fi2);['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';s.ga=false;s.fi=false;s.fa=false;});
+            document.getElementById('menuBtn').addEventListener('click',()=>{clearInterval(s.rtimer);clearInterval(s.fi2);['resultOverlay','finalOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='none';document.getElementById('compMenu').style.display='none';document.getElementById('playMenuBtn').style.display='block';document.getElementById('historyBtn').style.display='block';document.getElementById('syncBtn').style.display='block';s.ga=false;s.fi=false;s.fa=false;});
             document.getElementById('shareBtn').addEventListener('click',()=>{let t='🏆 InvestBattle: '+fm(s.yc);navigator.share?navigator.share({title:'InvestBattle',text:t}):cp(t);});
 
+            // Комнаты
             document.getElementById('createRoomBtn').addEventListener('click',()=>document.getElementById('roomModal').classList.add('show'));
             document.getElementById('roomCloseBtn').addEventListener('click',()=>document.getElementById('roomModal').classList.remove('show'));
-            document.getElementById('confirmRoomBtn').addEventListener('click',()=>{s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt(document.querySelector('#maxChips .selected')?.dataset?.max||2);s.sc=parseInt(document.querySelector('#cashChips .selected')?.dataset?.cash||10000);s.tr=parseInt(document.querySelector('#roundsChips .selected')?.dataset?.rounds||5);s.rt=parseInt(document.querySelector('#timeChips .selected')?.dataset?.time||30);document.getElementById('roomModal').classList.remove('show');cR();});
+            document.getElementById('confirmRoomBtn').addEventListener('click',()=>{
+                s.rn=document.getElementById('roomNameInput').value||'Комната';
+                s.mp=parseInt(document.querySelector('#maxChips .selected')?.dataset?.max||2);
+                s.sc=parseInt(document.querySelector('#cashChips .selected')?.dataset?.cash||10000);
+                s.tr=parseInt(document.querySelector('#roundsChips .selected')?.dataset?.rounds||5);
+                s.rt=parseInt(document.querySelector('#timeChips .selected')?.dataset?.time||30);
+                s.roomAccess=document.querySelector('#accessChips .selected')?.dataset?.access||'open';
+                document.getElementById('roomModal').classList.remove('show');
+                cR();
+            });
             document.getElementById('joinRoomBtn').addEventListener('click',()=>document.getElementById('joinModal').classList.add('show'));
             document.getElementById('joinCloseBtn').addEventListener('click',()=>document.getElementById('joinModal').classList.remove('show'));
             document.getElementById('confirmJoinBtn').addEventListener('click',()=>{let code=document.getElementById('joinCodeInput').value.trim().toUpperCase();if(code){window._joinRoom(code);document.getElementById('joinModal').classList.remove('show');}});
             
+            // Открытые комнаты
             document.getElementById('openRoomsBtn').addEventListener('click',()=>{
                 let m=document.createElement('div');m.className='modal show';
-                m.innerHTML=`<div class="modal-content"><button class="modal-close">✕</button><h3>🌍 Открытые комнаты</h3><div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div></div>`;
+                m.innerHTML=`<div class="modal-content"><button class="modal-close" id="openRoomsClose">✕</button><h3>🌍 Открытые комнаты</h3><div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div></div>`;
                 document.body.appendChild(m);
-                m.querySelector('.modal-close').addEventListener('click',()=>document.body.removeChild(m));
+                document.getElementById('openRoomsClose').addEventListener('click',()=>document.body.removeChild(m));
                 db.ref('rooms').once('value',sn=>{
                     let rooms=sn.val();let l=m.querySelector('#openRoomsList');
                     if(!rooms){l.innerHTML='<p>Нет комнат</p>';return;}
@@ -582,32 +615,38 @@
                 });
             });
             
-            document.getElementById('createCompanyBtn').addEventListener('click',()=>alert('🏗 Скоро!'));
+            // История и синхронизация
             document.getElementById('historyBtn').addEventListener('click',shGH);
             document.getElementById('historyCloseBtn').addEventListener('click',()=>document.getElementById('historyModal').classList.remove('show'));
-            
             document.getElementById('syncBtn').addEventListener('click',genSync);
             document.getElementById('syncCloseBtn').addEventListener('click',()=>document.getElementById('syncModal').classList.remove('show'));
             document.getElementById('confirmSyncBtn').addEventListener('click',doSync);
             document.getElementById('copySyncCode').addEventListener('click',()=>cp(s.syncCode||document.getElementById('syncCodeDisplay').textContent));
             
+            // Музыка и админ
             document.getElementById('musicToggleBtn').addEventListener('click',function(){mo=!mo;this.textContent=mo?L('musicOff'):L('musicOn');if(mo)pnt();else bm.pause();});
             document.getElementById('musicFloatBtn').addEventListener('click',function(){mo=!mo;this.textContent=mo?'🔊':'🔇';if(mo)pnt();else bm.pause();});
             document.getElementById('adminFloatBtn').addEventListener('click',()=>{if(!isAdmin())return;document.getElementById('adminModal').classList.add('show');upA();});
             document.getElementById('adminCloseBtn').addEventListener('click',()=>document.getElementById('adminModal').classList.remove('show'));
             document.getElementById('playerSearchInput')?.addEventListener('input',searchPlayer);
             
+            // Чипсы
             document.querySelectorAll('.chip-row').forEach(row=>{row.querySelectorAll('.chip').forEach(chip=>{chip.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');});});});
             document.querySelectorAll('#avatarChips .chip').forEach(c=>c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');s.previewAvatar=this.dataset.avatar;document.getElementById('editAvatarBig').innerHTML=av(s.previewAvatar);}));
             document.querySelectorAll('#langChips .chip').forEach(c=>c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');s.lang=this.dataset.lang;aL();localStorage.setItem('ib_lang',s.lang);}));
+            
+            // Лобби
             document.getElementById('lobbyCloseX').addEventListener('click',lvR);
 
+            // Deep link
             if(tg?.initDataUnsafe?.start_param){let code=tg.initDataUnsafe.start_param.toUpperCase().trim();setTimeout(()=>{window._joinRoom(code);},1500);}
+            
+            // Очистка пустых комнат
             db.ref('rooms').on('value',sn=>{let r=sn.val();if(r)Object.entries(r).forEach(([code,room])=>{if(room&&room.pl&&Object.keys(room.pl).length===0){db.ref('rooms/'+code).remove();}});});
         }
 
         lS();lC();bind();aL();
-        console.log('✅ InvestBattle v10.2 — Исправлена навигация и синхронизация');
+        console.log('✅ InvestBattle v10.3 — Чистое меню, исправлены комнаты');
     })();
     </script>
 </body>
