@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v10.5</title>
+    <title>InvestBattle v11.0</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -81,13 +81,15 @@
         .history-item{background:var(--surface);border-radius:8px;padding:8px;margin:4px 0;font-size:10px}
         .sync-box{background:var(--surface);border:1px solid var(--gold);border-radius:10px;padding:10px;margin:8px 0;text-align:center}
         .sync-box .sync-code{font-size:20px;font-weight:900;color:var(--gold);letter-spacing:3px}
+        .room-info{background:var(--surface);border-radius:10px;padding:10px;margin:8px 0;font-size:10px;color:var(--text2)}
+        .room-info span{color:#fff;font-weight:700}
     </style>
 </head>
 <body>
     <div class="app" id="app">
         <div class="loading-screen" id="loadingScreen">Загрузка...</div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v10.5</div></div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v11.0</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
@@ -114,7 +116,8 @@
         <div class="modal" id="settingsModal"><div class="modal-content"><button class="modal-close" id="settingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Язык</div><div class="chip-row" id="langChips"><div class="chip" data-lang="ru">🇷🇺 RU</div><div class="chip" data-lang="en">🇬🇧 EN</div></div><div class="section-title">Музыка</div><button class="btn" id="musicToggleBtn">🔊 Выкл</button></div></div>
         <div class="modal" id="syncModal"><div class="modal-content"><button class="modal-close" id="syncCloseBtn">✕</button><h3>🔄 Синхронизация устройств</h3><p style="text-align:center;font-size:11px;color:var(--text2);">Введите этот код на другом устройстве, чтобы синхронизировать аккаунты:</p><div class="sync-box"><div class="sync-code" id="syncCodeDisplay">------</div><button class="btn-sm" id="copySyncCode">📋 Копировать</button></div><div class="section-title">Или введите код с другого устройства:</div><input class="input" id="syncCodeInput" placeholder="Код синхронизации" maxlength="12"><button class="btn gold" id="confirmSyncBtn" style="margin-top:10px;">🔗 Синхронизировать</button></div></div>
         <div class="modal" id="soloModal"><div class="modal-content"><button class="modal-close" id="soloCloseBtn">✕</button><h3>🤖 Тренировка</h3><div class="section-title">💰 Капитал</div><div class="chip-row" id="sCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="sRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="sTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div></div><button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button></div></div>
-        <div class="modal" id="roomModal"><div class="modal-content"><button class="modal-close" id="roomCloseBtn">✕</button><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">🌍 Доступ</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">👥 Макс / 💰 Капитал</div><div class="chip-row" id="maxChips"><div class="chip selected" data-max="2">2</div><div class="chip" data-max="4">4</div></div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div></div><div class="section-title">📊 Раунды / ⏱ Сек</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div></div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
+        <div class="modal" id="roomModal"><div class="modal-content"><button class="modal-close" id="roomCloseBtn">✕</button><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">🌍 Тип доступа</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">⚙️ Режим</div><div class="chip-row" id="modeChips"><div class="chip selected" data-mode="hard">🔒 Жёсткая</div><div class="chip" data-mode="free">🎲 Произвольная</div></div><div class="section-title">👥 Макс игроков</div><div class="chip-row" id="maxChips"><div class="chip selected" data-max="2">2</div><div class="chip" data-max="4">4</div><div class="chip" data-max="6">6</div><div class="chip" data-max="10">10</div><div class="chip" data-max="20">20</div></div><div class="section-title">💰 Капитал</div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div><div class="chip" data-cash="100000">$100K</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div><div class="chip" data-time="90">90с</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div><div class="chip" data-rounds="30">30</div><div class="chip" data-rounds="50">50</div><div class="chip" data-rounds="100">100</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
+        <div class="modal" id="joinParamsModal"><div class="modal-content"><button class="modal-close" id="joinParamsCloseBtn">✕</button><h3>🎲 Выберите параметры</h3><p style="text-align:center;font-size:10px;color:var(--text2);">Среднее арифметическое (в большую сторону) определит параметры игры</p><div class="section-title">💰 Капитал</div><div class="chip-row" id="jpCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div><div class="chip" data-cash="100000">$100K</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="jpTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div><div class="chip" data-time="90">90с</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="jpRoundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div><div class="chip" data-rounds="30">30</div><div class="chip" data-rounds="50">50</div><div class="chip" data-rounds="100">100</div></div><button class="btn gold" id="confirmJoinParamsBtn" style="margin-top:10px;">✅ Подтвердить и войти</button></div></div>
         <div class="modal" id="lobbyModal"><div class="modal-content"><button class="modal-close" id="lobbyCloseX">✕</button><div id="lobbyContent"></div></div></div>
         <div class="modal" id="joinModal"><div class="modal-content"><button class="modal-close" id="joinCloseBtn">✕</button><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" placeholder="Код комнаты"><button class="btn gold" id="confirmJoinBtn" style="margin-top:10px;">Подключиться</button></div></div>
         <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><button class="modal-close" id="adminCloseBtn">✕</button><h3 style="color:var(--green);">🛡️ АДМИН</h3><input class="search-input" id="playerSearchInput" placeholder="🔍 Поиск игрока по ID..."><div id="playerSearchResult"></div><div class="admin-stat"><span>🟢 Онлайн</span><span class="value" id="aOnline">0</span></div><div class="admin-stat"><span>👥 Всего</span><span class="value" id="aTotal">0</span></div><div class="admin-stat"><span>🎮 Игр</span><span class="value" id="aPlaying">0</span></div><div class="admin-stat"><span>💼 Фрилансеров</span><span class="value" id="aFreel">0</span></div></div></div>
@@ -145,12 +148,12 @@
         if(tg){tg.ready();tg.expand();}
 
         let s={
-            pn:'Трейдер',pa:'icons/avatar1.png',ps:0,pd:0,sc:10000,rt:30,tr:10,mp:2,rc:null,rn:'Комната',ra:'open',
+            pn:'Трейдер',pa:'icons/avatar1.png',ps:0,pd:0,sc:10000,rt:30,tr:5,mp:2,rc:null,rn:'Комната',ra:'open',rm:'hard',
             cr:0,yc:10000,oc:10000,yp:{},op:{},cc:null,ga:false,fi:false,ft:90,
             uc:[],mk:{},fv:{},fi2:null,wp:false,rtimer:null,
             lp:[],acl:[],crdy:false,im:false,on:'🤖 Бот-Трейдер',oa:'🤖',
             pid:'',hid:'',cs:[],fa:false,fw:'',previewAvatar:null,lang:'ru',
-            gh:[],syncCode:'',roomListener:null
+            gh:[],syncCode:'',roomListener:null,pendingJoin:null
         };
 
         function pid(){if(tg?.initDataUnsafe?.user?.id)return'tg_'+tg.initDataUnsafe.user.id;let i=localStorage.getItem('ib_pid_v10');if(!i){i='web_'+Math.random().toString(36).substr(2,9);localStorage.setItem('ib_pid_v10',i);}return i;}
@@ -183,25 +186,43 @@
         function sy(){if(!s.rc||!s.im)return;db.ref(`rooms/${s.rc}/pl/${s.pid}`).update({n:s.pn,a:s.pa,c:s.yc,p:s.yp});}
         function botA(){if(!s.cc||s.im)return;let sym=s.cc.symbol,pr=s.mk[sym]||s.cc.price,ip=s.op[sym],fair=s.fv[sym]||pr;if(s.oc>=pr&&pr<fair*0.85){let q=Math.floor(Math.random()*5)+3;if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};let o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}}else if(ip&&ip.qty>0&&(pr>ip.avgPrice*1.15||pr>fair*1.05)){let q=Math.min(ip.qty,Math.ceil(ip.qty*0.8));s.oc+=pr*q;ip.qty-=q;if(ip.qty<=0)delete s.op[sym];}else if(Math.random()<0.25&&s.oc>=pr*2){let q=Math.floor(Math.random()*4)+1;if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};let o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}}upr();}
 
+        function calcRoomParams(r){
+            if(!r.votes||Object.keys(r.votes).length===0)return;
+            let totals={sc:0,rt:0,tr:0};let cnt=Object.keys(r.votes).length;
+            for(let[,v]of Object.entries(r.votes)){totals.sc+=v.sc||r.sc;totals.rt+=v.rt||r.rt;totals.tr+=v.tr||r.tr;}
+            let newSc=Math.ceil(totals.sc/cnt),newRt=Math.ceil(totals.rt/cnt),newTr=Math.ceil(totals.tr/cnt);
+            db.ref('rooms/'+s.rc).update({sc:newSc,rt:newRt,tr:newTr});
+        }
+
         function startRoomListener(){
             if(!s.rc)return;
             if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}
             s.roomListener=sn=>{
                 let r=sn.val();
-                if(!r){if(document.getElementById('lobbyModal').classList.contains('show')){document.getElementById('lobbyModal').classList.remove('show');alert('Комната удалена');}s.rc=null;s.im=false;return;}
-                s.hid=r.hid||'';
+                if(!r){document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;return;}
+                s.hid=r.hid||'';s.sc=r.sc||10000;s.rt=r.rt||30;s.tr=r.tr||5;s.mp=r.mp||2;s.rm=r.rm||'hard';
                 if(r.pl){s.lp=Object.entries(r.pl).map(([id,p])=>({id,n:p.n||'Игрок',a:p.a||'👤',c:p.c||s.sc}));}
                 if(r.st==='playing'&&!s.ga){document.getElementById('lobbyModal').classList.remove('show');smg();return;}
                 if(r.rd&&s.ga){let rc=Object.values(r.rd).filter(Boolean).length,tl=s.lp.length;document.getElementById('readyStatus').textContent=`NO: ${rc}/${tl}`;if(rc>=tl&&tl>=2){clearInterval(s.rtimer);let t=5;document.getElementById('timer').textContent=t;s.rtimer=setInterval(()=>{t--;document.getElementById('timer').textContent=t;if(t<=0){clearInterval(s.rtimer);nr();}},1000);}}
-                if(document.getElementById('lobbyModal').classList.contains('show')){ulc(r);}
+                if(document.getElementById('lobbyModal').classList.contains('show'))ulc(r);
                 if(r.ch&&document.getElementById('chatMsgs')){let ms=Object.values(r.ch).sort((a,b)=>a.t-b.t);let ch=document.getElementById('chatMsgs');ch.innerHTML=ms.map(m=>`<div class="chat-msg"><span class="author">${m.n}:</span> ${m.tx}</div>`).join('');ch.scrollTop=ch.scrollHeight;}
+                if(r.rm==='free'&&r.votes)calcRoomParams(r);
             };
             db.ref('rooms/'+s.rc).on('value',s.roomListener);
         }
 
         function ulc(r){
             let c=document.getElementById('lobbyContent'),isH=s.pid===r.hid,deep=`https://t.me/InvestBattleBot?start=${s.rc}`;
-            c.innerHTML=`<h3>🏆 ${r.rn||'Комната'}</h3><div class="room-link" id="copyRoomCode">🆔 ${s.rc} (нажми скопировать)</div><div class="room-link" id="copyDeepLink">🔗 Ссылка (нажми скопировать)</div><p>👥 ${s.lp.length}/${r.mp||2} | 💰 ${fm(r.sc||10000)} | ⏱ ${r.rt||30}с | 📊 ${r.tr||10} раундов</p>${s.lp.map(p=>`<div class="lobby-player"><span class="avatar">${av(p.a)}</span>${p.n} ${p.id===s.pid?'(Вы)':''} ${p.id===r.hid?'👑':''}</div>`).join('')}<div class="chat-box" id="chatMsgs"></div><div class="chat-input-row"><input id="chatInput" placeholder="Сообщение..." maxlength="100"><button class="btn-sm" id="chatSend">✉️</button></div>${isH?`<button class="btn gold" id="startLobbyBtn" style="margin-top:10px;" ${s.lp.length<2?'disabled':''}>🚀 НАЧАТЬ (${s.lp.length}/${r.mp||2})</button>`:'<p style="text-align:center;color:var(--text2);">⏳ Ожидание хоста...</p>'}<button class="btn" id="leaveLobbyBtn" style="margin-top:6px;">🚪 Выйти</button>`;
+            c.innerHTML=`
+                <h3>🏆 ${r.rn||'Комната'}</h3>
+                <div class="room-link" id="copyRoomCode">🆔 ${s.rc} (нажми скопировать)</div>
+                <div class="room-link" id="copyDeepLink">🔗 Ссылка (нажми скопировать)</div>
+                <div class="room-info">👥 ${s.lp.length}/${r.mp||2} | 💰 ${fm(r.sc||10000)} | ⏱ ${r.rt||30}с | 📊 ${r.tr||5} раундов | ${r.rm==='free'?'🎲 Произвольная':'🔒 Жёсткая'}</div>
+                ${s.lp.map(p=>`<div class="lobby-player"><span class="avatar">${av(p.a)}</span>${p.n} ${p.id===s.pid?'(Вы)':''} ${p.id===r.hid?'👑':''}</div>`).join('')}
+                <div class="chat-box" id="chatMsgs"></div>
+                <div class="chat-input-row"><input id="chatInput" placeholder="Сообщение..." maxlength="100"><button class="btn-sm" id="chatSend">✉️</button></div>
+                ${isH?`<button class="btn gold" id="startLobbyBtn" style="margin-top:10px;" ${s.lp.length<2?'disabled':''}>🚀 НАЧАТЬ (${s.lp.length}/${r.mp||2})</button>`:'<p style="text-align:center;color:var(--text2);">⏳ Ожидание хоста...</p>'}
+                <button class="btn" id="leaveLobbyBtn" style="margin-top:6px;">🚪 Выйти</button>`;
             setTimeout(()=>{
                 document.getElementById('copyRoomCode')?.addEventListener('click',()=>cp(s.rc));
                 document.getElementById('copyDeepLink')?.addEventListener('click',()=>cp(deep));
@@ -214,12 +235,11 @@
 
         function sdCh(){let inp=document.getElementById('chatInput');if(!inp||!inp.value.trim()||!s.rc)return;db.ref(`rooms/${s.rc}/ch`).push({n:s.pn,tx:inp.value.trim().substring(0,100),t:firebase.database.ServerValue.TIMESTAMP});inp.value='';}
         function hsg(){if(!s.rc)return;let cs=[],ui=[];for(let i=0;i<s.tr;i++){let v=s.acl.filter(c=>c&&c.symbol&&!ui.includes(c.id));let k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1});}db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});}
-        
         function lvR(){
             if(!s.rc)return;
             if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}
-            if(s.pid===s.hid){if(s.lp.length>1){let nid=s.lp.find(p=>p.id!==s.pid)?.id;if(nid)db.ref(`rooms/${s.rc}/hid`).set(nid);else db.ref('rooms/'+s.rc).remove();}else{db.ref('rooms/'+s.rc).remove();}}
-            else{db.ref(`rooms/${s.rc}/pl/${s.pid}`).remove();db.ref(`rooms/${s.rc}/rd/${s.pid}`).remove();}
+            if(s.pid===s.hid){db.ref('rooms/'+s.rc).remove();}
+            else{db.ref(`rooms/${s.rc}/pl/${s.pid}`).remove();db.ref(`rooms/${s.rc}/votes/${s.pid}`).remove();}
             document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];
         }
 
@@ -230,21 +250,37 @@
             document.getElementById('lobbyModal').classList.add('show');
             document.getElementById('lobbyContent').innerHTML='<p style="text-align:center;color:var(--gold);">Создание...</p>';
             startRoomListener();
-            db.ref('rooms/'+s.rc).set({hid:s.pid,rn:s.rn||'Комната',mp:s.mp||2,sc:s.sc||10000,tr:s.tr||10,rt:s.rt||30,pl:{[s.pid]:pd},st:'waiting',access:s.ra||'open'}).then(()=>{console.log('✅ Комната:',s.rc);}).catch(e=>{alert('❌ Ошибка Firebase: '+e.message);document.getElementById('lobbyModal').classList.remove('show');if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}s.rc=null;s.im=false;});
+            db.ref('rooms/'+s.rc).set({hid:s.pid,rn:s.rn||'Комната',mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:{[s.pid]:pd},st:'waiting',access:s.ra,rm:s.rm}).then(()=>{}).catch(e=>{alert('❌ Ошибка: '+e.message);lvR();});
+        }
+
+        function doJoinRoom(code,params){
+            code=code.toUpperCase().trim();
+            db.ref('rooms/'+code).once('value',sn=>{
+                let r=sn.val();if(!r){alert('❌ Комната не найдена');return;}
+                if(r.st!=='waiting'){alert('❌ Игра уже идёт');return;}
+                if(r.pl&&Object.keys(r.pl).length>=(r.mp||2)){alert('❌ Комната заполнена');return;}
+                s.rc=code;s.hid=r.hid||'';s.sc=r.sc||10000;s.rt=r.rt||30;s.tr=r.tr||5;s.mp=r.mp||2;s.rm=r.rm||'hard';
+                if(s.rm==='free'&&params&&s.pid!==r.hid){
+                    db.ref(`rooms/${code}/votes/${s.pid}`).set(params);
+                }
+                s.im=true;s.lp=[];
+                document.getElementById('lobbyModal').classList.add('show');
+                document.getElementById('lobbyContent').innerHTML='<p style="text-align:center;color:var(--gold);">Подключение...</p>';
+                startRoomListener();
+                db.ref(`rooms/${code}/pl/${s.pid}`).set({n:s.pn,a:s.pa,c:s.sc||10000}).catch(e=>{alert('❌ Ошибка: '+e.message);});
+            });
         }
 
         window._joinRoom=function(code){
             code=code.toUpperCase().trim();
             db.ref('rooms/'+code).once('value',sn=>{
                 let r=sn.val();if(!r){alert('❌ Комната не найдена');return;}
-                if(r.st!=='waiting'){alert('❌ Игра уже идёт');return;}
-                let pc=r.pl?Object.keys(r.pl).length:0;if(pc>=(r.mp||2)){alert('❌ Комната заполнена');return;}
-                s.rc=code;s.hid=r.hid||'';s.sc=r.sc||10000;s.tr=r.tr||10;s.rt=r.rt||30;
-                s.im=true;s.lp=[];
-                document.getElementById('lobbyModal').classList.add('show');
-                document.getElementById('lobbyContent').innerHTML='<p style="text-align:center;color:var(--gold);">Подключение...</p>';
-                startRoomListener();
-                db.ref(`rooms/${code}/pl/${s.pid}`).set({n:s.pn,a:s.pa,c:s.sc}).catch(e=>{alert('❌ Ошибка: '+e.message);});
+                if(r.rm==='free'&&s.pid!==r.hid){
+                    s.pendingJoin=code;
+                    document.getElementById('joinParamsModal').classList.add('show');
+                }else{
+                    doJoinRoom(code,null);
+                }
             });
         };
 
@@ -300,11 +336,13 @@
             document.getElementById('shareBtn').addEventListener('click',()=>{let t='🏆 InvestBattle: '+fm(s.yc);navigator.share?navigator.share({title:'InvestBattle',text:t}):cp(t);});
             document.getElementById('createRoomBtn').addEventListener('click',()=>document.getElementById('roomModal').classList.add('show'));
             document.getElementById('roomCloseBtn').addEventListener('click',()=>document.getElementById('roomModal').classList.remove('show'));
-            document.getElementById('confirmRoomBtn').addEventListener('click',()=>{s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt(document.querySelector('#maxChips .selected')?.dataset?.max||2);s.sc=parseInt(document.querySelector('#cashChips .selected')?.dataset?.cash||10000);s.tr=parseInt(document.querySelector('#roundsChips .selected')?.dataset?.rounds||5);s.rt=parseInt(document.querySelector('#timeChips .selected')?.dataset?.time||30);s.ra=document.querySelector('#accessChips .selected')?.dataset?.access||'open';document.getElementById('roomModal').classList.remove('show');cR();});
+            document.getElementById('confirmRoomBtn').addEventListener('click',()=>{s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt(document.querySelector('#maxChips .selected')?.dataset?.max||2);s.sc=parseInt(document.querySelector('#cashChips .selected')?.dataset?.cash||10000);s.rt=parseInt(document.querySelector('#timeChips .selected')?.dataset?.time||30);s.tr=parseInt(document.querySelector('#roundsChips .selected')?.dataset?.rounds||5);s.ra=document.querySelector('#accessChips .selected')?.dataset?.access||'open';s.rm=document.querySelector('#modeChips .selected')?.dataset?.mode||'hard';document.getElementById('roomModal').classList.remove('show');cR();});
             document.getElementById('joinRoomBtn').addEventListener('click',()=>document.getElementById('joinModal').classList.add('show'));
             document.getElementById('joinCloseBtn').addEventListener('click',()=>document.getElementById('joinModal').classList.remove('show'));
             document.getElementById('confirmJoinBtn').addEventListener('click',()=>{let code=document.getElementById('joinCodeInput').value.trim().toUpperCase();if(code){window._joinRoom(code);document.getElementById('joinModal').classList.remove('show');}});
-            document.getElementById('openRoomsBtn').addEventListener('click',()=>{let m=document.createElement('div');m.className='modal show';m.innerHTML=`<div class="modal-content"><button class="modal-close" id="openRoomsClose">✕</button><h3>🌍 Открытые комнаты</h3><div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div></div>`;document.body.appendChild(m);document.getElementById('openRoomsClose').addEventListener('click',()=>document.body.removeChild(m));db.ref('rooms').once('value',sn=>{let rooms=sn.val();let l=m.querySelector('#openRoomsList');if(!rooms){l.innerHTML='<p>Нет комнат</p>';return;}let openR=Object.entries(rooms).filter(([,r])=>r&&r.st==='waiting'&&r.access!=='closed');if(openR.length===0){l.innerHTML='<p>Нет комнат</p>';return;}l.innerHTML=openR.map(([c,r])=>`<div style="background:var(--surface);padding:10px;border-radius:10px;margin-bottom:6px;cursor:pointer;" id="rm_${c}"><b>${r.rn||'Комната'}</b> | 👥 ${r.pl?Object.keys(r.pl).length:0}/${r.mp||2}</div>`).join('');openR.forEach(([c])=>{let d=m.querySelector('#rm_'+c);if(d)d.addEventListener('click',()=>{document.body.removeChild(m);window._joinRoom(c);});});});});
+            document.getElementById('confirmJoinParamsBtn').addEventListener('click',()=>{let sc=parseInt(document.querySelector('#jpCashChips .selected')?.dataset?.cash||10000);let rt=parseInt(document.querySelector('#jpTimeChips .selected')?.dataset?.time||30);let tr=parseInt(document.querySelector('#jpRoundsChips .selected')?.dataset?.rounds||5);document.getElementById('joinParamsModal').classList.remove('show');if(s.pendingJoin){doJoinRoom(s.pendingJoin,{sc,rt,tr});s.pendingJoin=null;}});
+            document.getElementById('joinParamsCloseBtn').addEventListener('click',()=>{document.getElementById('joinParamsModal').classList.remove('show');s.pendingJoin=null;});
+            document.getElementById('openRoomsBtn').addEventListener('click',()=>{let m=document.createElement('div');m.className='modal show';m.innerHTML=`<div class="modal-content"><button class="modal-close" id="openRoomsClose">✕</button><h3>🌍 Открытые комнаты</h3><div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div></div>`;document.body.appendChild(m);document.getElementById('openRoomsClose').addEventListener('click',()=>document.body.removeChild(m));db.ref('rooms').once('value',sn=>{let rooms=sn.val();let l=m.querySelector('#openRoomsList');if(!rooms){l.innerHTML='<p>Нет комнат</p>';return;}let openR=Object.entries(rooms).filter(([,r])=>r&&r.st==='waiting'&&r.access==='open');if(openR.length===0){l.innerHTML='<p>Нет комнат</p>';return;}l.innerHTML=openR.map(([c,r])=>`<div style="background:var(--surface);padding:10px;border-radius:10px;margin-bottom:6px;cursor:pointer;" id="rm_${c}"><b>${r.rn||'Комната'}</b> | 👥 ${r.pl?Object.keys(r.pl).length:0}/${r.mp||2} | ${r.rm==='free'?'🎲':'🔒'} | 💰${fm(r.sc||10000)}</div>`).join('');openR.forEach(([c])=>{let d=m.querySelector('#rm_'+c);if(d)d.addEventListener('click',()=>{document.body.removeChild(m);window._joinRoom(c);});});});});
             document.getElementById('historyBtn').addEventListener('click',shGH);
             document.getElementById('historyCloseBtn').addEventListener('click',()=>document.getElementById('historyModal').classList.remove('show'));
             document.getElementById('syncBtn').addEventListener('click',genSync);
@@ -321,11 +359,11 @@
             document.querySelectorAll('#langChips .chip').forEach(c=>c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));this.classList.add('selected');s.lang=this.dataset.lang;aL();localStorage.setItem('ib_lang',s.lang);}));
             document.getElementById('lobbyCloseX').addEventListener('click',lvR);
             if(tg?.initDataUnsafe?.start_param){let code=tg.initDataUnsafe.start_param.toUpperCase().trim();setTimeout(()=>{window._joinRoom(code);},1500);}
-            db.ref('rooms').on('value',sn=>{let r=sn.val();if(r)Object.entries(r).forEach(([code,room])=>{if(room&&room.pl&&Object.keys(room.pl).length===0){db.ref('rooms/'+code).remove();}});});
+            db.ref('rooms').on('value',sn=>{let r=sn.val();if(r)Object.entries(r).forEach(([code,room])=>{if(room&&room.pl&&Object.keys(room.pl).length===0&&room.st==='waiting'){setTimeout(()=>{db.ref('rooms/'+code).once('value',s2=>{let r2=s2.val();if(r2&&r2.pl&&Object.keys(r2.pl).length===0)db.ref('rooms/'+code).remove();});},60000);}});});
         }
 
         lS();lC();bind();aL();
-        console.log('✅ InvestBattle v10.5 — Комнаты фикс');
+        console.log('✅ InvestBattle v11.0 — Новая система комнат');
     })();
     </script>
 </body>
