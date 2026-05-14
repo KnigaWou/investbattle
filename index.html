@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v12.2</title>
+    <title>InvestBattle v12.3</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -96,7 +96,7 @@
         <div id="leftNotice" class="left-notice"></div>
         <div id="tradeNotice" class="trade-notice"></div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v12.2</div></div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v12.3</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
@@ -161,11 +161,35 @@ firebase.initializeApp(fc);
 const db=firebase.database(),tg=window.Telegram?.WebApp,ADMIN='5909465804';
 if(tg){tg.ready();tg.expand();}
 
+// ВСЕ КЕЙСЫ СРАЗУ В КОДЕ — никаких fetch
+const CASES=[
+    {id:"c1",symbol:"AAPL",name:"Apple Inc.",price:150,trend:"up",desc:"Крупнейшая тех-компания мира"},
+    {id:"c2",symbol:"TSLA",name:"Tesla",price:200,trend:"volatile",desc:"Электромобили и энергия"},
+    {id:"c3",symbol:"NVDA",name:"NVIDIA",price:100,trend:"up",desc:"Лидер AI-чипов"},
+    {id:"c4",symbol:"META",name:"Meta",price:300,trend:"down",desc:"Соцсети и метавселенная"},
+    {id:"c5",symbol:"GOLD",name:"Gold ETF",price:80,trend:"up",desc:"Защитный актив"},
+    {id:"c6",symbol:"OIL",name:"Crude Oil",price:60,trend:"volatile",desc:"Чёрное золото"},
+    {id:"c7",symbol:"BTC",name:"Bitcoin",price:250,trend:"volatile",desc:"Цифровое золото"},
+    {id:"c8",symbol:"NFLX",name:"Netflix",price:180,trend:"up",desc:"Стриминговый гигант"},
+    {id:"c9",symbol:"AMZN",name:"Amazon",price:220,trend:"up",desc:"E-commerce лидер"},
+    {id:"c10",symbol:"MSFT",name:"Microsoft",price:280,trend:"up",desc:"Софт и AI"},
+    {id:"c11",symbol:"GOOGL",name:"Google",price:260,trend:"up",desc:"Поиск и реклама"},
+    {id:"c12",symbol:"BABA",name:"Alibaba",price:45,trend:"down",desc:"Китайский Amazon"},
+    {id:"c13",symbol:"UBER",name:"Uber",price:55,trend:"up",desc:"Такси и доставка"},
+    {id:"c14",symbol:"SNAP",name:"Snapchat",price:15,trend:"down",desc:"Соцсеть"},
+    {id:"c15",symbol:"PYPL",name:"PayPal",price:40,trend:"down",desc:"Платежи"},
+    {id:"c16",symbol:"COIN",name:"Coinbase",price:90,trend:"down",desc:"Крипто-биржа"},
+    {id:"c17",symbol:"PLTR",name:"Palantir",price:35,trend:"volatile",desc:"AI аналитика"},
+    {id:"c18",symbol:"RIVN",name:"Rivian",price:25,trend:"down",desc:"Электро-пикапы"},
+    {id:"c19",symbol:"ROKU",name:"Roku",price:20,trend:"volatile",desc:"TV стриминг"},
+    {id:"c20",symbol:"SQ",name:"Block",price:30,trend:"volatile",desc:"FinTech"}
+];
+
 let s={
     pn:'Трейдер',pa:'icons/avatar1.png',ps:0,pd:0,sc:10000,rt:30,tr:5,mp:4,rc:null,rn:'Комната',ra:'open',rm:'hard',
     cr:0,yc:10000,oc:10000,yp:{},op:{},cc:null,ga:false,fi:false,ft:90,
     uc:[],mk:{},fv:{},fi2:null,fi3:null,wp:false,rtimer:null,roundOk:false,
-    lp:[],acl:[],crdy:false,im:false,on:'🤖 Бот-Трейдер',oa:'🤖',
+    lp:[],acl:CASES,crdy:true,im:false,on:'🤖 Бот-Трейдер',oa:'🤖',
     pid:'',hid:'',cs:[],fa:false,fw:'',previewAvatar:null,lang:'ru',
     gh:[],roomListener:null,pendingJoin:null,fr:[],frc:[],
     leftPlayers:[],currentTab:'menu',tradeShown:{}
@@ -178,41 +202,6 @@ function fm(n){return n>=1e6?'$'+(n/1e6).toFixed(1)+'M':'$'+Math.round(n).toLoca
 function gwk(){let n=new Date(),d=n.getDay();n.setDate(n.getDate()-(d===0?6:d-1));n.setHours(0,0,0,0);return'week_'+n.toISOString().split('T')[0];}
 function toast(msg){let t=document.getElementById('copiedToast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500);}
 function cp(tx){navigator.clipboard.writeText(tx).then(()=>toast('✅ Скопировано!')).catch(()=>{let t=document.createElement('textarea');t.value=tx;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('✅ Скопировано!');});}
-
-// ЗАГРУЗКА КЕЙСОВ — правильный raw URL с GitHub
-function lC(){
-    const url = 'https://raw.githubusercontent.com/KnigaWou/investbattle/main/cases.json';
-    
-    function finishLoad(cases){
-        s.acl = cases.filter(c => c && c.symbol && c.price);
-        if(s.acl.length === 0){
-            s.acl = [
-                {id:"c1",symbol:"AAPL",name:"Apple",price:150,trend:"up",desc:"Тех-гигант"},
-                {id:"c2",symbol:"TSLA",name:"Tesla",price:200,trend:"volatile",desc:"Электромобили"},
-                {id:"c3",symbol:"NVDA",name:"NVIDIA",price:100,trend:"up",desc:"AI-чипы"},
-                {id:"c4",symbol:"META",name:"Meta",price:300,trend:"down",desc:"Соцсети"},
-                {id:"c5",symbol:"GOLD",name:"Gold",price:80,trend:"up",desc:"Золото"},
-                {id:"c6",symbol:"OIL",name:"Oil",price:60,trend:"volatile",desc:"Нефть"},
-                {id:"c7",symbol:"BTC",name:"Bitcoin",price:250,trend:"volatile",desc:"Крипто"},
-                {id:"c8",symbol:"NFLX",name:"Netflix",price:180,trend:"up",desc:"Стриминг"},
-                {id:"c9",symbol:"AMZN",name:"Amazon",price:220,trend:"up",desc:"E-com"},
-                {id:"c10",symbol:"MSFT",name:"Microsoft",price:280,trend:"up",desc:"Софт"}
-            ];
-        }
-        s.crdy = true;
-        document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('menuScreen').style.display = 'block';
-        document.getElementById('bottomNav').style.display = 'flex';
-        document.getElementById('adminFloatBtn').style.display = isAdmin() ? 'flex' : 'none';
-        console.log('✅ Загружено кейсов:', s.acl.length);
-    }
-    
-    fetch(url)
-        .then(r => r.json())
-        .then(cs => finishLoad(cs))
-        .catch(() => finishLoad([]));
-}
-
 function sf(){if(!s.pid)return;db.ref(`u/${s.pid}`).update({n:s.pn,a:s.pa,st:s.ps,do:s.pd,fr:s.fr,ls:firebase.database.ServerValue.TIMESTAMP});db.ref(`on/${s.pid}`).set({n:s.pn,ts:firebase.database.ServerValue.TIMESTAMP});db.ref(`on/${s.pid}`).onDisconnect().remove();}
 function lf(cb){db.ref('u/'+s.pid).once('value',sn=>{let d=sn.val();if(d){s.pn=d.n||'Трейдер';s.pa=d.a||'icons/avatar1.png';s.ps=typeof d.st=='number'?d.st:0;s.pd=typeof d.do=='number'?d.do:0;s.fr=d.fr||[];}try{let r=localStorage.getItem('ib_v15');if(r){let o=JSON.parse(r);if(s.pn=='Трейдер'&&o.playerName)s.pn=o.playerName;if(s.pa=='icons/avatar1.png'&&o.playerAvatar)s.pa=o.playerAvatar;if(!s.ps&&o.playerStars)s.ps=o.playerStars;if(!s.pd&&o.playerDollars)s.pd=o.playerDollars;if(!s.fr.length&&o.friends)s.fr=o.friends;}}catch(e){}try{let h=localStorage.getItem('ib_history');if(h)s.gh=JSON.parse(h);}catch(e){s.gh=[];}let sl=localStorage.getItem('ib_lang');if(sl)s.lang=sl;cb();});}
 function lS(){s.pid=pid();lf(()=>{loadFriendRequests();up();sf();if(isAdmin()){setInterval(upA,5000);upA();}});}
@@ -367,8 +356,13 @@ function bind(){
     if(tg?.initDataUnsafe?.start_param){let code=tg.initDataUnsafe.start_param.toUpperCase().trim();setTimeout(()=>window._joinRoom(code),1500);}
 }
 
-lS();lC();bind();aL();
-console.log('✅ InvestBattle v12.2 — Raw URL GitHub');
+// Запуск — без fetch, сразу
+document.getElementById('loadingScreen').style.display='none';
+document.getElementById('menuScreen').style.display='block';
+document.getElementById('bottomNav').style.display='flex';
+document.getElementById('adminFloatBtn').style.display=isAdmin()?'flex':'none';
+lS();bind();aL();
+console.log('✅ InvestBattle v12.3 — Кейсы в коде, загрузка мгновенная');
 })();
 </script>
 </body>
