@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v12.1</title>
+    <title>InvestBattle v12.2</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -96,7 +96,7 @@
         <div id="leftNotice" class="left-notice"></div>
         <div id="tradeNotice" class="trade-notice"></div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v12.1</div></div>
+            <div class="header"><div class="logo">🏆 <span>InvestBattle</span></div><div class="badge">v12.2</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName">Трейдер</div><div style="font-size:11px;color:var(--gold);">⭐ <span id="profileStars">0</span> | 💵 <span id="profileDollars">0</span></div></div>
@@ -123,7 +123,6 @@
         </div>
         <div id="copiedToast" class="copied-toast">✅ Скопировано!</div>
 
-        <!-- Modals -->
         <div class="modal" id="profileModal"><div class="modal-content"><button class="modal-close" id="profileCloseBtn">✕</button><h3>👤 Профиль</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">👤</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;"></div></div><button class="btn gold" id="saveProfileBtn" style="margin-top:10px;">💾 Сохранить</button></div></div>
         <div class="modal" id="settingsModal"><div class="modal-content"><button class="modal-close" id="settingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Язык</div><div class="chip-row" id="langChips"><div class="chip" data-lang="ru">🇷🇺 RU</div><div class="chip" data-lang="en">🇬🇧 EN</div></div><div class="section-title">Музыка</div><button class="btn" id="musicToggleBtn">🔊 Выкл</button></div></div>
         <div class="modal" id="soloModal"><div class="modal-content"><button class="modal-close" id="soloCloseBtn">✕</button><h3>🤖 Тренировка</h3><div class="section-title">💰 Капитал</div><div class="chip-row" id="sCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="sRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="sTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div></div><button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button></div></div>
@@ -180,20 +179,38 @@ function gwk(){let n=new Date(),d=n.getDay();n.setDate(n.getDate()-(d===0?6:d-1)
 function toast(msg){let t=document.getElementById('copiedToast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500);}
 function cp(tx){navigator.clipboard.writeText(tx).then(()=>toast('✅ Скопировано!')).catch(()=>{let t=document.createElement('textarea');t.value=tx;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('✅ Скопировано!');});}
 
-// ЗАГРУЗКА - как в v11.8, которая работала
+// ЗАГРУЗКА КЕЙСОВ — правильный raw URL с GitHub
 function lC(){
-    fetch('./cases.json').then(r=>r.json()).then(cs=>{
-        s.acl=cs.filter(c=>c&&c.symbol&&c.price);
-        if(s.acl.length===0)throw new Error('empty');
-    }).catch(()=>{
-        s.acl=[{id:"c1",symbol:"AAPL",name:"Apple",price:150,trend:"up",desc:"Тех-гигант"},{id:"c2",symbol:"TSLA",name:"Tesla",price:200,trend:"volatile",desc:"Электромобили"},{id:"c3",symbol:"NVDA",name:"NVIDIA",price:100,trend:"up",desc:"AI-чипы"},{id:"c4",symbol:"META",name:"Meta",price:300,trend:"down",desc:"Соцсети"},{id:"c5",symbol:"GOLD",name:"Gold",price:80,trend:"up",desc:"Золото"},{id:"c6",symbol:"OIL",name:"Oil",price:60,trend:"volatile",desc:"Нефть"},{id:"c7",symbol:"BTC",name:"Bitcoin",price:250,trend:"volatile",desc:"Крипто"},{id:"c8",symbol:"NFLX",name:"Netflix",price:180,trend:"up",desc:"Стриминг"},{id:"c9",symbol:"AMZN",name:"Amazon",price:220,trend:"up",desc:"E-com"},{id:"c10",symbol:"MSFT",name:"Microsoft",price:280,trend:"up",desc:"Софт"}];
-    }).finally(()=>{
-        s.crdy=true;
-        document.getElementById('loadingScreen').style.display='none';
-        document.getElementById('menuScreen').style.display='block';
-        document.getElementById('bottomNav').style.display='flex';
-        document.getElementById('adminFloatBtn').style.display=isAdmin()?'flex':'none';
-    });
+    const url = 'https://raw.githubusercontent.com/KnigaWou/investbattle/main/cases.json';
+    
+    function finishLoad(cases){
+        s.acl = cases.filter(c => c && c.symbol && c.price);
+        if(s.acl.length === 0){
+            s.acl = [
+                {id:"c1",symbol:"AAPL",name:"Apple",price:150,trend:"up",desc:"Тех-гигант"},
+                {id:"c2",symbol:"TSLA",name:"Tesla",price:200,trend:"volatile",desc:"Электромобили"},
+                {id:"c3",symbol:"NVDA",name:"NVIDIA",price:100,trend:"up",desc:"AI-чипы"},
+                {id:"c4",symbol:"META",name:"Meta",price:300,trend:"down",desc:"Соцсети"},
+                {id:"c5",symbol:"GOLD",name:"Gold",price:80,trend:"up",desc:"Золото"},
+                {id:"c6",symbol:"OIL",name:"Oil",price:60,trend:"volatile",desc:"Нефть"},
+                {id:"c7",symbol:"BTC",name:"Bitcoin",price:250,trend:"volatile",desc:"Крипто"},
+                {id:"c8",symbol:"NFLX",name:"Netflix",price:180,trend:"up",desc:"Стриминг"},
+                {id:"c9",symbol:"AMZN",name:"Amazon",price:220,trend:"up",desc:"E-com"},
+                {id:"c10",symbol:"MSFT",name:"Microsoft",price:280,trend:"up",desc:"Софт"}
+            ];
+        }
+        s.crdy = true;
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('menuScreen').style.display = 'block';
+        document.getElementById('bottomNav').style.display = 'flex';
+        document.getElementById('adminFloatBtn').style.display = isAdmin() ? 'flex' : 'none';
+        console.log('✅ Загружено кейсов:', s.acl.length);
+    }
+    
+    fetch(url)
+        .then(r => r.json())
+        .then(cs => finishLoad(cs))
+        .catch(() => finishLoad([]));
 }
 
 function sf(){if(!s.pid)return;db.ref(`u/${s.pid}`).update({n:s.pn,a:s.pa,st:s.ps,do:s.pd,fr:s.fr,ls:firebase.database.ServerValue.TIMESTAMP});db.ref(`on/${s.pid}`).set({n:s.pn,ts:firebase.database.ServerValue.TIMESTAMP});db.ref(`on/${s.pid}`).onDisconnect().remove();}
@@ -351,7 +368,7 @@ function bind(){
 }
 
 lS();lC();bind();aL();
-console.log('✅ InvestBattle v12.1 — Работает как v11.8 + все исправления');
+console.log('✅ InvestBattle v12.2 — Raw URL GitHub');
 })();
 </script>
 </body>
