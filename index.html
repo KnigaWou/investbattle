@@ -228,7 +228,7 @@ function showTradeRequest(trade){
     if(s.tradeShown[key])return;
     s.tradeShown[key]=true;
     let el=document.getElementById('tradeNotice');
-    el.innerHTML=`<b>${trade.fromName}</b> хочет купить <b>${trade.sym}</b> за <b>${fm(trade.price)}</b><br><button class="btn-sm" id="acceptTrade" style="border-color:var(--green);color:var(--green);margin-top:8px;padding:10px 20px;font-size:12px;">✅ Принять</button> <button class="btn-sm" id="declineTrade" style="border-color:var(--red);color:var(--red);margin-top:8px;padding:10px 20px;font-size:12px;">✕ Отклонить</button>`;
+   el.innerHTML='<b>'+trade.fromName+'</b> хочет купить <b>'+trade.sym+'</b> за <b>'+fm(trade.price)+'</b><br><button class="btn-sm" id="acceptTrade" style="border-color:var(--green);color:var(--green);margin-top:8px;padding:10px 20px;font-size:12px;">✅ Принять</button> <button class="btn-sm" id="declineTrade" style="border-color:var(--red);color:var(--red);margin-top:8px;padding:10px 20px;font-size:12px;">✕ Отклонить</button>';
     el.classList.add('show');
     document.getElementById('acceptTrade')?.addEventListener('click',()=>{
         if(s.op[trade.sym]&&s.op[trade.sym].qty>0){s.oc+=trade.price;s.op[trade.sym].qty--;if(s.op[trade.sym].qty<=0)delete s.op[trade.sym];db.ref(`rooms/${s.rc}/pl/${trade.from}`).once('value',sn=>{let fd=sn.val();if(fd){let fc=fd.c||0;fc-=trade.price;if(!fd.p)fd.p={};if(!fd.p[trade.sym])fd.p[trade.sym]={qty:0,avgPrice:0};fd.p[trade.sym].qty++;fd.p[trade.sym].avgPrice=trade.price;db.ref(`rooms/${s.rc}/pl/${trade.from}`).update({c:fc,p:fd.p});}});delete s.tradeShown[key];db.ref(`rooms/${s.rc}/trades/${key}`).update({status:'done'});toast('✅ Сделка!');}
