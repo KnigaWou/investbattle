@@ -209,24 +209,96 @@ function upt(){var b=document.getElementById('portfolioBody'),as=Object.entries(
 function upr(){var activeLP=s.lp.filter(function(p){return!s.leftPlayers.includes(p.id);});var ps=s.im&&activeLP.length>0?activeLP.map(function(p){return{n:p.n,a:p.a,c:p.c||s.sc,you:p.id===s.pid,id:p.id,left:s.leftPlayers.includes(p.id)};}):[{n:s.pn,a:s.pa,c:s.yc,you:true},{n:s.on,a:s.oa,c:s.oc,you:false}];document.getElementById('playersRow').innerHTML=ps.map(function(p){return'<div class="player-card '+(p.you?'you ':'')+(p.left?'left ':'')+'" data-pid="'+(p.id||'')+'" data-pname="'+p.n+'" data-pavatar="'+p.a+'"><div class="avatar">'+av(p.a)+'<'+'/div><div class="name">'+p.n+(p.left?' (left)':'')+'<'+'/div><div class="cash">'+fm(p.c)+'<'+'/div><'+'/div>';}).join('');document.querySelectorAll('.player-card:not(.you):not(.left)').forEach(function(card){card.addEventListener('click',function(){showPlayerProfile(card.dataset);});});}
 function showPlayerProfile(data){var c=document.getElementById('ppContent');var isFriend=s.fr.includes(data.pid);c.innerHTML='<h3>'+(data.pname||'Player')+'<'+'/h3><div class="profile-avatar" style="margin:0 auto 10px;width:64px;height:64px;">'+av(data.pavatar)+'<'+'/div><p style="text-align:center;color:#fff;">'+(data.pname||'Player')+'<'+'/p>'+(isFriend?'<p style="text-align:center;color:var(--green);">Friend<'+'/p>':(data.pid?'<button class="btn gold" id="addFriendBtn">Add friend<'+'/button>':''))+'<button class="btn orange" id="offerTradeBtn" style="margin-top:6px;">Buy stocks<'+'/button>';document.getElementById('playerProfileModal').classList.add('show');var afb=document.getElementById('addFriendBtn');if(afb)afb.addEventListener('click',function(){if(data.pid&&!isFriend){sendFriendRequest(data.pid);document.getElementById('playerProfileModal').classList.remove('show');}});var otb=document.getElementById('offerTradeBtn');if(otb)otb.addEventListener('click',function(){showTradeOffer(data);});}
 
-function showTradeOffer(data){
-    var c=document.getElementById('tradeContent');c.innerHTML='<h3>Buy from '+data.pname+'<'+'/h3><div class="section-title">Your cash: '+fm(s.yc)+'<'+'/div><div class="section-title">Pick stock (market price):<'+'/div><div id="tradeSymbols"><'+'/div>';document.getElementById('tradeModal').classList.add('show');
-    var oppPortfolio={};if(s.im&&s.rc){var op=s.lp.find(function(p){return p.id===data.pid;});if(op&&op.p)oppPortfolio=op.p||{};}else{oppPortfolio=s.op||{};}
-    var syms=Object.keys(oppPortfolio).filter(function(sym){return oppPortfolio[sym]&&oppPortfolio[sym].qty>0;});
-    if(syms.length===0){c.innerHTML+='<p style="text-align:center;color:var(--text2);">No stocks<'+'/p>';return;}
-    var html2='';syms.forEach(function(sym){var pr2=s.mk[sym]||10;var qty2=oppPortfolio[sym].qty||0;html2+='<div style="background:var(--surface);padding:10px;border-radius:8px;margin:4px 0;cursor:pointer;" class="trade-sym" data-sym="'+sym+'" data-price="'+pr2+'" data-target="'+data.pid+'"><b>'+sym+'<'+'/b> | Market: '+fm(pr2)+' | Avail: '+qty2+'<'+'/div>';});
-    document.getElementById('tradeSymbols').innerHTML=html2;
-    document.querySelectorAll('.trade-sym').forEach(function(el){el.addEventListener('click',function(){var sym2=el.dataset.sym,pr3=parseFloat(el.dataset.price),target2=el.dataset.target;if(s.yc>=pr3){var tradeKey2=target2+'_'+sym2;db.ref('rooms/'+s.rc+'/trades/'+tradeKey2).set({from:s.pid,to:target2,sym:sym2,price:pr3,fromName:s.pn,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});toast('Offer sent: '+sym2);document.getElementById('tradeModal').classList.remove('show');}else{toast('Not enough cash');}});});}
+function showTradeOffer(data) {
+  const c = document.getElementById('tradeContent');
+  const modal = document.getElementById('tradeModal');
+
+  if (!c || !modal) return;
+
+  c.innerHTML =
+    `<h3>Buy from ${data.pname}</h3>` +
+    `<div class="section-title">Your cash: ${fm(s.yc)}</div>` +
+    `<div class="section-title">Pick stock (market price):</div>` +
+    `<div id="tradeSymbols"></div>`;
+
+  modal.classList.add('show');
+
+  let oppPortfolio = {};
+
+  // s.im&&s.rc: перенос через s.lp, иначе s.op
+  if (s.im && s.rc) {
+    const op = (s.lp || []).find(p => p.id === data.pid);
+    if (op && op.p) oppPortfolio = op.p || {};
+  } else {
+    oppPortfolio = s.op || {};
+  }
+
+  const syms = Object.keys(oppPortfolio).filter(sym => {
+    return oppPortfolio[sym] && oppPortfolio[sym].qty > 0;
+  });
+
+  if (syms.length === 0) {
+    c.innerHTML += `<p style="text-align:center;color:var(--text2);">No stocks</p>`;
+    return;
+  }
+
+  let html2 = '';
+  syms.forEach(sym => {
+    const pr2 = (s.mk && s.mk[sym]) ? s.mk[sym] : 10;
+    const qty2 = oppPortfolio[sym] ? (oppPortfolio[sym].qty || 0) : 0;
+
+    html2 +=
+      `<div style="background:var(--surface);padding:10px;border-radius:8px;margin:4px 0;cursor:pointer;" ` +
+      `class="trade-sym" data-sym="${sym}" data-price="${pr2}" data-target="${data.pid}">` +
+      `<b>${sym}</b> | Market: ${fm(pr2)} | Avail: ${qty2}` +
+      `</div>`;
+  });
+
+  document.getElementById('tradeSymbols').innerHTML = html2;
+
+  document.querySelectorAll('.trade-sym').forEach(el => {
+    el.addEventListener('click', () => {
+      const sym2 = el.dataset.sym;
+      const pr3 = parseFloat(el.dataset.price);
+      const target2 = el.dataset.target;
+
+      if (Number.isNaN(pr3)) return;
+
+      if (s.yc >= pr3) {
+        const tradeKey2 = `${target2}_${sym2}`;
+
+        db.ref(`rooms/${s.rc}/trades/${tradeKey2}`).set({
+          from: s.pid,
+          to: target2,
+          sym: sym2,
+          price: pr3,
+          fromName: s.pn,
+          status: 'pending',
+          ts: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        toast('Offer sent: ' + sym2);
+        modal.classList.remove('show');
+      } else {
+        toast('Not enough cash');
+      }
+    });
+  });
 }
 
-function showTradeRequest(trade){
-  var key = trade.from + '_' + trade.sym;
+function showTradeRequest(trade) {
+  const key = trade.from + '_' + trade.sym;
 
-  if (typeof s === 'undefined') return; // или замените на инициализацию
+  if (typeof s === 'undefined') return; // если s ещё не инициализирован
   if (!s.tradeShown) s.tradeShown = {};
 
   if (s.tradeShown[key]) return;
   s.tradeShown[key] = true;
+
+  // Дальше продолжай твою отрисовку/логику trade request (если есть)
+  // Здесь я оставил только то, что было у тебя до ошибки.
+}
+
 
   var el2 = document.getElementById('tradeNotice');
     el2.innerHTML='<b>'+trade.fromName+'<'+'/b> wants to buy <b>'+trade.sym+'<'+'/b> for <b>'+fm(trade.price)+'<'+'/b><br><button class="btn-sm" id="acceptTrade" style="border-color:var(--green);color:var(--green);margin-top:8px;padding:10px 20px;font-size:12px;">Accept<'+'/button> <button class="btn-sm" id="declineTrade" style="border-color:var(--red);color:var(--red);margin-top:8px;padding:10px 20px;font-size:12px;">Decline<'+'/button>';
