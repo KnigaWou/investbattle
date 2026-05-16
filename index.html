@@ -259,7 +259,7 @@ function showTradeOffer(data){
 }
 
 function showTradeRequest(trade){
-    let key=trade.from+'_'+trade.sym;
+    var key=trade.from+'_'+trade.sym;
     if(s.tradeShown[key])return;
     s.tradeShown[key]=true;
     let el=document.getElementById('tradeNotice');
