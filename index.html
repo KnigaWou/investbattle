@@ -252,17 +252,19 @@ function showTradeOffer(data){
     let c=document.getElementById('tradeContent');c.innerHTML=`<h3>💰 Купить акции у ${data.pname}</h3><div class="section-title">Ваши деньги: ${fm(s.yc)}</div><div class="section-title">Выберите акцию (рыночная цена):</div><div id="tradeSymbols"></div>`;document.getElementById('tradeModal').classList.add('show');
     let oppPortfolio={};if(s.im&&s.rc){let op=s.lp.find(p=>p.id==data.pid);if(op&&op.p)oppPortfolio=op.p||{};}else{oppPortfolio=s.op||{};}
     let syms=Object.keys(oppPortfolio).filter(sym=>oppPortfolio[sym]&&oppPortfolio[sym].qty>0);
-    if(syms.length==0){c.innerHTML+='<p style="text-align:center;color:var(--text2);">У игрока нет акций</p>';return;}
-    let html='';syms.forEach(sym=>{let pr=s.mk[sym]||10;let qty=oppPortfolio[sym].qty||0;html+=`<div style="background:var(--surface);padding:10px;border-radius:8px;margin:4px 0;cursor:pointer;" class="trade-sym" data-sym="${sym}" data-price="${pr}" data-target="${data.pid}"><b>${sym}</b> | Рынок: ${fm(pr)} | Доступно: ${qty}</div>`;});
-    document.getElementById('tradeSymbols').innerHTML=html;
-    document.querySelectorAll('.trade-sym').forEach(el=>{el.addEventListener('click',()=>{let sym=el.dataset.sym,pr=parseFloat(el.dataset.price),target=el.dataset.target;if(s.yc>=pr){let tradeKey=target+'_'+sym;db.ref(`rooms/${s.rc}/trades/${tradeKey}`).set({from:s.pid,to:target,sym:sym,price:pr,fromName:s.pn,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});toast(`📨 Предложение на ${sym} отправлено!`);document.getElementById('tradeModal').classList.remove('show');}else{toast('❌ Недостаточно денег');}});});}
+    if(syms.length===0){c.innerHTML+='<p style="text-align:center;color:var(--text2);">У игрока нет акций</p>';return;}
+    var html2='';syms.forEach(function(sym){var pr2=s.mk[sym]||10;var qty2=oppPortfolio[sym].qty||0;html2+='<div style="background:var(--surface);padding:10px;border-radius:8px;margin:4px 0;cursor:pointer;" class="trade-sym" data-sym="'+sym+'" data-price="'+pr2+'" data-target="'+data.pid+'"><b>'+sym+'</b> | Рынок: '+fm(pr2)+' | Доступно: '+qty2+'</div>';});
+    document.getElementById('tradeSymbols').innerHTML=html2;
+    document.querySelectorAll('.trade-sym').forEach(function(el){el.addEventListener('click',function(){var sym2=el.dataset.sym,pr3=parseFloat(el.dataset.price),target2=el.dataset.target;if(s.yc>=pr3){var tradeKey2=target2+'_'+sym2;db.ref('rooms/'+s.rc+'/trades/'+tradeKey2).set({from:s.pid,to:target2,sym:sym2,price:pr3,fromName:s.pn,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});toast('Предложение на '+sym2+' отправлено!');document.getElementById('tradeModal').classList.remove('show');}else{toast('Недостаточно денег');}});});}
 }
 
 function showTradeRequest(trade){
     var key=trade.from+'_'+trade.sym;
     if(s.tradeShown[key])return;
     s.tradeShown[key]=true;
-    let el=document.getElementById('tradeNotice');
+    var el2=document.getElementById('tradeNotice');
+    el2.innerHTML='<b>'+trade.fromName+'</b> хочет купить <b>'+trade.sym+'</b> за <b>'+fm(trade.price)+'</b><br><button class="btn-sm" id="acceptTrade" style="border-color:var(--green);color:var(--green);margin-top:8px;padding:10px 20px;font-size:12px;">Принять</button> <button class="btn-sm" id="declineTrade" style="border-color:var(--red);color:var(--red);margin-top:8px;padding:10px 20px;font-size:12px;">Отклонить</button>';
+    el2.classList.add('show');
     el.innerHTML=`<b>${trade.fromName}</b> хочет купить <b>${trade.sym}</b> за <b>${fm(trade.price)}</b><br><button class="btn-sm" id="acceptTrade" style="border-color:var(--green);color:var(--green);margin-top:8px;padding:10px 20px;font-size:12px;">✅ Принять</button> <button class="btn-sm" id="declineTrade" style="border-color:var(--red);color:var(--red);margin-top:8px;padding:10px 20px;font-size:12px;">✕ Отклонить</button>`;
     el.classList.add('show');
     document.getElementById('acceptTrade')?.addEventListener('click',()=>{
