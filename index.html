@@ -207,27 +207,112 @@ function leaveGame(){if(s.rc){db.ref('rooms/'+s.rc+'/pl/'+s.pid).remove();db.ref
 
 function upt(){var b=document.getElementById('portfolioBody'),as=Object.entries(s.yp);b.innerHTML=as.length===0?'<tr><td colspan="6">No assets<'+'/td><'+'/tr>':as.map(function(e){var sym=e[0],d=e[1];var pr=s.mk[sym]||d.avgPrice,val=pr*d.qty,pc=d.avgPrice?((pr-d.avgPrice)/d.avgPrice*100).toFixed(1):0;var cls=+pc>=0?'up':'down',arr=+pc>=0?'+':'',p=Math.abs(pc);return'<tr><td class="sym">'+sym+'<'+'/td><td>'+d.qty+'<'+'/td><td>'+fm(pr)+'<'+'/td><td>'+fm(val)+'<'+'/td><td class="'+cls+'">'+arr+p+'%<'+'/td><td><input class="qty-input" id="sq_'+sym+'" value="'+d.qty+'"><button class="btn-sm sell" id="sl_'+sym+'">Sell<'+'/button><'+'/td><'+'/tr>';}).join('');as.forEach(function(e){var sym=e[0];var btn=document.getElementById('sl_'+sym);if(btn)btn.onclick=function(){var d=s.yp[sym];if(!d)return;var inp=document.getElementById('sq_'+sym);var q=Math.max(1,Math.min(d.qty,parseInt((inp||{}).value)||d.qty));s.yc+=(s.mk[sym]||d.avgPrice)*q;d.qty-=q;if(d.qty<=0)delete s.yp[sym];upt();upr();sy();};});}
 function upr(){var activeLP=s.lp.filter(function(p){return!s.leftPlayers.includes(p.id);});var ps=s.im&&activeLP.length>0?activeLP.map(function(p){return{n:p.n,a:p.a,c:p.c||s.sc,you:p.id===s.pid,id:p.id,left:s.leftPlayers.includes(p.id)};}):[{n:s.pn,a:s.pa,c:s.yc,you:true},{n:s.on,a:s.oa,c:s.oc,you:false}];document.getElementById('playersRow').innerHTML=ps.map(function(p){return'<div class="player-card '+(p.you?'you ':'')+(p.left?'left ':'')+'" data-pid="'+(p.id||'')+'" data-pname="'+p.n+'" data-pavatar="'+p.a+'"><div class="avatar">'+av(p.a)+'<'+'/div><div class="name">'+p.n+(p.left?' (left)':'')+'<'+'/div><div class="cash">'+fm(p.c)+'<'+'/div><'+'/div>';}).join('');document.querySelectorAll('.player-card:not(.you):not(.left)').forEach(function(card){card.addEventListener('click',function(){showPlayerProfile(card.dataset);});});}
-function showPlayerProfile(data){var c=document.getElementById('ppContent');var isFriend=s.fr.includes(data.pid);c.innerHTML='<h3>'+(data.pname||'Player')+'<'+'/h3><div class="profile-avatar" style="margin:0 auto 10px;width:64px;height:64px;">'+av(data.pavatar)+'<'+'/div><p style="text-align:center;color:#fff;">'+(data.pname||'Player')+'<'+'/p>'+(isFriend?'<p style="text-align:center;color:var(--green);">Friend<'+'/p>':(data.pid?'<button class="btn gold" id="addFriendBtn">Add friend<'+'/button>':''))+'<button class="btn orange" id="offerTradeBtn" style="margin-top:6px;">Buy stocks<'+'/button>';document.getElementById('playerProfileModal').classList.add('show');var afb=document.getElementById('addFriendBtn');if(afb)afb.addEventListener('click',function(){if(data.pid&&!isFriend){sendFriendRequest(data.pid);document.getElementById('playerProfileModal').classList.remove('show');}});var otb=document.getElementById('offerTradeBtn');if(otb)otb.addEventListener('click',function(){showTradeOffer(data);});}
+<script>
+function showPlayerProfile(data) {
+  const c = document.getElementById('ppContent');
+  const modalEl = document.getElementById('playerProfileModal');
+  if (!c || !modalEl) return;
+
+  const isFriend = s?.fr?.includes?.(data.pid) ?? false;
+
+  c.innerHTML = `
+    <h3>${data.pname || 'Player'}</h3>
+    <div class="profile-avatar" style="margin:0 auto 10px;width:64px;height:64px;">
+      ${av(data.pavatar)}
+    </div>
+    <p style="text-align:center;color:#fff;">${data.pname || 'Player'}</p>
+    ${
+      isFriend
+        ? `<p style="text-align:center;color:var(--green);">Friend</p>`
+        : (data.pid ? `<button class="btn gold" id="addFriendBtn">Add friend</button>` : ``)
+    }
+    <button class="btn orange" id="offerTradeBtn" style="margin-top:6px;">Buy stocks</button>
+  `;
+
+  modalEl.classList.add('show');
+
+  const afb = document.getElementById('addFriendBtn');
+  if (afb) {
+    afb.addEventListener('click', function () {
+      if (data.pid && !isFriend) {
+        sendFriendRequest(data.pid);
+        modalEl.classList.remove('show');
+      }
+    });
+  }
+
+  const otb = document.getElementById('offerTradeBtn');
+  if (otb) {
+    otb.addEventListener('click', function () {
+      showTradeOffer(data);
+    });
+  }
+}
 
 function showTradeOffer(data) {
   const c = document.getElementById('tradeContent');
   const modal = document.getElementById('tradeModal');
-
   if (!c || !modal) return;
 
-  c.innerHTML =
-    `<h3>Buy from ${data.pname}</h3>` +
-    `<div class="section-title">Your cash: ${fm(s.yc)}</div>` +
-    `<div class="section-title">Pick stock (market price):</div>` +
-    `<div id="tradeSymbols"></div>`;
+  c.innerHTML = `
+    <h3>Buy from ${data.pname}</h3>
+    <div class="section-title">Your cash: ${fm(s.yc)}</div>
+    <div class="section-title">Pick stock (market price):</div>
+    <div id="tradeSymbols"></div>
+  `;
 
   modal.classList.add('show');
 
   let oppPortfolio = {};
 
-  // s.im&&s.rc: перенос через s.lp, иначе s.op
+  // s.im && s.rc: перенос через s.lp, иначе s.op
   if (s.im && s.rc) {
     const op = (s.lp || []).find(p => p.id === data.pid);
+    oppPortfolio = op?.stocks || op || {};
+  } else {
+    // ожидается, что s.op хранит портфели по pid (проверь структуру)
+    oppPortfolio = (s.op && (s.op[data.pid] || s.op.find?.(p => p.id === data.pid))) || {};
+  }
+
+  // Дальше: отрисовка списка акций (если у тебя есть структура — подставь сюда)
+  // Пример (если oppPortfolio.stocks — массив):
+  const list = oppPortfolio.stocks || oppPortfolio || [];
+  const wrap = document.getElementById('tradeSymbols');
+
+  if (!wrap) return;
+
+  if (!Array.isArray(list) || list.length === 0) {
+    wrap.innerHTML = `<p style="color:#fff;opacity:.8;">No stocks available.</p>`;
+    return;
+  }
+
+  wrap.innerHTML = list.map(stock => {
+    const sym = stock.sym || stock.symbol || stock.id;
+    const qty = stock.qty ?? stock.quantity ?? 0;
+    const price = stock.price ?? stock.marketPrice ?? stock.mp ?? 0;
+
+    return `
+      <button class="btn blue tradePickBtn" 
+              data-sym="${sym}" 
+              data-price="${price}" 
+              data-qty="${qty}"
+              style="margin:6px;">
+        ${sym} • ${qty} @ ${price}
+      </button>
+    `;
+  }).join('');
+
+  wrap.querySelectorAll('.tradePickBtn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      // Здесь вызови твою логику покупки/обмена.
+      // Например:
+      // buyStocksFrom(data.pid, btn.dataset.sym, Number(btn.dataset.price), Number(btn.dataset.qty));
+      showTradeConfirm?.(data, this);
+    });
+  });
+}
+</script>
+
     if (op && op.p) oppPortfolio = op.p || {};
   } else {
     oppPortfolio = s.op || {};
