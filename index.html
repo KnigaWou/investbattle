@@ -297,37 +297,66 @@ function showTradeOffer(data) {
               data-price="${price}" 
               data-qty="${qty}"
               style="margin:6px;">
-        ${sym} • ${qty} @ ${price}
-      </button>
-    `;
-  }).join('');
+// === build opponent symbols list ===
+  let html2 = '';
 
-  wrap.querySelectorAll('.tradePickBtn').forEach(btn => {
+  for (const sym of syms) {
+    const item = oppPortfolio[sym] || {};
+    const qty = Number(item.qty || 0);
+    if (qty <= 0) continue;
+
+    // ожидаем, что цена берётся из data по sym (или откуда у тебя она хранится)
+    // если у тебя другая структура — замени "getPriceForSym" на свою логику
+    const getPriceForSym = () => {
+      // пример: ищем в data по символу
+      if (typeof data?.prices?.[sym] === 'number') return data.prices[sym];
+      if (typeof data?.priceBySym?.[sym] === 'number') return data.priceBySym[sym];
+      return Number(item.price || 0);
+    };
+
+    const price = getPriceForSym();
+
+    html2 += `
+      <div class="tradePickItem">
+        <div class="tradePickInfo">
+          <span class="tradeSym">${sym}</span>
+          <span class="tradeQty">${qty}</span>
+          <span class="tradePrice">${price}</span>
+        </div>
+
+        <button
+          class="tradePickBtn"
+          type="button"
+          data-sym="${sym}"
+          data-qty="${qty}"
+          data-price="${price}"
+        >
+          Select
+        </button>
+      </div>
+    `;
+  }
+
+  // выводим в нужный контейнер (замени target на твой)
+  // например: c.innerHTML = c.innerHTML + html2;
+  // или: someContainer.innerHTML = html2;
+  c.innerHTML += html2;
+
+  // === bind click events ===
+  c.querySelectorAll('.tradePickBtn').forEach(btn => {
     btn.addEventListener('click', function () {
-      // Здесь вызови твою логику покупки/обмена.
-      // Например:
-      // buyStocksFrom(data.pid, btn.dataset.sym, Number(btn.dataset.price), Number(btn.dataset.qty));
+      const sym = btn.dataset.sym;
+      const qty = Number(btn.dataset.qty);
+      const price = Number(btn.dataset.price);
+
+      // здесь вызови твою логику покупки/обмена.
+      // buyStocksFrom(data.pid, sym, price, qty);
+
+      // если у тебя уже есть showTradeConfirm:
       showTradeConfirm?.(data, this);
     });
   });
-}
-</script>
 
-    if (op && op.p) oppPortfolio = op.p || {};
-  } else {
-    oppPortfolio = s.op || {};
-  }
-
-  const syms = Object.keys(oppPortfolio).filter(sym => {
-    return oppPortfolio[sym] && oppPortfolio[sym].qty > 0;
-  });
-
-  if (syms.length === 0) {
-    c.innerHTML += `<p style="text-align:center;color:var(--text2);">No stocks</p>`;
-    return;
-  }
-
-  let html2 = '';
   syms.forEach(sym => {
     const pr2 = (s.mk && s.mk[sym]) ? s.mk[sym] : 10;
     const qty2 = oppPortfolio[sym] ? (oppPortfolio[sym].qty || 0) : 0;
