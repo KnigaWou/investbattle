@@ -220,10 +220,15 @@ function showTradeOffer(data){
 }
 
 function showTradeRequest(trade){
-    var key=trade.from+'_'+trade.sym;
-    if(s.tradeShown[key])return;
-    s.tradeShown[key]=true;
-    var el2=document.getElementById('tradeNotice');
+  var key = trade.from + '_' + trade.sym;
+
+  if (typeof s === 'undefined') return; // или замените на инициализацию
+  if (!s.tradeShown) s.tradeShown = {};
+
+  if (s.tradeShown[key]) return;
+  s.tradeShown[key] = true;
+
+  var el2 = document.getElementById('tradeNotice');
     el2.innerHTML='<b>'+trade.fromName+'<'+'/b> wants to buy <b>'+trade.sym+'<'+'/b> for <b>'+fm(trade.price)+'<'+'/b><br><button class="btn-sm" id="acceptTrade" style="border-color:var(--green);color:var(--green);margin-top:8px;padding:10px 20px;font-size:12px;">Accept<'+'/button> <button class="btn-sm" id="declineTrade" style="border-color:var(--red);color:var(--red);margin-top:8px;padding:10px 20px;font-size:12px;">Decline<'+'/button>';
     el2.classList.add('show');
     var ab=document.getElementById('acceptTrade');
