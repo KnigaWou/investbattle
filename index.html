@@ -180,7 +180,6 @@ function lS(){s.pid=pid();lf(function(){loadFriendRequests();up();sf();if(isAdmi
 function sS(){localStorage.setItem('ib_v15',JSON.stringify({playerName:s.pn,playerAvatar:s.pa,playerStars:s.ps,playerDollars:s.pd,friends:s.fr}));localStorage.setItem('ib_lang',s.lang);localStorage.setItem('ib_history',JSON.stringify(s.gh.slice(0,50)));if(tg&&tg.CloudStorage)tg.CloudStorage.setItems([{key:'ib_name',value:s.pn},{key:'ib_avatar',value:s.pa},{key:'ib_stars',value:String(s.ps)},{key:'ib_dollars',value:String(s.pd)}]);sf();}
 function up(){document.getElementById('profileName').textContent=s.pn;document.getElementById('profileAvatar').innerHTML=av(s.pa);document.getElementById('editAvatarBig').innerHTML=av(s.previewAvatar||s.pa);document.getElementById('editName').value=s.pn;document.getElementById('profileStars').textContent=s.ps;document.getElementById('profileDollars').textContent=s.pd;document.querySelectorAll('#avatarChips .chip').forEach(function(c){c.classList.toggle('selected',c.dataset.avatar===(s.previewAvatar||s.pa));});document.querySelectorAll('#langChips .chip').forEach(function(c){c.classList.toggle('selected',c.dataset.lang===s.lang);});aL();}
 function upA(){if(!isAdmin())return;db.ref('on').once('value',function(sn){document.getElementById('aOnline').textContent=sn.val()?Object.keys(sn.val()).length:0;});db.ref('u').once('value',function(sn){document.getElementById('aTotal').textContent=sn.val()?Object.keys(sn.val()).length:0;});db.ref('rooms').once('value',function(sn){var r=sn.val(),p=0;if(r)Object.values(r).forEach(function(x){if(x&&x.st==='playing')p++;});document.getElementById('aPlaying').textContent=p;});}
-
 function loadFriendRequests(){db.ref('frc/'+s.pid).on('value',function(sn){var d=sn.val();s.frc=d?Object.keys(d).filter(function(k){return d[k]&&!d[k].accepted;}):[];});}
 function sendFriendRequest(targetId){db.ref('frc/'+targetId+'/'+s.pid).set({n:s.pn,a:s.pa,ts:firebase.database.ServerValue.TIMESTAMP});toast('Request sent!');}
 function acceptFriendRequest(fromId){db.ref('frc/'+s.pid+'/'+fromId).remove();if(!s.fr.includes(fromId)){s.fr.push(fromId);}db.ref('frc/'+fromId+'/'+s.pid).set({n:s.pn,a:s.pa,accepted:true});sS();up();toast('Friend added!');}
@@ -198,10 +197,8 @@ function resetBottomNav(){s.currentTab='menu';document.querySelectorAll('#bottom
 
 var mt=['music/track1.mp3','music/track2.mp3','music/track3.mp3'];var ct=0,mo=false;var bm=new Audio();
 function pnt(){if(!mo||!mt[ct])return;bm.src=mt[ct];bm.play().catch(function(){});bm.onended=function(){ct=(ct+1)%mt.length;pnt();};}
-
 function ump(){var cs=s.fa?s.acl.filter(function(c){return c&&c.price&&c.price>=1&&c.price<=15;}):s.acl;for(var i=0;i<cs.length;i++){var c=cs[i];if(!c||!c.symbol||!c.price)continue;if(!s.mk[c.symbol]){s.mk[c.symbol]=Number(c.price)||10;s.fv[c.symbol]=Number(c.price)||10;}var cu=s.mk[c.symbol],fa=s.fv[c.symbol],vm=s.fa?2.5:1;var tb=c.trend==='up'?0.5:c.trend==='down'?-0.4:c.trend==='volatile'?(Math.random()-0.5)*1.5:0;var ft=Math.random()<0.667,bias=ft?tb:-tb;var ch=(fa-cu)/fa*30*vm+(Math.random()-0.5+bias*0.4)*12*vm;if(Math.random()<0.06*vm)ch=(Math.random()>0.5?1:-1)*(15+Math.random()*20);ch=Math.max(-50,Math.min(50,ch));s.mk[c.symbol]=Math.max(0.05,cu*(1+ch/100));s.fv[c.symbol]=fa*(1+(Math.random()-0.49)*4/100);}}
 function grc(){var p=s.fa?s.acl.filter(function(c){return c&&c.symbol&&c.price&&c.price>=1&&c.price<=15;}):s.acl;var v=p.filter(function(c){return c&&c.symbol&&c.price&&!s.uc.includes(c.id);});if(!v.length){s.uc=[];return p[Math.floor(Math.random()*p.length)];}return v[Math.floor(Math.random()*v.length)];}
-
 function showLeftNotice(name){var el=document.getElementById('leftNotice');el.innerHTML=name+' left the game! <button class="btn-sm" id="leaveAfterThem" style="margin-left:8px;border-color:var(--red);color:var(--red);">Leave too</button>';el.classList.add('show');var btn=document.getElementById('leaveAfterThem');if(btn)btn.addEventListener('click',function(){el.classList.remove('show');leaveGame();});setTimeout(function(){el.classList.remove('show');},15000);}
 function leaveGame(){if(s.rc){db.ref('rooms/'+s.rc+'/pl/'+s.pid).remove();db.ref('rooms/'+s.rc+'/rd/'+s.pid).remove();}s.ga=false;clearInterval(s.rtimer);clearInterval(s.fi2);clearInterval(s.fi3);document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';document.getElementById('leftNotice').classList.remove('show');s.rc=null;s.im=false;s.leftPlayers=[];}
 
@@ -220,15 +217,9 @@ function showTradeOffer(data){
     for(var ti=0;ti<trades.length;ti++){
         (function(el){
             el.addEventListener('click',function(){
-                var sym2=el.dataset.sym;
-                var pr3=parseFloat(el.dataset.price);
-                var target2=el.dataset.target;
-                if(s.yc>=pr3){
-                    var tradeKey2=target2+'_'+sym2;
-                    db.ref('rooms/'+s.rc+'/trades/'+tradeKey2).set({from:s.pid,to:target2,sym:sym2,price:pr3,fromName:s.pn,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});
-                    toast('Offer sent: '+sym2);
-                    document.getElementById('tradeModal').classList.remove('show');
-                }else{toast('Not enough cash');}
+                var sym2=el.dataset.sym;var pr3=parseFloat(el.dataset.price);var target2=el.dataset.target;
+                if(s.yc>=pr3){var tradeKey2=target2+'_'+sym2;db.ref('rooms/'+s.rc+'/trades/'+tradeKey2).set({from:s.pid,to:target2,sym:sym2,price:pr3,fromName:s.pn,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});toast('Offer sent: '+sym2);document.getElementById('tradeModal').classList.remove('show');}
+                else{toast('Not enough cash');}
             });
         })(trades[ti]);
     }
@@ -259,7 +250,6 @@ function tw(){if(!s.im){nr();return;}if(s.wp)return;s.wp=true;document.getElemen
 function sy(){if(!s.rc||!s.im)return;db.ref('rooms/'+s.rc+'/pl/'+s.pid).update({n:s.pn,a:s.pa,c:s.yc,p:s.yp});}
 function botA(){if(!s.cc||s.im)return;var sym=s.cc.symbol,pr=s.mk[sym]||s.cc.price,ip=s.op[sym],fair=s.fv[sym]||pr;var ok=Math.random()<0.65;if(ok){if(pr<fair*0.9&&s.oc>=pr*2){var q=Math.floor(Math.random()*4)+2;if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};var o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}}else if(ip&&ip.qty>0&&pr>ip.avgPrice*1.1){var q2=Math.min(ip.qty,Math.ceil(ip.qty*0.6));s.oc+=pr*q2;ip.qty-=q2;if(ip.qty<=0)delete s.op[sym];}}else{if(Math.random()<0.3&&s.oc>=pr){var q3=1;s.oc-=pr*q3;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};var o2=s.op[sym];o2.avgPrice=(o2.qty*o2.avgPrice+pr*q3)/(o2.qty+q3);o2.qty+=q3;}}upr();}
 function botSellAll(){for(var sym in s.op){s.oc+=(s.mk[sym]||s.op[sym].avgPrice)*s.op[sym].qty;}s.op={};}
-
 function calcRoomParams(r){if(!r.votes||Object.keys(r.votes).length===0)return;var totals={sc:r.sc||10000,rt:r.rt||30,tr:r.tr||5};var cnt=1;for(var k in r.votes){var v=r.votes[k];totals.sc+=v.sc||r.sc;totals.rt+=v.rt||r.rt;totals.tr+=v.tr||r.tr;cnt++;}db.ref('rooms/'+s.rc).update({sc:Math.ceil(totals.sc/cnt),rt:Math.ceil(totals.rt/cnt),tr:Math.ceil(totals.tr/cnt)});}
 
 function startRoomListener(){
@@ -290,6 +280,9 @@ function eF(){if(s.pd<5000){alert('Not enough! Need 5 000');return;}if(!s.crdy){
 function shFR(){document.getElementById('freelancerRatingModal').classList.add('show');var wk=gwk();var now=new Date(),day=now.getDay(),nm=new Date(now);nm.setDate(now.getDate()+(day===0?1:8-day));nm.setHours(0,0,0,0);var diff=nm-now,ds=Math.floor(diff/86400000),hs=Math.floor((diff%86400000)/3600000);document.getElementById('ratingTimer').textContent='Ends in: '+ds+'d '+hs+'h';db.ref('fr/'+wk).orderByChild('te').limitToLast(20).once('value',function(sn){var r=sn.val();var l=document.getElementById('ratingList');if(!r){l.innerHTML='<p>No players</p>';return;}var so=Object.entries(r).sort(function(a,b){return(b[1].te||0)-(a[1].te||0);});l.innerHTML=so.map(function(e,i){var id=e[0],rd=e[1];var m=i===0?'1':i===1?'2':i===2?'3':(i+1)+'.';return'<div class="lobby-player"><span>'+m+'</span><span class="avatar">'+av(rd.a)+'</span><span>'+(rd.n||'Player')+'</span><span style="margin-left:auto;color:var(--gold);">$'+(rd.te||0).toFixed(0)+'</span></div>';}).join('');});}
 function shGH(){document.getElementById('historyModal').classList.add('show');var l=document.getElementById('historyList');if(s.gh.length===0){l.innerHTML='<p style="text-align:center;color:var(--text2);">No history</p>';return;}l.innerHTML=s.gh.slice().reverse().map(function(g){return'<div style="background:var(--surface);border-radius:8px;padding:8px;margin:4px 0;font-size:10px"><div style="color:'+(g.result==='win'?'var(--green)':'var(--red)')+';font-weight:700;">'+(g.result==='win'?'Win':'Lose')+'</div><div>$ '+fm(g.cash)+' | '+g.rounds+' rounds | '+g.opponent+'</div><div style="color:var(--text2);font-size:9px;">'+new Date(g.date).toLocaleString()+'</div></div>';}).join('');}
 function searchPlayer(){var q=document.getElementById('playerSearchInput');if(!q)return;var v=q.value.trim();var r=document.getElementById('playerSearchResult');if(!v||!r)return;db.ref('u').orderByChild('n').startAt(v).endAt(v+'\uf8ff').limitToFirst(5).once('value',function(sn){var u=sn.val();if(!u){r.innerHTML='<p style="color:var(--text2);">Nothing found</p>';return;}r.innerHTML=Object.entries(u).map(function(e){var id=e[0],ud=e[1];return'<div class="lobby-player"><span class="avatar">'+av(ud.a)+'</span><span>'+(ud.n||'Player')+'</span><span style="color:var(--text2);font-size:9px;">ID: '+id+'</span><span style="margin-left:auto;color:var(--gold);">$'+(ud.st||0)+'</span></div>';}).join('');});}
+
+function L(k){var en={play:'PLAY',solo:'Bot Training',create:'Create Room',join:'Join',open:'Open Rooms',comp:'Competitions',fl:'Freelancer',compBack:'Back',back:'Back',settings:'Settings',profile:'Profile',save:'Save',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'Off',musicOn:'On',history:'HISTORY'};return s.lang==='en'?(en[k]||k):{play:'IGRAT',solo:'Trenirovka',create:'Sozdat komnatu',join:'Podkluchitsya',open:'Otkrytye komnaty',comp:'Sorevnovaniya',fl:'Frilanser',compBack:'Nazad',back:'Nazad',settings:'Nastroyki',profile:'Profil',save:'Sokhranit',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'Vykl',musicOn:'Vkl',history:'ISTORIYA'}[k]||k;}
+function aL(){var btns={playMenuBtn:'play',soloBtn:'solo',createRoomBtn:'create',joinRoomBtn:'join',openRoomsBtn:'open',compBtn:'comp',freelancerBtn:'fl',compBackBtn:'compBack',backMenuBtn:'back',settingsBtn:'settings',saveProfileBtn:'save',historyBtn:'history'};for(var id in btns){var el=document.getElementById(id);if(el)el.textContent=L(btns[id]);}document.getElementById('buyBtn').textContent=L('buy');document.getElementById('waitBtn').textContent=L('wait');}
 
 function lC(){
     fetch('cases.json').then(function(r){return r.json();}).then(function(cs){
