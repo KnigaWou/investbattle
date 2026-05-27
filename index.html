@@ -216,7 +216,22 @@ function showTradeOffer(data){
     if(syms.length===0){c.innerHTML+='<p style="text-align:center;color:var(--text2);">No stocks</p>';return;}
     var html2='';syms.forEach(function(sym){var pr2=s.mk[sym]||10;var qty2=oppPortfolio[sym].qty||0;html2+='<div style="background:var(--surface);padding:10px;border-radius:8px;margin:4px 0;cursor:pointer;" class="trade-sym" data-sym="'+sym+'" data-price="'+pr2+'" data-target="'+data.pid+'"><b>'+sym+'</b> | Market: '+fm(pr2)+' | Avail: '+qty2+'</div>';});
     document.getElementById('tradeSymbols').innerHTML=html2;
-    document.querySelectorAll('.trade-sym').forEach(function(el){el.addEventListener('click',function(){var sym2=el.dataset.sym,pr3=parseFloat(el.dataset.price),target2=el.dataset.target;if(s.yc>=pr3){var tradeKey2=target2+'_'+sym2;db.ref('rooms/'+s.rc+'/trades/'+tradeKey2).set({from:s.pid,to:target2,sym:sym2,price:pr3,fromName:s.pn,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});toast('Offer sent: '+sym2);document.getElementById('tradeModal').classList.remove('show');}else{toast('Not enough cash');}});});}
+    var trades=document.querySelectorAll('.trade-sym');
+    for(var ti=0;ti<trades.length;ti++){
+        (function(el){
+            el.addEventListener('click',function(){
+                var sym2=el.dataset.sym;
+                var pr3=parseFloat(el.dataset.price);
+                var target2=el.dataset.target;
+                if(s.yc>=pr3){
+                    var tradeKey2=target2+'_'+sym2;
+                    db.ref('rooms/'+s.rc+'/trades/'+tradeKey2).set({from:s.pid,to:target2,sym:sym2,price:pr3,fromName:s.pn,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});
+                    toast('Offer sent: '+sym2);
+                    document.getElementById('tradeModal').classList.remove('show');
+                }else{toast('Not enough cash');}
+            });
+        })(trades[ti]);
+    }
 }
 
 function showTradeRequest(trade){
