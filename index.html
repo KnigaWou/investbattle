@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v13.0</title>
+    <title>InvestBattle v13.1</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -28,17 +28,21 @@
         table.portfolio th{color:var(--text2);font-weight:600;padding:6px 4px;text-align:left;border-bottom:1px solid var(--border);font-size:9px}
         table.portfolio td{padding:6px 4px;border-bottom:1px solid rgba(255,255,255,0.03)}
         .sym{font-weight:700;color:#fff}.up{color:var(--green)}.down{color:var(--red)}
-        .qty-input{width:36px;padding:4px 2px;background:#000;border:1px solid var(--border);color:#fff;border-radius:5px;text-align:center;font-size:10px;font-weight:600}
-        .btn-sm{padding:5px 10px;border:1px solid var(--border);background:var(--surface);color:#fff;border-radius:12px;cursor:pointer;font-size:10px;font-weight:700}
+        .qty-input{width:48px;padding:8px 4px;background:#000;border:1px solid var(--border);color:#fff;border-radius:8px;text-align:center;font-size:14px;font-weight:700}
+        .btn-sm{padding:8px 12px;border:1px solid var(--border);background:var(--surface);color:#fff;border-radius:12px;cursor:pointer;font-size:11px;font-weight:700;min-width:60px}
         .btn-sm.sell{border-color:var(--red);color:var(--red)}
         .case-box{background:var(--surface);border:2px solid var(--gold);border-radius:14px;padding:14px;margin-bottom:12px}
         .case-box .case-title{font-weight:700;font-size:14px;color:var(--gold);margin-bottom:6px}
-        .case-box .case-desc{font-size:12px;color:var(--text2);line-height:1.6}
-        .case-box .case-price{font-weight:700;font-size:13px;color:#fff;margin-top:8px}
+        .case-box .case-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px}
+        .case-box .case-reason{font-size:10px;padding:6px 10px;border-radius:8px;margin-top:6px}
+        .case-box .case-reason.up{background:rgba(0,224,112,0.1);color:var(--green)}
+        .case-box .case-reason.down{background:rgba(240,48,80,0.1);color:var(--red)}
+        .case-box .case-price{font-weight:700;font-size:14px;color:#fff;margin-top:8px}
         .action-row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
         .qty-control{display:flex;align-items:center;gap:6px}
-        .qty-control button{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
-        .qty-control input{width:50px;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:10px;text-align:center;font-weight:700;font-size:14px}
+        .qty-control button{width:42px;height:42px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:#fff;font-size:20px;font-weight:700;cursor:pointer}
+        .qty-control button:active{background:var(--gold);color:#000}
+        .qty-control input{width:60px;padding:10px;background:#000;border:1px solid var(--border);color:#fff;border-radius:10px;text-align:center;font-weight:700;font-size:16px}
         .btn{padding:14px 20px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;background:var(--surface);color:#fff;text-align:center;min-height:52px;display:flex;align-items:center;justify-content:center;width:100%;margin-bottom:6px}
         .btn:disabled{opacity:0.3;pointer-events:none}
         .btn.gold{background:var(--gold);color:#000;border:none}
@@ -49,38 +53,38 @@
         .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.94);z-index:100;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
         .overlay.show{display:flex}.overlay .inner{max-width:400px;width:100%}
         .chip-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0}
-        .chip{padding:8px 14px;border:1.5px solid var(--border);background:var(--surface);color:#fff;border-radius:18px;cursor:pointer;font-weight:700;font-size:11px;min-width:44px;text-align:center}
+        .chip{padding:10px 16px;border:1.5px solid var(--border);background:var(--surface);color:#fff;border-radius:18px;cursor:pointer;font-weight:700;font-size:12px;min-width:48px;text-align:center}
         .chip.selected{border-color:var(--gold);background:rgba(240,160,48,0.2)}
-        .input{width:100%;padding:12px;background:#000;border:1px solid var(--border);color:#fff;border-radius:10px;font-size:14px;text-align:center;font-weight:700;margin-bottom:8px}
+        .input{width:100%;padding:14px;background:#000;border:1px solid var(--border);color:#fff;border-radius:12px;font-size:16px;text-align:center;font-weight:700;margin-bottom:8px}
         .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:250;align-items:center;justify-content:center}
         .modal.show{display:flex}
         .modal-content{background:#0c0c1c;border:2px solid var(--gold);border-radius:18px;padding:20px;width:92%;max-width:420px;max-height:90vh;overflow-y:auto;position:relative}
         .modal-content h3{color:var(--gold);margin-bottom:12px;text-align:center;font-size:16px}
-        .modal-close{position:absolute;top:10px;right:14px;font-size:20px;color:var(--gold);cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:none;background:transparent}
+        .modal-close{position:absolute;top:10px;right:14px;font-size:22px;color:var(--gold);cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:none;background:transparent}
         .profile-section{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px;background:var(--surface);border-radius:14px}
         .profile-avatar{width:50px;height:50px;border-radius:50%;background:#1a1a2e;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;cursor:pointer}
         .profile-avatar img{width:100%;height:100%;object-fit:cover}
         .profile-btn{padding:12px 18px;background:var(--surface);border:2px solid var(--gold);border-radius:14px;color:var(--gold);font-weight:700;font-size:14px;cursor:pointer}
-        .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:#0c0c1c;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px;z-index:50}
-        .bottom-nav .nav-btn{flex:1;text-align:center;color:var(--text2);font-size:11px;cursor:pointer;padding:8px;border-radius:8px;font-weight:700}
+        .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:#0c0c1c;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px;z-index:50}
+        .bottom-nav .nav-btn{flex:1;text-align:center;color:var(--text2);font-size:12px;cursor:pointer;padding:10px;border-radius:8px;font-weight:700}
         .bottom-nav .nav-btn.active{color:var(--gold);background:rgba(240,160,48,0.15)}
         .music-btn,.admin-btn{position:fixed;bottom:70px;width:46px;height:46px;border-radius:12px;background:var(--surface);border:2px solid var(--gold);color:var(--gold);font-size:20px;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center}
         .music-btn{right:20px}.admin-btn{left:20px;border-color:var(--green);color:var(--green);display:none}
         .chat-box{max-height:150px;overflow-y:auto;margin:8px 0;padding:6px;background:rgba(0,0,0,0.3);border-radius:10px}
-        .chat-msg{font-size:10px;margin:4px 0;padding:4px 8px;border-radius:8px;background:var(--surface);display:inline-block;max-width:80%}
-        .chat-msg .author{font-weight:700;color:var(--gold);font-size:9px}
-        .chat-input-row{display:flex;gap:6px}.chat-input-row input{flex:1;padding:8px;background:#000;border:1px solid var(--border);color:#fff;border-radius:8px;font-size:11px}
+        .chat-msg{font-size:11px;margin:4px 0;padding:4px 8px;border-radius:8px;background:var(--surface);display:inline-block;max-width:80%}
+        .chat-msg .author{font-weight:700;color:var(--gold);font-size:10px}
+        .chat-input-row{display:flex;gap:6px}.chat-input-row input{flex:1;padding:10px;background:#000;border:1px solid var(--border);color:#fff;border-radius:8px;font-size:12px}
         .copied-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:10px 20px;border-radius:20px;font-weight:700;font-size:12px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
         .copied-toast.show{opacity:1}
-        .lobby-player{display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface);border-radius:10px;margin-bottom:4px;font-size:11px}
+        .lobby-player{display:flex;align-items:center;gap:8px;padding:10px;background:var(--surface);border-radius:10px;margin-bottom:4px;font-size:12px}
         .lobby-player .avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#1a1a2e;font-size:14px;margin-right:6px}
-        .room-link{background:#000;border:1px solid var(--gold);padding:8px;border-radius:8px;font-size:10px;color:var(--gold);word-break:break-all;text-align:center;margin:6px 0;cursor:pointer}
+        .room-link{background:#000;border:1px solid var(--gold);padding:10px;border-radius:8px;font-size:11px;color:var(--gold);word-break:break-all;text-align:center;margin:6px 0;cursor:pointer}
         .loading-screen{text-align:center;padding:40px;color:var(--gold);font-weight:700;font-size:14px}
-        .sell-all-btn{width:100%;padding:8px;background:rgba(240,48,80,0.1);border:1px solid var(--red);color:var(--red);border-radius:8px;cursor:pointer;font-size:10px;font-weight:700;margin-bottom:6px}
+        .sell-all-btn{width:100%;padding:10px;background:rgba(240,48,80,0.1);border:1px solid var(--red);color:var(--red);border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;margin-bottom:6px}
         .ready-counter{text-align:center;font-size:14px;font-weight:900;color:var(--gold);margin:4px 0}
-        .left-notice{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:2px solid var(--red);color:#fff;padding:12px 20px;border-radius:12px;z-index:300;font-size:12px;text-align:center;display:none}
+        .left-notice{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:2px solid var(--red);color:#fff;padding:14px 24px;border-radius:12px;z-index:300;font-size:13px;text-align:center;display:none}
         .left-notice.show{display:block}
-        .trade-notice{position:fixed;top:120px;left:50%;transform:translateX(-50%);background:#0c0c1c;border:3px solid var(--orange);color:#fff;padding:16px 24px;border-radius:12px;z-index:310;font-size:14px;text-align:center;display:none;min-width:320px}
+        .trade-notice{position:fixed;top:120px;left:50%;transform:translateX(-50%);background:#0c0c1c;border:3px solid var(--orange);color:#fff;padding:16px 24px;border-radius:12px;z-index:310;font-size:14px;text-align:center;display:none;min-width:330px}
         .trade-notice.show{display:block}
         .final-player{background:var(--surface);border-radius:10px;padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center}
         .final-player .fp-name{font-weight:700;color:#fff;font-size:12px}
@@ -94,7 +98,7 @@
         <div id="leftNotice" class="left-notice"></div>
         <div id="tradeNotice" class="trade-notice"></div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo"><span>InvestBattle</span></div><div class="badge">v13.0</div></div>
+            <div class="header"><div class="logo"><span>InvestBattle</span></div><div class="badge">v13.1</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">?</div>
                 <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName"></div><div style="font-size:11px;color:var(--gold);"><span id="profileStars">0</span> | <span id="profileDollars">0</span></div></div>
@@ -125,14 +129,15 @@
             <div class="vs-row" id="playersRow"></div>
             <button class="sell-all-btn" id="sellAllBtn">💰 ПРОДАТЬ ВСЁ</button>
             <table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th>±</th><th></th></tr></thead><tbody id="portfolioBody"></tbody></table>
-            <div class="case-box"><div class="case-title" id="caseTitle"></div><div class="case-desc" id="caseDesc"></div><div class="case-price" id="casePrice"></div></div>
-            <div class="action-row"><div class="qty-control"><button id="qtyMinus">−</button><input type="number" id="buyQty" value="1" min="1" max="1000"><button id="qtyPlus">+</button></div><button class="btn green btn-inline" id="buyBtn">BUY</button><button class="btn red btn-inline" id="waitBtn">NO</button></div>
+            <div class="case-box"><div class="case-title" id="caseTitle"></div><div class="case-desc" id="caseDesc"></div><div class="case-reason" id="caseReason" style="display:none;"></div><div class="case-price" id="casePrice"></div></div>
+            <div class="action-row"><div class="qty-control"><button id="qtyMinus">−</button><input type="text" inputmode="numeric" pattern="[0-9]*" id="buyQty" value="1"><button id="qtyPlus">+</button></div><button class="btn green btn-inline" id="buyBtn">BUY</button><button class="btn red btn-inline" id="waitBtn">NO</button></div>
             <div class="ready-counter" id="readyStatus">NO: 0/0</div>
         </div>
         <div class="overlay" id="finalOverlay"><div class="inner"><div style="font-size:32px;">🏁</div><div class="timer" id="finalTimer">90</div><div id="finalPlayers" style="margin:8px 0;"></div><table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th>±</th><th>P&amp;L</th></tr></thead><tbody id="finalBody"></tbody></table><div style="font-weight:900;font-size:18px;color:var(--gold);margin:12px 0;" id="finalTotal">💰 $0</div><button class="btn gold" id="sellAllFinalBtn">💰 ПРОДАТЬ ВСЁ</button></div></div>
         <div class="overlay" id="resultOverlay"><div class="inner"><div style="font-size:52px;" id="resultEmoji">🏆</div><div style="font-size:24px;font-weight:900;" id="resultTitle"></div><div style="font-size:30px;font-weight:900;color:var(--gold);margin:10px 0;" id="resultCash"></div><div id="resultPrize" style="font-size:12px;color:var(--text2);"></div><button class="btn gold" id="shareBtn" style="margin-top:10px;">📤 ПОДЕЛИТЬСЯ</button><button class="btn" id="menuBtn" style="margin-top:6px;">↩ В МЕНЮ</button></div></div>
+        <!-- Modals same as v13.0, keeping them all -->
         <div class="modal" id="profileModal"><div class="modal-content"><button class="modal-close" id="profileCloseBtn">✕</button><h3>👤 Профиль</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">?</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;"></div></div><button class="btn gold" id="saveProfileBtn" style="margin-top:10px;">💾 Сохранить</button></div></div>
-        <div class="modal" id="settingsModal"><div class="modal-content"><button class="modal-close" id="settingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Язык</div><div class="chip-row" id="langChips"><div class="chip" data-lang="ru">🇷🇺 RU</div><div class="chip" data-lang="en">🇬🇧 EN</div></div><button class="btn" id="musicToggleBtn">🔊 Выкл</button></div></div>
+        <div class="modal" id="settingsModal"><div class="modal-content"><button class="modal-close" id="settingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Язык / Language</div><div class="chip-row" id="langChips"><div class="chip" data-lang="ru">🇷🇺 Русский</div><div class="chip" data-lang="en">🇬🇧 English</div></div><button class="btn" id="musicToggleBtn">🔊 Выкл</button></div></div>
         <div class="modal" id="soloModal"><div class="modal-content"><button class="modal-close" id="soloCloseBtn">✕</button><h3>🤖 Тренировка</h3><div class="section-title">💰 Капитал</div><div class="chip-row" id="sCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="sRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="sTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div></div><button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button></div></div>
         <div class="modal" id="roomModal"><div class="modal-content"><button class="modal-close" id="roomCloseBtn">✕</button><h3>👥 Новая комната</h3><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">🌍 Доступ</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">⚙️ Режим</div><div class="chip-row" id="modeChips"><div class="chip selected" data-mode="hard">🔒 Жёсткая</div><div class="chip" data-mode="free">🎲 Произвольная</div></div><div class="section-title">👥 Макс игроков</div><div class="chip-row" id="maxChips"><div class="chip" data-max="2">2</div><div class="chip selected" data-max="4">4</div><div class="chip" data-max="6">6</div><div class="chip" data-max="10">10</div></div><div class="section-title">💰 Капитал</div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
         <div class="modal" id="joinParamsModal"><div class="modal-content"><button class="modal-close" id="joinParamsCloseBtn">✕</button><h3>🎲 Выберите параметры</h3><p style="text-align:center;font-size:10px;color:var(--text2);">Среднее арифметическое в большую сторону</p><div class="section-title">💰 Капитал</div><div class="chip-row" id="jpCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="jpTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="jpRoundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div></div><button class="btn gold" id="confirmJoinParamsBtn" style="margin-top:10px;">✅ Подтвердить и войти</button></div></div>
@@ -184,11 +189,15 @@ function loadFriendRequests(){db.ref('frc/'+s.pid).on('value',function(sn){var d
 function sendFriendRequest(targetId){db.ref('frc/'+targetId+'/'+s.pid).set({n:s.pn,a:s.pa,ts:firebase.database.ServerValue.TIMESTAMP});toast('Заявка отправлена!');}
 function acceptFriendRequest(fromId){db.ref('frc/'+s.pid+'/'+fromId).remove();if(!s.fr.includes(fromId)){s.fr.push(fromId);}db.ref('frc/'+fromId+'/'+s.pid).set({n:s.pn,a:s.pa,accepted:true});sS();up();toast('Друг добавлен!');}
 function declineFriendRequest(fromId){db.ref('frc/'+s.pid+'/'+fromId).remove();toast('Отклонено');}
-function inviteToGame(friendId){var code=Math.random().toString(36).substring(2,8).toUpperCase();var deep='https://t.me/InvestBattleBot?start='+code;cp(deep);toast('Ссылка скопирована!');document.getElementById('friendsModal').classList.remove('show');resetBottomNav();}
+function inviteToGame(friendId){
+    if(s.rc){var deep='https://t.me/InvestBattleBot?start='+s.rc;cp(deep);toast('Ссылка скопирована! Отправьте другу.');}
+    else{s.rc=Math.random().toString(36).substring(2,8).toUpperCase();s.im=true;cR();var deep='https://t.me/InvestBattleBot?start='+s.rc;cp(deep);toast('Комната создана! Ссылка скопирована.');}
+    document.getElementById('friendsModal').classList.remove('show');resetBottomNav();
+}
 function showFriendsModal(){
     var m=document.getElementById('friendsModal');m.classList.add('show');
     if(s.frc.length===0){document.getElementById('frcList').innerHTML='<p style="text-align:center;color:var(--text2);">Нет заявок</p>';}
-    else{Promise.all(s.frc.map(function(id){return db.ref('u/'+id).once('value');})).then(function(snaps){var h='';snaps.forEach(function(sn,i){var d=sn.val();if(d)h+='<div class="lobby-player"><span class="avatar">'+av(d.a)+'</span>'+(d.n||'Игрок')+' <button class="btn-sm accept-fr" data-id="'+s.frc[i]+'" style="border-color:var(--green);color:var(--green);">V</button> <button class="btn-sm decline-fr" data-id="'+s.frc[i]+'" style="border-color:var(--red);color:var(--red);">X</button></div>';});document.getElementById('frcList').innerHTML=h||'<p style="text-align:center;color:var(--text2);">Нет заявок</p>';document.querySelectorAll('.accept-fr').forEach(function(b){b.onclick=function(){acceptFriendRequest(b.dataset.id);showFriendsModal();};});document.querySelectorAll('.decline-fr').forEach(function(b){b.onclick=function(){declineFriendRequest(b.dataset.id);showFriendsModal();};});});}
+    else{Promise.all(s.frc.map(function(id){return db.ref('u/'+id).once('value');})).then(function(snaps){var h='';snaps.forEach(function(sn,i){var d=sn.val();if(d)h+='<div class="lobby-player"><span class="avatar">'+av(d.a)+'</span>'+(d.n||'Игрок')+' <button class="btn-sm accept-fr" data-id="'+s.frc[i]+'" style="border-color:var(--green);color:var(--green);">✅</button> <button class="btn-sm decline-fr" data-id="'+s.frc[i]+'" style="border-color:var(--red);color:var(--red);">✕</button></div>';});document.getElementById('frcList').innerHTML=h||'<p style="text-align:center;color:var(--text2);">Нет заявок</p>';document.querySelectorAll('.accept-fr').forEach(function(b){b.onclick=function(){acceptFriendRequest(b.dataset.id);showFriendsModal();};});document.querySelectorAll('.decline-fr').forEach(function(b){b.onclick=function(){declineFriendRequest(b.dataset.id);showFriendsModal();};});});}
     if(s.fr.length===0){document.getElementById('friendsList').innerHTML='<p style="text-align:center;color:var(--text2);">Нет друзей</p>';}
     else{Promise.all(s.fr.map(function(id){return db.ref('u/'+id).once('value');})).then(function(snaps){var h='';snaps.forEach(function(sn){var d=sn.val();if(d)h+='<div class="lobby-player"><span class="avatar">'+av(d.a)+'</span>'+(d.n||'Игрок')+' <button class="btn-sm invite-game" data-id="'+sn.key+'" style="border-color:var(--blue);color:var(--blue);">📨 Пригласить</button></div>';});document.getElementById('friendsList').innerHTML=h||'<p style="text-align:center;color:var(--text2);">Нет друзей</p>';document.querySelectorAll('.invite-game').forEach(function(b){b.onclick=function(){inviteToGame(b.dataset.id);};});});}
 }
@@ -234,13 +243,55 @@ function showTradeRequest(trade){
     setTimeout(function(){el2.classList.remove('show');delete s.tradeShown[key];},30000);
 }
 
-function shc(k){if(!k||!k.symbol)return;s.cc=k;if(!s.mk[k.symbol]){s.mk[k.symbol]=Number(k.price)||10;s.fv[k.symbol]=Number(k.price)||10;}document.getElementById('caseTitle').textContent=k.symbol+' — '+(k.name||'');document.getElementById('caseDesc').textContent=k.desc||'';document.getElementById('casePrice').textContent='💰 '+fm(s.mk[k.symbol]);document.getElementById('roundBadge').textContent=s.cr+'/'+s.tr;upt();upr();ubb();}
-function ubb(){var k=s.cc;if(!k)return;var pr=s.mk[k.symbol]||k.price;var inp=document.getElementById('buyQty');var q=Math.max(1,parseInt((inp||{}).value)||1);document.getElementById('buyBtn').disabled=s.yc<pr*q;}
-function pBuy(){if(!s.ga||s.fi||!s.cc)return;var k=s.cc,pr=s.mk[k.symbol]||k.price,inp=document.getElementById('buyQty'),q=Math.max(1,parseInt((inp||{}).value)||1);if(s.yc<pr*q)return;s.yc-=pr*q;if(!s.yp[k.symbol])s.yp[k.symbol]={qty:0,avgPrice:0};var o=s.yp[k.symbol];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;upt();upr();ubb();sy();}
+function shc(k){
+    if(!k||!k.symbol)return;s.cc=k;
+    if(!s.mk[k.symbol]){s.mk[k.symbol]=Number(k.price)||10;s.fv[k.symbol]=Number(k.price)||10;}
+    document.getElementById('caseTitle').textContent=k.symbol+' — '+(k.name||'');
+    document.getElementById('caseDesc').textContent=k.desc||'';
+    document.getElementById('casePrice').textContent='💰 '+fm(s.mk[k.symbol]);
+    document.getElementById('roundBadge').textContent=s.cr+'/'+s.tr;
+    var pr=s.mk[k.symbol]||k.price;
+    var pc=k.price?((pr-k.price)/k.price*100):0;
+    var reasonEl=document.getElementById('caseReason');
+    if(k.reason_up&&k.reason_down){
+        reasonEl.style.display='block';
+        if(pc>=0){reasonEl.className='case-reason up';reasonEl.textContent='📈 '+k.reason_up;}
+        else{reasonEl.className='case-reason down';reasonEl.textContent='📉 '+k.reason_down;}
+    }else{reasonEl.style.display='none';}
+    upt();upr();ubb();
+}
+function ubb(){var k=s.cc;if(!k)return;var pr=s.mk[k.symbol]||k.price;var inp=document.getElementById('buyQty');var q=Math.max(1,parseInt((inp||{}).value)||1);if(isNaN(q))q=1;document.getElementById('buyBtn').disabled=s.yc<pr*q;}
+function pBuy(){if(!s.ga||s.fi||!s.cc)return;var k=s.cc,pr=s.mk[k.symbol]||k.price,inp=document.getElementById('buyQty'),q=Math.max(1,parseInt((inp||{}).value)||1);if(isNaN(q))q=1;if(s.yc<pr*q)return;s.yc-=pr*q;if(!s.yp[k.symbol])s.yp[k.symbol]={qty:0,avgPrice:0};var o=s.yp[k.symbol];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;upt();upr();ubb();sy();}
 function slA(){if(Object.keys(s.yp).length===0)return;if(!confirm('Продать ВСЕ активы?'))return;for(var sym in s.yp){s.yc+=(s.mk[sym]||s.yp[sym].avgPrice)*s.yp[sym].qty;}s.yp={};upt();upr();sy();}
-function tw(){if(!s.im){nr();return;}if(s.wp)return;s.wp=true;document.getElementById('waitBtn').classList.add('held');if(s.rc)db.ref('rooms/'+s.rc+'/rd/'+s.pid).set(true);}
+function tw(){
+    if(!s.im){nr();return;}
+    if(s.wp)return;
+    s.wp=true;document.getElementById('waitBtn').classList.add('held');
+    if(s.rc)db.ref('rooms/'+s.rc+'/rd/'+s.pid).set(true);
+}
 function sy(){if(!s.rc||!s.im)return;db.ref('rooms/'+s.rc+'/pl/'+s.pid).update({n:s.pn,a:s.pa,c:s.yc,p:s.yp});}
-function botA(){if(!s.cc||s.im)return;var sym=s.cc.symbol,pr=s.mk[sym]||s.cc.price,ip=s.op[sym],fair=s.fv[sym]||pr;var ok=Math.random()<0.65;if(ok){if(pr<fair*0.9&&s.oc>=pr*2){var q=Math.floor(Math.random()*4)+2;if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};var o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}}else if(ip&&ip.qty>0&&pr>ip.avgPrice*1.1){var q2=Math.min(ip.qty,Math.ceil(ip.qty*0.6));s.oc+=pr*q2;ip.qty-=q2;if(ip.qty<=0)delete s.op[sym];}}else{if(Math.random()<0.3&&s.oc>=pr){var q3=1;s.oc-=pr*q3;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};var o2=s.op[sym];o2.avgPrice=(o2.qty*o2.avgPrice+pr*q3)/(o2.qty+q3);o2.qty+=q3;}}upr();}
+// Improved bot - aggressive, buys low sells high
+function botA(){
+    if(!s.cc||s.im)return;
+    var sym=s.cc.symbol,pr=s.mk[sym]||s.cc.price,ip=s.op[sym],fair=s.fv[sym]||pr;
+    // Buy if price is significantly below fair value
+    if(pr<fair*0.85&&s.oc>=pr*3){
+        var q=Math.floor(Math.random()*6)+3;if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};var o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}
+    }
+    // Buy if trend is up and price is decent
+    else if(s.cc.trend==='up'&&pr<fair&&s.oc>=pr*2){
+        var q=Math.floor(Math.random()*4)+2;if(s.oc>=pr*q){s.oc-=pr*q;if(!s.op[sym])s.op[sym]={qty:0,avgPrice:0};var o=s.op[sym];o.avgPrice=(o.qty*o.avgPrice+pr*q)/(o.qty+q);o.qty+=q;}
+    }
+    // Sell if price is significantly above purchase price
+    if(ip&&ip.qty>0&&pr>ip.avgPrice*1.12){
+        var q=Math.min(ip.qty,Math.ceil(ip.qty*0.7));s.oc+=pr*q;ip.qty-=q;if(ip.qty<=0)delete s.op[sym];
+    }
+    // Sell if price is above fair value
+    else if(ip&&ip.qty>0&&pr>fair*1.05){
+        var q=Math.min(ip.qty,Math.ceil(ip.qty*0.5));s.oc+=pr*q;ip.qty-=q;if(ip.qty<=0)delete s.op[sym];
+    }
+    upr();
+}
 function botSellAll(){for(var sym in s.op){s.oc+=(s.mk[sym]||s.op[sym].avgPrice)*s.op[sym].qty;}s.op={};}
 function calcRoomParams(r){if(!r.votes||Object.keys(r.votes).length===0)return;var totals={sc:r.sc||10000,rt:r.rt||30,tr:r.tr||5};var cnt=1;for(var k in r.votes){var v=r.votes[k];totals.sc+=v.sc||r.sc;totals.rt+=v.rt||r.rt;totals.tr+=v.tr||r.tr;cnt++;}db.ref('rooms/'+s.rc).update({sc:Math.ceil(totals.sc/cnt),rt:Math.ceil(totals.rt/cnt),tr:Math.ceil(totals.tr/cnt)});}
 
@@ -262,7 +313,7 @@ function smg(){s.yc=s.sc;s.yp={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.u
 function nr(){if(s.cr>=s.tr){stF();return;}s.cr++;ump();s.wp=false;document.getElementById('waitBtn').classList.remove('held');s.roundOk=false;var activeCount=s.lp.filter(function(p){return!s.leftPlayers.includes(p.id);}).length||1;document.getElementById('readyStatus').textContent='NO: 0/'+activeCount;if(s.rc)db.ref('rooms/'+s.rc+'/rd').remove();var k=grc();if(!k){nr();return;}s.uc.push(k.id);shc(k);if(!s.im)botA();stT();}
 function stT(){var t=s.rt;document.getElementById('timer').textContent=t;document.getElementById('timer').classList.remove('urgent');clearInterval(s.rtimer);s.rtimer=setInterval(function(){t--;document.getElementById('timer').textContent=t;if(t<=5)document.getElementById('timer').classList.add('urgent');if(t<=0){clearInterval(s.rtimer);s.roundOk=false;nr();}},1000);}
 function sG(){if(!s.crdy){alert('Загрузка кейсов...');return;}s.yc=s.sc;s.oc=s.sc;s.yp={};s.op={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;s.leftPlayers=[];s.roundOk=false;s.tradeShown={};document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';document.getElementById('readyStatus').textContent='NO: 0/0';['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});if(!s.im){s.on='Бот-Трейдер';s.oa='Бот';}upt();upr();nr();}
-function stF(){s.fi=true;s.ft=90;clearInterval(s.fi2);clearInterval(s.fi3);document.getElementById('gameScreen').style.display='none';document.getElementById('finalOverlay').classList.add('show');upF();upFP();s.fi3=setInterval(function(){if(!s.im)botA();upFP();},3000);s.fi2=setInterval(function(){s.ft-=5;if(s.ft<0)s.ft=0;document.getElementById('finalTimer').textContent=s.ft;for(var sym in s.mk)s.mk[sym]=Math.max(0.02,s.mk[sym]*(1+(Math.random()-0.46)*14/100));upF();upFP();if(s.ft<=0){clearInterval(s.fi2);clearInterval(s.fi3);if(!s.im)botSellAll();slL();eG();}},5000);}
+function stF(){s.fi=true;s.ft=90;clearInterval(s.fi2);clearInterval(s.fi3);document.getElementById('gameScreen').style.display='none';document.getElementById('finalOverlay').classList.add('show');upF();upFP();s.fi3=setInterval(function(){if(!s.im)botA();upFP();},3000);s.fi2=setInterval(function(){s.ft-=5;if(s.ft<0)s.ft=0;document.getElementById('finalTimer').textContent=s.ft;for(var sym in s.mk)s.mk[sym]=Math.max(0.02,s.mk[sym]*(1+(Math.random()-0.46)*14/100));upF();upFP();if(s.ft<=0){clearInterval(s.fi2);clearInterval(s.fi3);if(!s.im)botSellAll();slL();eG();}},5000);setTimeout(function(){if(!s.im)botSellAll();},85000);}
 function upF(){var b=document.getElementById('finalBody'),as=Object.entries(s.yp);b.innerHTML=as.length===0?'<tr><td colspan="6">Нет активов</td></tr>':as.map(function(e){var sym=e[0],d=e[1];var pr=s.mk[sym]||d.avgPrice,val=pr*d.qty,pc=d.avgPrice?((pr-d.avgPrice)/d.avgPrice*100).toFixed(1):0,pnl=(pr-d.avgPrice)*d.qty;var cls=+pc>=0?'up':'down',arr=+pc>=0?'+':'',p=Math.abs(pc);var pnlCls=pnl>=0?'pos':'neg',pnlSign=pnl>=0?'+':'';return'<tr><td class="sym">'+sym+'</td><td>'+d.qty+'</td><td>'+fm(pr)+'</td><td>'+fm(val)+'</td><td class="'+cls+'">'+arr+p+'%</td><td class="final-pnl"><span class="'+pnlCls+'">'+pnlSign+fm(pnl)+'</span></td></tr>';}).join('');var totalPnl=s.yc-s.sc;for(var sym in s.yp){totalPnl+=(s.mk[sym]-s.yp[sym].avgPrice)*s.yp[sym].qty;}var totalVal=s.yc+as.reduce(function(sum,e){return sum+(s.mk[e[0]]||e[1].avgPrice)*e[1].qty;},0);var pnlCls2=totalPnl>=0?'pos':'neg',pnlSign2=totalPnl>=0?'+':'';document.getElementById('finalTotal').innerHTML='💰 '+fm(totalVal)+' <span class="final-pnl"><span class="'+pnlCls2+'">('+pnlSign2+fm(totalPnl)+')</span></span>';}
 function upFP(){var el=document.getElementById('finalPlayers');var myTotal=s.yc+Object.entries(s.yp).reduce(function(sum,e){return sum+(s.mk[e[0]]||e[1].avgPrice)*e[1].qty;},0);var opTotal=s.oc+Object.entries(s.op).reduce(function(sum,e){return sum+(s.mk[e[0]]||e[1].avgPrice)*e[1].qty;},0);var iWin=myTotal>opTotal;var myPnl=myTotal-s.sc,opPnl=opTotal-s.sc;var mCls=iWin?'win':'lose',oCls=iWin?'lose':'win';var mpCls=myPnl>=0?'pos':'neg',mpSign=myPnl>=0?'+':'';var opCls2=opPnl>=0?'pos':'neg',opSign=opPnl>=0?'+':'';el.innerHTML='<div class="final-player"><div class="fp-name">'+s.pn+' (Вы)</div><div><div class="fp-cash '+mCls+'">'+fm(myTotal)+'</div><div class="final-pnl"><span class="'+mpCls+'">'+mpSign+fm(myPnl)+'</span></div></div></div><div class="final-player"><div class="fp-name">'+s.on+'</div><div><div class="fp-cash '+oCls+'">'+fm(opTotal)+'</div><div class="final-pnl"><span class="'+opCls2+'">'+opSign+fm(opPnl)+'</span></div></div></div>';}
 function slL(){for(var sym in s.yp){s.yc+=(s.mk[sym]||s.yp[sym].avgPrice)*s.yp[sym].qty;}s.yp={};}
@@ -274,7 +325,7 @@ function shGH(){document.getElementById('historyModal').classList.add('show');va
 function searchPlayer(){var q=document.getElementById('playerSearchInput');if(!q)return;var v=q.value.trim();var r=document.getElementById('playerSearchResult');if(!v||!r)return;db.ref('u').orderByChild('n').startAt(v).endAt(v+'\uf8ff').limitToFirst(5).once('value',function(sn){var u=sn.val();if(!u){r.innerHTML='<p style="color:var(--text2);">Ничего не найдено</p>';return;}r.innerHTML=Object.entries(u).map(function(e){var id=e[0],ud=e[1];return'<div class="lobby-player"><span class="avatar">'+av(ud.a)+'</span><span>'+(ud.n||'Игрок')+'</span><span style="color:var(--text2);font-size:9px;">ID: '+id+'</span><span style="margin-left:auto;color:var(--gold);">⭐'+(ud.st||0)+'</span></div>';}).join('');});}
 
 function L(k){
-    var ru={play:'🎮 ИГРАТЬ',solo:'🤖 Тренировка с ботом',create:'👥 Создать комнату',join:'🔗 Подключиться',open:'🌍 Открытые комнаты',comp:'🏆 Соревнования',fl:'💼 Начинающий фрилансер',compBack:'↩ Назад',back:'↩ Назад',settings:'⚙️ Настройки',profile:'👤 Профиль',save:'💾 Сохранить',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Выкл',musicOn:'🔇 Вкл',history:'📜 ИСТОРИЯ ИГР'};
+    var ru={play:'🎮 ИГРАТЬ',solo:'🤖 Тренировка с ботом',create:'👥 Создать комнату',join:'🔗 Подключиться',open:'🌍 Открытые комнаты',comp:'🏆 Соревнования',fl:'💼 Начинающий фрилансер',compBack:'↩ Назад',back:'↩ Назад',settings:'⚙️ Настройки',profile:'👤 Профиль',save:'💾 Сохранить',buy:'КУПИТЬ',sell:'ПРОДАТЬ',wait:'NO',musicOff:'🔊 Выкл',musicOn:'🔇 Вкл',history:'📜 ИСТОРИЯ ИГР'};
     var en={play:'🎮 PLAY',solo:'🤖 Bot Training',create:'👥 Create Room',join:'🔗 Join',open:'🌍 Open Rooms',comp:'🏆 Competitions',fl:'💼 Freelancer',compBack:'↩ Back',back:'↩ Back',settings:'⚙️ Settings',profile:'👤 Profile',save:'💾 Save',buy:'BUY',sell:'SELL',wait:'NO',musicOff:'🔊 Off',musicOn:'🔇 On',history:'📜 HISTORY'};
     return s.lang==='en'?(en[k]||k):(ru[k]||k);
 }
@@ -317,7 +368,7 @@ function bind(){
     document.getElementById('soloBtn').addEventListener('click',function(){s.fa=false;document.getElementById('soloModal').classList.add('show');});
     document.getElementById('soloCloseBtn').addEventListener('click',function(){document.getElementById('soloModal').classList.remove('show');});
     document.getElementById('startSoloBtn').addEventListener('click',function(){s.sc=parseInt((document.querySelector('#sCashChips .selected')||{}).dataset.cash||10000);s.tr=parseInt((document.querySelector('#sRoundsChips .selected')||{}).dataset.rounds||10);s.rt=parseInt((document.querySelector('#sTimeChips .selected')||{}).dataset.time||30);s.im=false;s.fa=false;document.getElementById('soloModal').classList.remove('show');sG();});
-    document.getElementById('buyBtn').addEventListener('click',pBuy);document.getElementById('waitBtn').addEventListener('click',tw);document.getElementById('sellAllBtn').addEventListener('click',slA);document.getElementById('sellAllFinalBtn').addEventListener('click',function(){if(!s.im)botSellAll();slL();eG();});document.getElementById('qtyMinus').addEventListener('click',function(){var i=document.getElementById('buyQty');i.value=Math.max(1,parseInt(i.value)-1);ubb();});document.getElementById('qtyPlus').addEventListener('click',function(){var i=document.getElementById('buyQty');i.value=Math.min(1000,parseInt(i.value)+1);ubb();});document.getElementById('buyQty').addEventListener('input',ubb);
+    document.getElementById('buyBtn').addEventListener('click',pBuy);document.getElementById('waitBtn').addEventListener('click',tw);document.getElementById('sellAllBtn').addEventListener('click',slA);document.getElementById('sellAllFinalBtn').addEventListener('click',function(){if(!s.im)botSellAll();slL();eG();});document.getElementById('qtyMinus').addEventListener('click',function(){var i=document.getElementById('buyQty');var v=parseInt(i.value)||1;i.value=Math.max(1,v-1);ubb();});document.getElementById('qtyPlus').addEventListener('click',function(){var i=document.getElementById('buyQty');var v=parseInt(i.value)||1;i.value=Math.min(1000,v+1);ubb();});document.getElementById('buyQty').addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'');if(!this.value||parseInt(this.value)<1)this.value='1';ubb();});
     document.getElementById('menuBtn').addEventListener('click',function(){clearInterval(s.rtimer);clearInterval(s.fi2);clearInterval(s.fi3);if(s.roomListener&&s.rc){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';document.getElementById('compMenu').style.display='none';resetBottomNav();s.ga=false;s.fi=false;s.fa=false;});
     document.getElementById('shareBtn').addEventListener('click',function(){var t='🏆 InvestBattle: '+fm(s.yc);navigator.share?navigator.share({title:'InvestBattle',text:t}):cp(t);});
     document.getElementById('createRoomBtn').addEventListener('click',function(){document.getElementById('roomModal').classList.add('show');});
@@ -328,7 +379,7 @@ function bind(){
     document.getElementById('confirmJoinBtn').addEventListener('click',function(){var code=document.getElementById('joinCodeInput').value.trim().toUpperCase();if(code){window._joinRoom(code);document.getElementById('joinModal').classList.remove('show');}});
     document.getElementById('confirmJoinParamsBtn').addEventListener('click',function(){var sc=parseInt((document.querySelector('#jpCashChips .selected')||{}).dataset.cash||10000);var rt=parseInt((document.querySelector('#jpTimeChips .selected')||{}).dataset.time||30);var tr=parseInt((document.querySelector('#jpRoundsChips .selected')||{}).dataset.rounds||5);document.getElementById('joinParamsModal').classList.remove('show');if(s.pendingJoin){joinRoom(s.pendingJoin,{sc:sc,rt:rt,tr:tr});s.pendingJoin=null;}});
     document.getElementById('joinParamsCloseBtn').addEventListener('click',function(){document.getElementById('joinParamsModal').classList.remove('show');s.pendingJoin=null;});
-    document.getElementById('openRoomsBtn').addEventListener('click',function(){var m=document.createElement('div');m.className='modal show';m.innerHTML='<div class="modal-content"><button class="modal-close" id="openRoomsClose">✕</button><h3>🌍 Открытые комнаты</h3><div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div></div>';document.body.appendChild(m);document.getElementById('openRoomsClose').addEventListener('click',function(){document.body.removeChild(m);});db.ref('rooms').once('value',function(sn){var rooms=sn.val();var l=m.querySelector('#openRoomsList');if(!rooms){l.innerHTML='<p>Нет комнат</p>';return;}var openR=Object.entries(rooms).filter(function(e){var r=e[1];return r&&r.st==='waiting'&&r.access==='open';});if(openR.length===0){l.innerHTML='<p>Нет комнат</p>';return;}l.innerHTML=openR.map(function(e){var c=e[0],r=e[1];return'<div style="background:var(--surface);padding:10px;border-radius:10px;margin-bottom:6px;cursor:pointer;" id="rm_'+c+'"><b>'+(r.rn||'Комната')+'</b> | 👥 '+(r.pl?Object.keys(r.pl).length:0)+'/'+(r.mp||4)+' | 💰 $'+fm(r.sc||10000)+'</div>';}).join('');openR.forEach(function(e){var c=e[0];var d=m.querySelector('#rm_'+c);if(d)d.addEventListener('click',function(){document.body.removeChild(m);window._joinRoom(c);});});});});
+    document.getElementById('openRoomsBtn').addEventListener('click',function(){var m=document.createElement('div');m.className='modal show';m.innerHTML='<div class="modal-content"><button class="modal-close" id="openRoomsClose">✕</button><h3>🌍 Открытые комнаты</h3><div id="openRoomsList" style="max-height:300px;overflow-y:auto;"></div></div>';document.body.appendChild(m);document.getElementById('openRoomsClose').addEventListener('click',function(){document.body.removeChild(m);});db.ref('rooms').once('value',function(sn){var rooms=sn.val();var l=m.querySelector('#openRoomsList');if(!rooms){l.innerHTML='<p>Нет комнат</p>';return;}var openR=Object.entries(rooms).filter(function(e){var r=e[1];return r&&r.st==='waiting'&&r.access==='open';});if(openR.length===0){l.innerHTML='<p>Нет открытых комнат</p>';return;}l.innerHTML=openR.map(function(e){var c=e[0],r=e[1];return'<div style="background:var(--surface);padding:12px;border-radius:10px;margin-bottom:6px;cursor:pointer;" id="rm_'+c+'"><b>'+(r.rn||'Комната')+'</b><br>👥 '+(r.pl?Object.keys(r.pl).length:0)+'/'+(r.mp||4)+' | '+(r.rm==='free'?'🎲':'🔒')+' | 💰 $'+fm(r.sc||10000)+'</div>';}).join('');openR.forEach(function(e){var c=e[0];var d=m.querySelector('#rm_'+c);if(d)d.addEventListener('click',function(){document.body.removeChild(m);window._joinRoom(c);});});});});
     document.getElementById('historyBtn').addEventListener('click',shGH);document.getElementById('historyCloseBtn').addEventListener('click',function(){document.getElementById('historyModal').classList.remove('show');});
     document.getElementById('musicToggleBtn').addEventListener('click',function(){mo=!mo;this.textContent=mo?'🔊 Выкл':'🔇 Вкл';if(mo)pnt();else bm.pause();});
     document.getElementById('musicFloatBtn').addEventListener('click',function(){mo=!mo;this.textContent=mo?'🎵':'🔇';if(mo)pnt();else bm.pause();});
@@ -339,13 +390,13 @@ function bind(){
     document.getElementById('tradeCloseBtn').addEventListener('click',function(){document.getElementById('tradeModal').classList.remove('show');});
     document.querySelectorAll('.chip-row').forEach(function(row){row.querySelectorAll('.chip').forEach(function(chip){chip.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');});});});
     document.querySelectorAll('#avatarChips .chip').forEach(function(c){c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');s.previewAvatar=this.dataset.avatar;document.getElementById('editAvatarBig').innerHTML=av(s.previewAvatar);});});
-    document.querySelectorAll('#langChips .chip').forEach(function(c){c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');s.lang=this.dataset.lang;localStorage.setItem('ib_lang',s.lang);});});
+    document.querySelectorAll('#langChips .chip').forEach(function(c){c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');s.lang=this.dataset.lang;aL();localStorage.setItem('ib_lang',s.lang);});});
     document.getElementById('lobbyCloseX').addEventListener('click',lvR);
     if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param){var code=tg.initDataUnsafe.start_param.toUpperCase().trim();setTimeout(function(){window._joinRoom(code);},1500);}
 }
 
 lS();lC();bind();
-console.log('InvestBattle v13.0 ready');
+console.log('InvestBattle v13.1 ready');
 })();
 </script>
 </body>
