@@ -122,6 +122,12 @@
         .custom-input-box .hint{font-size:10px;color:var(--text2);margin-bottom:12px}
         .custom-input-box .btn-row{display:flex;gap:8px}
         .custom-input-box .btn-row button{flex:1;padding:12px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer}
+        .coin-input-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+        .coin-input-row input{flex:1;padding:12px;background:#000;border:2px solid var(--gold);color:#fff;border-radius:10px;text-align:center;font-weight:700;font-size:16px}
+        .coin-input-row button{padding:12px 16px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;min-width:80px}
+        .coin-input-row button.add{background:var(--green);color:#000;border:none}
+        .coin-input-row button.take{background:var(--red);color:#fff;border:none}
+        .coin-stats{font-size:10px;color:var(--text2);margin-top:4px;text-align:center}
     </style>
 </head>
 <body>
@@ -198,11 +204,12 @@
         <div class="modal" id="confirmModal"><div class="modal-content"><h3 id="confirmTitle">Подтверждение</h3><p style="text-align:center;color:var(--text);" id="confirmMsg"></p><div style="display:flex;gap:10px;margin-top:10px;"><button class="btn green" id="confirmYes">✅ Да</button><button class="btn red" id="confirmNo">✕ Нет</button></div></div></div>
         <div class="modal" id="friendsModal"><div class="modal-content"><button class="modal-close" id="friendsCloseBtn">✕</button><h3>👥 Друзья</h3><div class="section-title">🔍 Поиск по нику</div><div class="friend-search"><input id="friendSearchInput" placeholder="Введите ник..."></div><div class="friend-search-results" id="friendSearchResults"></div><div class="section-title">📨 Заявки в друзья</div><div id="frcList"></div><div class="section-title">🎮 Приглашения в игру</div><div id="gameInvitesList"></div><div class="section-title">👥 Список друзей</div><div id="friendsList"></div></div></div>
         <div class="modal" id="inviteModal"><div class="modal-content"><button class="modal-close" id="inviteCloseBtn">✕</button><h3>📨 Пригласить друга</h3><div class="section-title">Отправить приглашение</div><div id="inviteFriendList" style="max-height:200px;overflow-y:auto;"></div><div class="section-title">Код комнаты</div><div class="room-link" id="inviteLink" style="cursor:pointer;"></div><p style="text-align:center;color:var(--text2);font-size:9px;">Отправьте код другу</p></div></div>
-        <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><button class="modal-close" id="adminCloseBtn">✕</button><h3 style="color:var(--green);">🛡️ АДМИН</h3><div class="stat-item" id="adminOnlineBtn"><span>🟢 Онлайн</span><span class="stat-val" id="aOnline">0</span></div><div class="stat-item" id="adminTotalBtn"><span>👥 Всего игроков</span><span class="stat-val" id="aTotal">0</span></div><div class="stat-item" id="adminPlayingBtn"><span>🎮 Активных игр</span><span class="stat-val" id="aPlaying">0</span></div><button class="btn" id="adminConsoleBtn2" style="margin-top:10px;">📟 Консоль</button></div></div>
+        <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><button class="modal-close" id="adminCloseBtn">✕</button><h3 style="color:var(--green);">🛡️ АДМИН</h3><div class="stat-item" id="adminOnlineBtn"><span>🟢 Онлайн</span><span class="stat-val" id="aOnline">0</span></div><div class="stat-item" id="adminTotalBtn"><span>👥 Всего игроков</span><span class="stat-val" id="aTotal">0</span></div><div class="stat-item" id="adminPlayingBtn"><span>🎮 Активных игр</span><span class="stat-val" id="aPlaying">0</span></div><div class="stat-item" id="adminCoinsBtn" style="border-color:var(--gold);"><span>💰 Монеты</span><span class="stat-val" style="color:var(--gold);">Выдать</span></div><button class="btn" id="adminConsoleBtn2" style="margin-top:10px;">📟 Консоль</button></div></div>
         <div class="modal" id="consoleModal"><div class="modal-content" style="border-color:var(--gold);max-width:500px;"><button class="modal-close" id="consoleCloseBtn">✕</button><h3>📟 Консоль</h3><div id="consoleContent" style="max-height:400px;overflow-y:auto;font-family:monospace;font-size:10px;color:var(--green);background:#000;padding:10px;border-radius:8px;"></div></div></div>
         <div class="modal" id="onlinePlayersModal"><div class="modal-content"><button class="modal-close" id="onlinePlayersCloseBtn">✕</button><h3>🟢 Онлайн игроки</h3><div class="admin-search"><input id="onlineSearchInput" placeholder="🔍 Поиск по нику или ID..."></div><div id="onlinePlayersList" style="max-height:300px;overflow-y:auto;"></div></div></div>
         <div class="modal" id="allPlayersModal"><div class="modal-content"><button class="modal-close" id="allPlayersCloseBtn">✕</button><h3>👥 Все игроки</h3><div class="admin-search"><input id="allSearchInput" placeholder="🔍 Поиск по нику или ID..."></div><div id="allPlayersList" style="max-height:300px;overflow-y:auto;"></div></div></div>
         <div class="modal" id="activeGamesModal"><div class="modal-content"><button class="modal-close" id="activeGamesCloseBtn">✕</button><h3>🎮 Активные игры</h3><div class="admin-search"><input id="gamesSearchInput" placeholder="🔍 Поиск по коду комнаты..."></div><div id="activeGamesList" style="max-height:300px;overflow-y:auto;"></div></div></div>
+        <div class="modal" id="adminCoinsModal"><div class="modal-content" style="border-color:var(--gold);"><button class="modal-close" id="adminCoinsCloseBtn">✕</button><h3>💰 Монеты</h3><div class="admin-search"><input id="coinsSearchInput" placeholder="🔍 Поиск по нику или ID..."></div><div id="coinsSearchList" style="max-height:300px;overflow-y:auto;"></div><div id="coinsDetail" style="display:none;"></div></div></div>
         <div class="modal" id="adminPlayerDetailModal"><div class="modal-content"><button class="modal-close" id="adminPlayerDetailCloseBtn">✕</button><h3>👤 Игрок</h3><div id="adminPlayerDetailContent"></div></div></div>
         <div class="modal" id="adminGameDetailModal"><div class="modal-content"><button class="modal-close" id="adminGameDetailCloseBtn">✕</button><h3>🎮 Комната</h3><div id="adminGameDetailContent"></div></div></div>
         <div class="modal" id="freelancerIntroModal"><div class="modal-content" style="border-color:var(--orange);"><button class="modal-close" id="flCloseBtn">✕</button><h3 style="color:var(--orange);">💼 НАЧИНАЮЩИЙ ФРИЛАНСЕР</h3><div style="text-align:center;font-size:40px;">💼</div><p style="font-size:10px;color:var(--text2);text-align:center;line-height:1.5;">Ты — фрилансер с <b>$100</b>. Стань профи!<br>📉 Акции $1-15 | 🎢 ×2.5 волатильность<br>♾️ Бесконечные уровни | 🏆 Топ-5 призы<br>💎 Вход: <b>5 000 💵</b> | Обновление: понедельник</p><div style="font-size:10px;color:var(--gold);text-align:center;">🥇50% 🥈25% 🥉15% 4-5:5%</div><button class="btn orange" id="flEnterBtn" style="margin-top:10px;">💎 ВОЙТИ (5 000 💵)</button><button class="btn" id="flRatingViewBtn" style="margin-top:6px;">📊 Рейтинг</button></div></div>
@@ -220,7 +227,8 @@ var db=firebase.database();
 var tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand();}
 
-var adminIDs=['tg_5909465804','web_5909465804','web_xg6jxslm7'];
+var adminIDs=['web_rfzuxppca','web_xg6jxslm7','tg_5909465804'];
+var adminBtnVisible=false;
 var consoleLogs=[];
 function cl(msg,type){var t=type||'log';var entry={time:new Date().toLocaleTimeString(),msg:msg,type:t};consoleLogs.push(entry);if(consoleLogs.length>50)consoleLogs.shift();if(type==='error'||type==='warn'){console[t](msg);}updateConsoleIfOpen();}
 function updateConsoleIfOpen(){var modal=document.getElementById('consoleModal');if(!modal.classList.contains('show'))return;var c=document.getElementById('consoleContent');if(!c)return;c.innerHTML=consoleLogs.slice().reverse().map(function(l){var col=l.type==='error'?'var(--red)':l.type==='warn'?'var(--gold)':'var(--green)';return'<div style="border-bottom:1px solid #222;padding:1px 0;"><span style="color:#888;">'+l.time+'</span> <span style="color:'+col+';">'+l.msg+'</span></div>';}).join('');}
@@ -265,20 +273,9 @@ function declineFriendRequest(fromId){db.ref('frc/'+s.pid+'/'+fromId).remove();t
 function sendGameInvite(targetId){if(!s.rc){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();s.im=true;cR();}db.ref('gi/'+targetId).push({from:s.pid,fromName:s.pn,fromAvatar:s.pa,roomCode:s.rc,roomName:s.rn,bet:s.bet,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,rm:s.rm,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});toast('Приглашение отправлено!');}
 function acceptGameInvite(inviteId,invite){
     db.ref('rooms/'+invite.roomCode).once('value',function(sn){
-        if(!sn.val()){
-            db.ref('gi/'+s.pid+'/'+inviteId).remove();
-            toast('Комната не найдена');
-            document.getElementById('friendsModal').classList.remove('show');
-            resetBottomNav();
-            return;
-        }
-        db.ref('gi/'+s.pid+'/'+inviteId).update({status:'accepted'});
-        document.getElementById('friendsModal').classList.remove('show');
-        resetBottomNav();
-        if(invite.rm=='free'&&s.pid!==invite.from){
-            s.pendingJoin=invite.roomCode;
-            document.getElementById('joinParamsModal').classList.add('show');
-        }else{joinRoom(invite.roomCode,null);}
+        if(!sn.val()){db.ref('gi/'+s.pid+'/'+inviteId).remove();toast('Комната не найдена');document.getElementById('friendsModal').classList.remove('show');resetBottomNav();return;}
+        db.ref('gi/'+s.pid+'/'+inviteId).update({status:'accepted'});document.getElementById('friendsModal').classList.remove('show');resetBottomNav();
+        if(invite.rm=='free'&&s.pid!==invite.from){s.pendingJoin=invite.roomCode;document.getElementById('joinParamsModal').classList.add('show');}else{joinRoom(invite.roomCode,null);}
     });
 }
 function declineGameInvite(inviteId){db.ref('gi/'+s.pid+'/'+inviteId).update({status:'declined'});}
@@ -293,6 +290,39 @@ function showGameDetail(code){db.ref('rooms/'+code).once('value',function(sn){va
 function showPlayerDetail(pid){db.ref('u/'+pid).once('value',function(sn){var u=sn.val();if(!u)return;var modal=document.getElementById('adminPlayerDetailModal');var content=document.getElementById('adminPlayerDetailContent');content.innerHTML='<div style="text-align:center;margin-bottom:12px;"><div class="profile-avatar" style="margin:0 auto 10px;width:64px;height:64px;">'+av(u.a)+'</div><h3>'+(u.n||'Игрок')+'</h3></div><div class="admin-detail"><div class="row"><span class="label">ID:</span><span class="value" style="font-size:9px;">'+pid+'</span></div><div class="row"><span class="label">Ник:</span><span class="value">'+(u.n||'—')+'</span></div><div class="row"><span class="label">Монеты:</span><span class="value">'+(u.do||0)+'</span></div></div>';modal.classList.add('show');});}
 function bindPlayerClicks(container){container.querySelectorAll('.lobby-player').forEach(function(el){el.addEventListener('click',function(){if(this.dataset.pid)showPlayerDetail(this.dataset.pid);});});}
 function showConsoleModal(){document.getElementById('consoleModal').classList.add('show');updateConsoleIfOpen();}
+
+function showAdminCoins(){
+    var m=document.getElementById('adminCoinsModal');m.classList.add('show');
+    var si=document.getElementById('coinsSearchInput');si.value='';
+    document.getElementById('coinsDetail').style.display='none';
+    document.getElementById('coinsSearchList').style.display='block';
+    loadCoinsSearch('');si.oninput=function(){loadCoinsSearch(this.value.trim());};
+}
+function loadCoinsSearch(query){
+    db.ref('u').once('value',function(sn){
+        var d=sn.val();var list=document.getElementById('coinsSearchList');
+        if(!d){list.innerHTML='<p style="color:var(--text2);">Нет</p>';return;}
+        var items=Object.entries(d).map(function(e){return{id:e[0],name:e[1].n||'Игрок',avatar:e[1].a,dollars:e[1].do||0};});
+        if(query)items=items.filter(function(x){return x.name.toLowerCase().includes(query.toLowerCase())||x.id.toLowerCase().includes(query.toLowerCase());});
+        list.innerHTML=items.length===0?'<p style="color:var(--text2);">Ничего</p>':items.map(function(p){return'<div class="lobby-player coins-player" data-pid="'+p.id+'" data-pname="'+p.name+'" data-pavatar="'+p.avatar+'" data-pdollars="'+p.dollars+'"><span class="avatar">'+av(p.avatar)+'</span><span>'+p.name+'</span><span style="color:var(--gold);margin-left:auto;">'+p.dollars+'</span></div>';}).join('');
+        list.querySelectorAll('.coins-player').forEach(function(el){el.addEventListener('click',function(){showCoinsDetail(this.dataset);});});
+    });
+}
+function showCoinsDetail(data){
+    document.getElementById('coinsSearchList').style.display='none';
+    var detail=document.getElementById('coinsDetail');
+    detail.style.display='block';
+    var pid=data.pid;
+    db.ref('coinLog/'+pid).once('value',function(sn){
+        var log=sn.val();
+        var totalGiven=0;var lastGiven=0;var lastTime='—';
+        if(log){totalGiven=log.totalGiven||0;lastGiven=log.lastGiven||0;lastTime=log.lastTime||'—';}
+        detail.innerHTML='<div style="text-align:center;margin-bottom:12px;"><div class="profile-avatar" style="margin:0 auto 10px;width:48px;height:48px;">'+av(data.pavatar)+'</div><h3>'+data.pname+'</h3><p style="color:var(--gold);">Монет: '+data.pdollars+'</p></div><div class="admin-detail"><div class="row"><span class="label">ID:</span><span class="value" style="font-size:9px;">'+pid+'</span></div><div class="row"><span class="label">Всего выдано:</span><span class="value" style="color:var(--green);">+'+totalGiven+'</span></div><div class="row"><span class="label">Последний раз:</span><span class="value">'+(lastGiven>0?'+'+lastGiven:'—')+'</span></div><div class="row"><span class="label">Когда:</span><span class="value" style="font-size:9px;">'+lastTime+'</span></div></div><div class="coin-input-row"><input type="number" id="coinsAmount" placeholder="Сумма" min="1" value="100"><button class="add" id="coinsAddBtn">Добавить</button></div><div class="coin-input-row"><input type="number" id="coinsTakeAmount" placeholder="Сумма" min="1" value="100"><button class="take" id="coinsTakeBtn">Забрать</button></div><div class="coin-stats" id="coinStats"></div><button class="btn" id="coinsBackBtn" style="margin-top:8px;">↩ Назад</button>';
+        document.getElementById('coinsBackBtn').addEventListener('click',function(){detail.style.display='none';document.getElementById('coinsSearchList').style.display='block';document.getElementById('coinsSearchInput').value='';loadCoinsSearch('');});
+        document.getElementById('coinsAddBtn').addEventListener('click',function(){var amt=parseInt(document.getElementById('coinsAmount').value);if(isNaN(amt)||amt<=0){toast('Введите положительное число!');return;}db.ref('u/'+pid+'/do').transaction(function(cur){return(cur||0)+amt;});db.ref('coinLog/'+pid).update({totalGiven:firebase.database.ServerValue.increment(amt),lastGiven:amt,lastTime:new Date().toLocaleString(),lastAdmin:s.pid});toast('Добавлено +'+amt+' монет для '+data.pname);showCoinsDetail(data);});
+        document.getElementById('coinsTakeBtn').addEventListener('click',function(){var amt=parseInt(document.getElementById('coinsTakeAmount').value);if(isNaN(amt)||amt<=0){toast('Введите положительное число!');return;}db.ref('u/'+pid+'/do').transaction(function(cur){return Math.max(0,(cur||0)-amt);});toast('Забрано -'+amt+' монет у '+data.pname);showCoinsDetail(data);});
+    });
+}
 
 function showCustomInput(title,min,max,callback){
     s.customChipCallback=callback;s.customChipMin=min;s.customChipMax=max;
@@ -313,8 +343,7 @@ document.getElementById('customInputValue').addEventListener('keypress',function
 
 function showInviteModal(friendId,friendName,friendAvatar){
     if(!s.rc){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();s.im=true;cR();}
-    document.getElementById('inviteLink').textContent='Код: '+s.rc;
-    document.getElementById('inviteLink').onclick=function(){cp(s.rc);};
+    document.getElementById('inviteLink').textContent='Код: '+s.rc;document.getElementById('inviteLink').onclick=function(){cp(s.rc);};
     document.getElementById('inviteFriendList').innerHTML='<div class="lobby-player" style="cursor:pointer;" id="sendInvite"><span class="avatar">'+av(friendAvatar||'?')+'</span>'+friendName+' — Отправить</div>';
     document.getElementById('sendInvite').addEventListener('click',function(){sendGameInvite(friendId);toast('Приглашение отправлено '+friendName);document.getElementById('inviteModal').classList.remove('show');});
     document.getElementById('inviteModal').classList.add('show');
@@ -409,29 +438,17 @@ function handleCustomChip(row,key,min,max,title){
     row.querySelectorAll('.chip.custom').forEach(function(chip){chip.addEventListener('click',function(){
         showCustomInput(title||'Введите значение',min,max,function(val){
             row.querySelectorAll('.chip.custom-selected').forEach(function(c){c.remove();});
-            var newChip=document.createElement('div');
-            newChip.className='chip selected custom-selected';
-            newChip.dataset[key]=val;
-            newChip.textContent=val;
+            var newChip=document.createElement('div');newChip.className='chip selected custom-selected';newChip.dataset[key]=val;newChip.textContent=val;
             newChip.addEventListener('click',function(){row.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});newChip.classList.add('selected');});
-            var customBtn=row.querySelector('.chip.custom');
-            customBtn.parentNode.insertBefore(newChip,customBtn);
+            var customBtn=row.querySelector('.chip.custom');customBtn.parentNode.insertBefore(newChip,customBtn);
         });
     });});
 }
 
 function lC(){
-    cl('Загрузка...');
-    fetch('cases.json').then(function(r){return r.json();}).then(function(cs){
-        s.acl=cs.filter(function(c){return c&&c.symbol&&c.price;});
-        s.crdy=true;
-        cl('Кейсы: '+s.acl.length);
-    }).catch(function(e){s.crdy=true;cl('Ошибка кейсов: '+e.message,'error');}).finally(function(){
-        document.getElementById('loadingScreen').style.display='none';
-        document.getElementById('menuScreen').style.display='block';
-        document.getElementById('bottomNav').style.display='flex';
-        if(isAdmin()){document.getElementById('adminFloatBtn').style.display='flex';}
-        cl('Готов');
+    cl('Загрузка...');fetch('cases.json').then(function(r){return r.json();}).then(function(cs){s.acl=cs.filter(function(c){return c&&c.symbol&&c.price;});s.crdy=true;cl('Кейсы: '+s.acl.length);}).catch(function(e){s.crdy=true;cl('Ошибка кейсов: '+e.message,'error');}).finally(function(){
+        document.getElementById('loadingScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('bottomNav').style.display='flex';
+        if(isAdmin()){cl('Режим админа');}cl('Готов');
     });
 }
 
@@ -446,8 +463,7 @@ function bind(){
     document.getElementById('flCloseBtn').addEventListener('click',function(){document.getElementById('freelancerIntroModal').classList.remove('show');document.getElementById('compMenu').style.display='block';});
     document.getElementById('flRatingViewBtn').addEventListener('click',function(){document.getElementById('freelancerIntroModal').classList.remove('show');shFR();});
     document.getElementById('flRatingCloseBtn').addEventListener('click',function(){document.getElementById('freelancerRatingModal').classList.remove('show');document.getElementById('freelancerIntroModal').classList.add('show');});
-    document.getElementById('flEnterBtn').addEventListener('click',eF);
-    document.getElementById('flPlayBtn').addEventListener('click',function(){document.getElementById('flConfirmModal').classList.remove('show');s.ga=true;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';upt();upr();nr();});
+    document.getElementById('flEnterBtn').addEventListener('click',eF);document.getElementById('flPlayBtn').addEventListener('click',function(){document.getElementById('flConfirmModal').classList.remove('show');s.ga=true;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';upt();upr();nr();});
     document.getElementById('flRatingFromConfirmBtn').addEventListener('click',function(){document.getElementById('flConfirmModal').classList.remove('show');shFR();});
     document.getElementById('flConfirmCloseBtn').addEventListener('click',function(){document.getElementById('flConfirmModal').classList.remove('show');});
     document.getElementById('profileAvatar').addEventListener('click',function(){s.previewAvatar=s.pa;up();document.getElementById('profileModal').classList.add('show');});
@@ -466,23 +482,7 @@ function bind(){
     document.getElementById('shareBtn').addEventListener('click',function(){var t='InvestBattle: '+fm2(s.yc);navigator.share?navigator.share({title:'InvestBattle',text:t}):cp(t);});
     document.getElementById('createRoomBtn').addEventListener('click',function(){document.getElementById('roomModal').classList.add('show');});
     document.getElementById('roomCloseBtn').addEventListener('click',function(){document.getElementById('roomModal').classList.remove('show');});
-    document.getElementById('confirmRoomBtn').addEventListener('click',function(){
-        s.rn=document.getElementById('roomNameInput').value||'Комната';
-        s.mp=parseInt((document.querySelector('#maxChips .selected')||{}).dataset.max||4);
-        s.sc=parseInt((document.querySelector('#cashChips .selected')||{}).dataset.cash||10000);
-        s.rt=parseInt((document.querySelector('#timeChips .selected')||{}).dataset.time||30);
-        s.tr=parseInt((document.querySelector('#roundsChips .selected')||{}).dataset.rounds||5);
-        s.ra=(document.querySelector('#accessChips .selected')||{}).dataset.access||'open';
-        s.rm=(document.querySelector('#modeChips .selected')||{}).dataset.mode||'hard';
-        s.bet=parseInt((document.querySelector('#betChips .selected')||{}).dataset.bet||0);
-        if(s.bet>0&&s.pd<s.bet){alert('Недостаточно монет! У вас '+s.pd);return;}
-        if(s.mp>20){alert('Максимум 20 игроков!');return;}
-        if(s.sc>100000){alert('Максимум 100 000 капитал!');return;}
-        if(s.rt>90){alert('Максимум 90 секунд!');return;}
-        if(s.tr>100){alert('Максимум 100 раундов!');return;}
-        document.getElementById('roomModal').classList.remove('show');
-        cR();
-    });
+    document.getElementById('confirmRoomBtn').addEventListener('click',function(){s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt((document.querySelector('#maxChips .selected')||{}).dataset.max||4);s.sc=parseInt((document.querySelector('#cashChips .selected')||{}).dataset.cash||10000);s.rt=parseInt((document.querySelector('#timeChips .selected')||{}).dataset.time||30);s.tr=parseInt((document.querySelector('#roundsChips .selected')||{}).dataset.rounds||5);s.ra=(document.querySelector('#accessChips .selected')||{}).dataset.access||'open';s.rm=(document.querySelector('#modeChips .selected')||{}).dataset.mode||'hard';s.bet=parseInt((document.querySelector('#betChips .selected')||{}).dataset.bet||0);if(s.bet>0&&s.pd<s.bet){alert('Недостаточно монет! У вас '+s.pd);return;}if(s.mp>20){alert('Максимум 20 игроков!');return;}if(s.sc>100000){alert('Максимум 100 000 капитал!');return;}if(s.rt>90){alert('Максимум 90 секунд!');return;}if(s.tr>100){alert('Максимум 100 раундов!');return;}document.getElementById('roomModal').classList.remove('show');cR();});
     document.getElementById('joinRoomBtn').addEventListener('click',function(){document.getElementById('joinModal').classList.add('show');});
     document.getElementById('joinCloseBtn').addEventListener('click',function(){document.getElementById('joinModal').classList.remove('show');});
     document.getElementById('confirmJoinBtn').addEventListener('click',function(){var code=document.getElementById('joinCodeInput').value.trim().toUpperCase();if(code){window._joinRoom(code);document.getElementById('joinModal').classList.remove('show');}});
@@ -492,12 +492,14 @@ function bind(){
     document.getElementById('historyBtn').addEventListener('click',shGH);document.getElementById('historyCloseBtn').addEventListener('click',function(){document.getElementById('historyModal').classList.remove('show');});
     document.getElementById('musicToggleBtn').addEventListener('click',function(){mo=!mo;this.textContent=mo?L('musicOff'):L('musicOn');document.getElementById('musicFloatBtn').textContent=mo?'🎵':'🔇';if(mo)pnt();else bm.pause();});
     document.getElementById('musicFloatBtn').addEventListener('click',function(){mo=!mo;this.textContent=mo?'🎵':'🔇';document.getElementById('musicToggleBtn').textContent=mo?L('musicOff'):L('musicOn');if(mo)pnt();else bm.pause();});
-    document.getElementById('adminFloatBtn').addEventListener('click',function(){if(!isAdmin())return;document.getElementById('adminModal').classList.add('show');upA();});
+    document.getElementById('adminFloatBtn').addEventListener('click',function(){if(!isAdmin()||!adminBtnVisible)return;document.getElementById('adminModal').classList.add('show');upA();});
     document.getElementById('adminConsoleBtn2').addEventListener('click',function(){showConsoleModal();});
     document.getElementById('consoleCloseBtn').addEventListener('click',function(){document.getElementById('consoleModal').classList.remove('show');});
     document.getElementById('adminOnlineBtn').addEventListener('click',showOnlinePlayers);
     document.getElementById('adminTotalBtn').addEventListener('click',showAllPlayers);
     document.getElementById('adminPlayingBtn').addEventListener('click',showActiveGames);
+    document.getElementById('adminCoinsBtn').addEventListener('click',showAdminCoins);
+    document.getElementById('adminCoinsCloseBtn').addEventListener('click',function(){document.getElementById('adminCoinsModal').classList.remove('show');});
     document.getElementById('onlinePlayersCloseBtn').addEventListener('click',function(){document.getElementById('onlinePlayersModal').classList.remove('show');});
     document.getElementById('allPlayersCloseBtn').addEventListener('click',function(){document.getElementById('allPlayersModal').classList.remove('show');});
     document.getElementById('activeGamesCloseBtn').addEventListener('click',function(){document.getElementById('activeGamesModal').classList.remove('show');});
@@ -516,7 +518,7 @@ function bind(){
     document.querySelectorAll('#langChips .chip').forEach(function(c){c.addEventListener('click',function(){this.parentElement.querySelectorAll('.chip').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');s.lang=this.dataset.lang;aL();localStorage.setItem('ib_lang',s.lang);});});
     document.getElementById('lobbyCloseX').addEventListener('click',lvR);
     var logoEl=document.getElementById('logoClick');
-    if(logoEl){logoEl.addEventListener('click',function(){if(!isAdmin())return;s.logoClickCount++;clearTimeout(s.logoClickTimer);if(s.logoClickCount>=5){document.getElementById('adminModal').classList.add('show');upA();s.logoClickCount=0;}s.logoClickTimer=setTimeout(function(){s.logoClickCount=0;},2000);});}
+    if(logoEl){logoEl.addEventListener('click',function(){if(!isAdmin())return;s.logoClickCount++;clearTimeout(s.logoClickTimer);if(s.logoClickCount>=3){adminBtnVisible=!adminBtnVisible;document.getElementById('adminFloatBtn').style.display=adminBtnVisible?'flex':'none';toast(adminBtnVisible?'Админ-панель показана':'Админ-панель скрыта');s.logoClickCount=0;}s.logoClickTimer=setTimeout(function(){s.logoClickCount=0;},2000);});}
     if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param){var code=tg.initDataUnsafe.start_param.toUpperCase().trim();setTimeout(function(){window._joinRoom(code);},1500);}
     window.addEventListener('beforeunload',function(){if(s.ga){forceLose();if(s.rc){db.ref('rooms/'+s.rc+'/pl/'+s.pid).update({c:0,p:{},left:true});}}});
 }
