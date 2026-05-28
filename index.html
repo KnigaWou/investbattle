@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v1.0</title>
+    <title>InvestBattle v1.1</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -147,7 +147,7 @@
             </div>
         </div>
         <div id="menuScreen" style="display:none;">
-            <div class="header"><div class="logo" id="logoClick"><span>InvestBattle</span></div><div class="badge">v1.0</div></div>
+            <div class="header"><div class="logo" id="logoClick"><span>InvestBattle</span></div><div class="badge">v1.1</div></div>
             <div class="profile-section">
                 <div class="profile-avatar" id="profileAvatar">?</div>
                 <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName"></div><div style="font-size:11px;color:var(--gold);"><span id="profileStars">0</span> | <span id="profileDollars">0</span></div></div>
@@ -195,7 +195,7 @@
         <div class="modal" id="profileModal"><div class="modal-content"><button class="modal-close" id="profileCloseBtn">✕</button><h3>👤 Профиль</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;font-size:28px;">?</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;"></div></div><button class="btn gold" id="saveProfileBtn" style="margin-top:10px;">💾 Сохранить</button></div></div>
         <div class="modal" id="settingsModal"><div class="modal-content"><button class="modal-close" id="settingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Язык / Language</div><div class="chip-row" id="langChips"><div class="chip" data-lang="ru">🇷🇺 Русский</div><div class="chip" data-lang="en">🇬🇧 English</div></div><button class="btn" id="musicToggleBtn">🔊 Выкл</button></div></div>
         <div class="modal" id="soloModal"><div class="modal-content"><button class="modal-close" id="soloCloseBtn">✕</button><h3>🤖 Тренировка</h3><div class="section-title">💰 Капитал</div><div class="chip-row" id="sCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="sRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="sTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div></div><button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button></div></div>
-        <div class="modal" id="roomModal"><div class="modal-content"><button class="modal-close" id="roomCloseBtn">✕</button><h3>👥 Создать комнату</h3><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">🌍 Доступ</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">⚙️ Режим</div><div class="chip-row" id="modeChips"><div class="chip selected" data-mode="hard">🔒 Жёсткая</div><div class="chip" data-mode="free">🎲 Произвольная</div></div><div class="section-title">💎 Ставка (монеты)</div><div class="chip-row" id="betChips"><div class="chip" data-bet="0">Без ставки</div><div class="chip selected" data-bet="100">100</div><div class="chip" data-bet="500">500</div><div class="chip" data-bet="1000">1000</div><div class="chip" data-bet="5000">5000</div><div class="chip custom" data-bet="custom">Своё</div></div><div class="section-title">👥 Макс игроков</div><div class="chip-row" id="maxChips"><div class="chip" data-max="2">2</div><div class="chip selected" data-max="4">4</div><div class="chip" data-max="6">6</div><div class="chip" data-max="10">10</div><div class="chip custom" data-max="custom">Своё</div></div><div class="section-title">💰 Капитал</div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div><div class="chip custom" data-cash="custom">Своё</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div><div class="chip custom" data-time="custom">Своё</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div><div class="chip custom" data-rounds="custom">Своё</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
+        <div class="modal" id="roomModal"><div class="modal-content"><button class="modal-close" id="roomCloseBtn">✕</button><h3>👥 Создать комнату</h3><div id="roomCodePreview" style="display:none;text-align:center;color:var(--gold);font-weight:700;margin-bottom:8px;">Код: <span id="roomCodeText"></span></div><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">🌍 Доступ</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">🌍 Открытая</div><div class="chip" data-access="closed">🔒 Закрытая</div></div><div class="section-title">⚙️ Режим</div><div class="chip-row" id="modeChips"><div class="chip selected" data-mode="hard">🔒 Жёсткая</div><div class="chip" data-mode="free">🎲 Произвольная</div></div><div class="section-title">💎 Ставка (монеты)</div><div class="chip-row" id="betChips"><div class="chip" data-bet="0">Без ставки</div><div class="chip selected" data-bet="100">100</div><div class="chip" data-bet="500">500</div><div class="chip" data-bet="1000">1000</div><div class="chip" data-bet="5000">5000</div><div class="chip custom" data-bet="custom">Своё</div></div><div class="section-title">👥 Макс игроков</div><div class="chip-row" id="maxChips"><div class="chip" data-max="2">2</div><div class="chip selected" data-max="4">4</div><div class="chip" data-max="6">6</div><div class="chip" data-max="10">10</div><div class="chip custom" data-max="custom">Своё</div></div><div class="section-title">💰 Капитал</div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div><div class="chip custom" data-cash="custom">Своё</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div><div class="chip custom" data-time="custom">Своё</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div><div class="chip custom" data-rounds="custom">Своё</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
         <div class="modal" id="joinParamsModal"><div class="modal-content"><button class="modal-close" id="joinParamsCloseBtn">✕</button><h3>🎲 Выберите параметры</h3><p style="text-align:center;font-size:10px;color:var(--text2);">Среднее арифметическое в большую сторону</p><div class="section-title">💰 Капитал</div><div class="chip-row" id="jpCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="jpTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="jpRoundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div></div><button class="btn gold" id="confirmJoinParamsBtn" style="margin-top:10px;">✅ Подтвердить и войти</button></div></div>
         <div class="modal" id="lobbyModal"><div class="modal-content"><button class="modal-close" id="lobbyCloseX">✕</button><div id="lobbyContent"></div></div></div>
         <div class="modal" id="joinModal"><div class="modal-content"><button class="modal-close" id="joinCloseBtn">✕</button><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" placeholder="Код комнаты"><button class="btn gold" id="confirmJoinBtn" style="margin-top:10px;">Подключиться</button></div></div>
@@ -246,7 +246,8 @@ var s={
     gh:[],roomListener:null,pendingJoin:null,fr:[],frc:[],gi:[],
     leftPlayers:[],currentTab:'menu',tradeShown:{},
     logoClickCount:0,logoClickTimer:null,
-    customChipCallback:null,customChipKey:'',customChipMin:0,customChipMax:0
+    customChipCallback:null,customChipKey:'',customChipMin:0,customChipMax:0,
+    inviteFromFriends:false
 };
 
 function pid(){if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)return'tg_'+tg.initDataUnsafe.user.id;var i=localStorage.getItem('ib_pid_v10');if(!i){i='web_'+Math.random().toString(36).substr(2,9);localStorage.setItem('ib_pid_v10',i);}return i;}
@@ -270,7 +271,18 @@ function sendFriendRequest(targetId){db.ref('frc/'+targetId+'/'+s.pid).set({n:s.
 function acceptFriendRequest(fromId){db.ref('frc/'+s.pid+'/'+fromId).remove();if(!s.fr.includes(fromId)){s.fr.push(fromId);}db.ref('frc/'+fromId+'/'+s.pid).set({n:s.pn,a:s.pa,accepted:true});sS();up();toast('Друг добавлен!');}
 function declineFriendRequest(fromId){db.ref('frc/'+s.pid+'/'+fromId).remove();toast('Отклонено');}
 
-function sendGameInvite(targetId){if(!s.rc){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();s.im=true;cR();}db.ref('gi/'+targetId).push({from:s.pid,fromName:s.pn,fromAvatar:s.pa,roomCode:s.rc,roomName:s.rn,bet:s.bet,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,rm:s.rm,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});toast('Приглашение отправлено!');}
+function sendGameInvite(targetId){
+    if(!s.rc){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();s.im=true;cR();}
+    db.ref('gi/'+targetId).push({from:s.pid,fromName:s.pn,fromAvatar:s.pa,roomCode:s.rc,roomName:s.rn,bet:s.bet,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,rm:s.rm,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});
+    toast('Приглашение отправлено!');
+    document.getElementById('inviteModal').classList.remove('show');
+    document.getElementById('friendsModal').classList.remove('show');
+    resetBottomNav();
+    s.inviteFromFriends=true;
+    document.getElementById('roomModal').classList.add('show');
+    document.getElementById('roomCodePreview').style.display='block';
+    document.getElementById('roomCodeText').textContent=s.rc;
+}
 function acceptGameInvite(inviteId,invite){
     db.ref('rooms/'+invite.roomCode).once('value',function(sn){
         if(!sn.val()){db.ref('gi/'+s.pid+'/'+inviteId).remove();toast('Комната не найдена');document.getElementById('friendsModal').classList.remove('show');resetBottomNav();return;}
@@ -310,17 +322,34 @@ function loadCoinsSearch(query){
 }
 function showCoinsDetail(data){
     document.getElementById('coinsSearchList').style.display='none';
-    var detail=document.getElementById('coinsDetail');
-    detail.style.display='block';
+    var detail=document.getElementById('coinsDetail');detail.style.display='block';
     var pid=data.pid;
     db.ref('coinLog/'+pid).once('value',function(sn){
-        var log=sn.val();
-        var totalGiven=0;var lastGiven=0;var lastTime='—';
+        var log=sn.val();var totalGiven=0;var lastGiven=0;var lastTime='—';
         if(log){totalGiven=log.totalGiven||0;lastGiven=log.lastGiven||0;lastTime=log.lastTime||'—';}
         detail.innerHTML='<div style="text-align:center;margin-bottom:12px;"><div class="profile-avatar" style="margin:0 auto 10px;width:48px;height:48px;">'+av(data.pavatar)+'</div><h3>'+data.pname+'</h3><p style="color:var(--gold);">Монет: '+data.pdollars+'</p></div><div class="admin-detail"><div class="row"><span class="label">ID:</span><span class="value" style="font-size:9px;">'+pid+'</span></div><div class="row"><span class="label">Всего выдано:</span><span class="value" style="color:var(--green);">+'+totalGiven+'</span></div><div class="row"><span class="label">Последний раз:</span><span class="value">'+(lastGiven>0?'+'+lastGiven:'—')+'</span></div><div class="row"><span class="label">Когда:</span><span class="value" style="font-size:9px;">'+lastTime+'</span></div></div><div class="coin-input-row"><input type="number" id="coinsAmount" placeholder="Сумма" min="1" value="100"><button class="add" id="coinsAddBtn">Добавить</button></div><div class="coin-input-row"><input type="number" id="coinsTakeAmount" placeholder="Сумма" min="1" value="100"><button class="take" id="coinsTakeBtn">Забрать</button></div><div class="coin-stats" id="coinStats"></div><button class="btn" id="coinsBackBtn" style="margin-top:8px;">↩ Назад</button>';
         document.getElementById('coinsBackBtn').addEventListener('click',function(){detail.style.display='none';document.getElementById('coinsSearchList').style.display='block';document.getElementById('coinsSearchInput').value='';loadCoinsSearch('');});
-        document.getElementById('coinsAddBtn').addEventListener('click',function(){var amt=parseInt(document.getElementById('coinsAmount').value);if(isNaN(amt)||amt<=0){toast('Введите положительное число!');return;}db.ref('u/'+pid+'/do').transaction(function(cur){return(cur||0)+amt;});db.ref('coinLog/'+pid).update({totalGiven:firebase.database.ServerValue.increment(amt),lastGiven:amt,lastTime:new Date().toLocaleString(),lastAdmin:s.pid});toast('Добавлено +'+amt+' монет для '+data.pname);showCoinsDetail(data);});
-        document.getElementById('coinsTakeBtn').addEventListener('click',function(){var amt=parseInt(document.getElementById('coinsTakeAmount').value);if(isNaN(amt)||amt<=0){toast('Введите положительное число!');return;}db.ref('u/'+pid+'/do').transaction(function(cur){return Math.max(0,(cur||0)-amt);});toast('Забрано -'+amt+' монет у '+data.pname);showCoinsDetail(data);});
+        document.getElementById('coinsAddBtn').addEventListener('click',function(){
+            var amt=parseInt(document.getElementById('coinsAmount').value);
+            if(isNaN(amt)||amt<=0){toast('Введите положительное число!');return;}
+            db.ref('u/'+pid+'/do').transaction(function(cur){return(cur||0)+amt;},function(err,committed,sn2){
+                if(err){cl('Ошибка выдачи монет: '+err.message,'error');toast('Ошибка!');return;}
+                if(committed){
+                    db.ref('coinLog/'+pid).update({totalGiven:firebase.database.ServerValue.increment(amt),lastGiven:amt,lastTime:new Date().toLocaleString(),lastAdmin:s.pid});
+                    toast('Добавлено +'+amt+' монет');
+                    data.pdollars=(sn2.val()||0);
+                    showCoinsDetail(data);
+                }
+            });
+        });
+        document.getElementById('coinsTakeBtn').addEventListener('click',function(){
+            var amt=parseInt(document.getElementById('coinsTakeAmount').value);
+            if(isNaN(amt)||amt<=0){toast('Введите положительное число!');return;}
+            db.ref('u/'+pid+'/do').transaction(function(cur){return Math.max(0,(cur||0)-amt);},function(err,committed,sn2){
+                if(err){cl('Ошибка изъятия монет: '+err.message,'error');toast('Ошибка!');return;}
+                if(committed){toast('Забрано -'+amt+' монет');data.pdollars=(sn2.val()||0);showCoinsDetail(data);}
+            });
+        });
     });
 }
 
@@ -345,7 +374,7 @@ function showInviteModal(friendId,friendName,friendAvatar){
     if(!s.rc){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();s.im=true;cR();}
     document.getElementById('inviteLink').textContent='Код: '+s.rc;document.getElementById('inviteLink').onclick=function(){cp(s.rc);};
     document.getElementById('inviteFriendList').innerHTML='<div class="lobby-player" style="cursor:pointer;" id="sendInvite"><span class="avatar">'+av(friendAvatar||'?')+'</span>'+friendName+' — Отправить</div>';
-    document.getElementById('sendInvite').addEventListener('click',function(){sendGameInvite(friendId);toast('Приглашение отправлено '+friendName);document.getElementById('inviteModal').classList.remove('show');});
+    document.getElementById('sendInvite').addEventListener('click',function(){sendGameInvite(friendId);});
     document.getElementById('inviteModal').classList.add('show');
 }
 document.getElementById('inviteCloseBtn').addEventListener('click',function(){document.getElementById('inviteModal').classList.remove('show');});
@@ -415,7 +444,13 @@ function startRoomListener(){if(!s.rc)return;if(s.roomListener)db.ref('rooms/'+s
 function ulc(r){var c=document.getElementById('lobbyContent'),isH=s.pid===r.hid,deep='https://t.me/InvestBattleBot?start='+s.rc;c.innerHTML='<h3>'+(r.rn||'Комната')+'</h3>'+(r.bet>0?'<div style="text-align:center;color:var(--gold);">Ставка: '+r.bet+' монет</div>':'')+'<div class="room-link" id="copyRoomCode">Код: '+s.rc+'</div><div class="room-link" id="copyDeepLink">Ссылка</div><p style="text-align:center;color:var(--text2);">'+s.lp.length+'/'+(r.mp||4)+' | '+fm2(r.sc||10000)+' | '+(r.rt||30)+'с | '+(r.tr||5)+' раундов | '+(r.rm=='free'?'Свободная':'Жёсткая')+'</p><div class="section-title">Участники:</div>'+s.lp.map(function(p){return'<div class="lobby-player"><span class="avatar">'+av(p.a)+'</span>'+p.n+' '+(p.id===s.pid?'(Вы)':'')+' '+(p.id===r.hid?'*':'')+'</div>';}).join('')+'<div class="chat-box" id="chatMsgs"></div><div class="chat-input-row"><input id="chatInput" placeholder="Сообщение..." maxlength="100"><button class="btn-sm" id="chatSend">Отпр.</button></div>'+(isH?'<button class="btn gold" id="startLobbyBtn" style="margin-top:10px;" '+(s.lp.length<2?'disabled':'')+'>НАЧАТЬ ('+s.lp.length+'/'+(r.mp||4)+')</button>':'<p style="text-align:center;color:var(--text2);">Ожидание хоста...</p>')+'<button class="btn" id="leaveLobbyBtn" style="margin-top:6px;">Выйти</button>';setTimeout(function(){document.getElementById('copyRoomCode').addEventListener('click',function(){cp(s.rc);});document.getElementById('copyDeepLink').addEventListener('click',function(){cp(deep);});var slb=document.getElementById('startLobbyBtn');if(slb)slb.addEventListener('click',hsg);document.getElementById('leaveLobbyBtn').addEventListener('click',lvR);document.getElementById('chatSend').addEventListener('click',sdCh);document.getElementById('chatInput').addEventListener('keypress',function(e){if(e.key=='Enter')sdCh();});},50);}
 function sdCh(){var inp=document.getElementById('chatInput');if(!inp||!inp.value.trim()||!s.rc)return;db.ref('rooms/'+s.rc+'/ch').push({n:s.pn,tx:inp.value.trim().substring(0,100),t:firebase.database.ServerValue.TIMESTAMP});inp.value='';}
 function hsg(){if(!s.rc)return;var cs=[],ui=[];for(var i=0;i<s.tr;i++){var v=s.acl.filter(function(c){return c&&c.symbol&&!ui.includes(c.id);});var k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1});}db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});}
-function lvR(){if(!s.rc)return;if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}if(s.pid===s.hid){db.ref('rooms/'+s.rc).remove();}else{db.ref('rooms/'+s.rc+'/pl/'+s.pid).remove();db.ref('rooms/'+s.rc+'/rd/'+s.pid).remove();db.ref('rooms/'+s.rc+'/votes/'+s.pid).remove();}db.ref('gi').orderByChild('roomCode').equalTo(s.rc).once('value',function(sn){sn.forEach(function(child){child.ref.remove();});});document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];}
+function lvR(){
+    if(!s.rc)return;
+    if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}
+    db.ref('gi').orderByChild('roomCode').equalTo(s.rc).once('value',function(sn){sn.forEach(function(child){child.ref.remove();});});
+    if(s.pid===s.hid){db.ref('rooms/'+s.rc).remove();}else{db.ref('rooms/'+s.rc+'/pl/'+s.pid).remove();db.ref('rooms/'+s.rc+'/rd/'+s.pid).remove();db.ref('rooms/'+s.rc+'/votes/'+s.pid).remove();}
+    document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];
+}
 function cR(){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();var pd={n:s.pn||'Игрок',a:s.pa||'?',c:s.sc};s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];document.getElementById('lobbyModal').classList.add('show');ulc({rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:{},hid:s.pid,rm:s.rm,access:s.ra,bet:s.bet});var pl={};pl[s.pid]=pd;startRoomListener();var roomData={hid:s.pid,rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:pl,st:'waiting',access:s.ra,rm:s.rm,bet:s.bet};if(s.rm=='free'){var votes={};votes[s.pid]={sc:s.sc,rt:s.rt,tr:s.tr};roomData.votes=votes;}db.ref('rooms/'+s.rc).set(roomData);cl('Комната: '+s.rc+(s.bet>0?' ставка '+s.bet:''));}
 function joinRoom(code,params){code=code.toUpperCase().trim();db.ref('rooms/'+code).once('value',function(sn){var r=sn.val();if(!r){alert('Комната не найдена');return;}if(r.st!=='waiting'){alert('Игра уже идёт');return;}if(r.pl&&Object.keys(r.pl).length>=(r.mp||4)){alert('Комната заполнена');return;}if(r.bet>0&&s.pd<r.bet){alert('Недостаточно монет! Нужно '+r.bet);return;}s.rc=code;s.hid=r.hid||'';s.sc=r.sc||10000;s.rt=r.rt||30;s.tr=r.tr||5;s.mp=r.mp||4;s.rm=r.rm||'hard';s.ra=r.access||'open';s.bet=r.bet||0;if(s.rm=='free'&&params&&s.pid!==r.hid){db.ref('rooms/'+code+'/votes/'+s.pid).set(params);}s.im=true;s.lp=[];document.getElementById('lobbyModal').classList.add('show');startRoomListener();db.ref('rooms/'+code+'/pl/'+s.pid).set({n:s.pn,a:s.pa,c:s.sc});cl('Вход в комнату: '+code);});}
 window._joinRoom=function(code){code=code.toUpperCase().trim();db.ref('rooms/'+code).once('value',function(sn){var r=sn.val();if(!r){alert('Комната не найдена');return;}if(s.pid!==r.hid&&r.rm=='free'){s.pendingJoin=code;document.getElementById('joinParamsModal').classList.add('show');}else{joinRoom(code,null);}});};
@@ -480,9 +515,14 @@ function bind(){
     document.getElementById('buyQty').addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'');if(!this.value||parseInt(this.value)<1)this.value='1';ubb();});
     document.getElementById('menuBtn').addEventListener('click',function(){clearInterval(s.rtimer);clearInterval(s.fi2);clearInterval(s.fi3);if(s.roomListener&&s.rc){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';document.getElementById('compMenu').style.display='none';resetBottomNav();s.ga=false;s.fi=false;s.fa=false;});
     document.getElementById('shareBtn').addEventListener('click',function(){var t='InvestBattle: '+fm2(s.yc);navigator.share?navigator.share({title:'InvestBattle',text:t}):cp(t);});
-    document.getElementById('createRoomBtn').addEventListener('click',function(){document.getElementById('roomModal').classList.add('show');});
-    document.getElementById('roomCloseBtn').addEventListener('click',function(){document.getElementById('roomModal').classList.remove('show');});
-    document.getElementById('confirmRoomBtn').addEventListener('click',function(){s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt((document.querySelector('#maxChips .selected')||{}).dataset.max||4);s.sc=parseInt((document.querySelector('#cashChips .selected')||{}).dataset.cash||10000);s.rt=parseInt((document.querySelector('#timeChips .selected')||{}).dataset.time||30);s.tr=parseInt((document.querySelector('#roundsChips .selected')||{}).dataset.rounds||5);s.ra=(document.querySelector('#accessChips .selected')||{}).dataset.access||'open';s.rm=(document.querySelector('#modeChips .selected')||{}).dataset.mode||'hard';s.bet=parseInt((document.querySelector('#betChips .selected')||{}).dataset.bet||0);if(s.bet>0&&s.pd<s.bet){alert('Недостаточно монет! У вас '+s.pd);return;}if(s.mp>20){alert('Максимум 20 игроков!');return;}if(s.sc>100000){alert('Максимум 100 000 капитал!');return;}if(s.rt>90){alert('Максимум 90 секунд!');return;}if(s.tr>100){alert('Максимум 100 раундов!');return;}document.getElementById('roomModal').classList.remove('show');cR();});
+    document.getElementById('createRoomBtn').addEventListener('click',function(){s.inviteFromFriends=false;document.getElementById('roomCodePreview').style.display='none';document.getElementById('roomModal').classList.add('show');});
+    document.getElementById('roomCloseBtn').addEventListener('click',function(){document.getElementById('roomModal').classList.remove('show');if(s.inviteFromFriends&&s.rc){lvR();s.inviteFromFriends=false;}});
+    document.getElementById('confirmRoomBtn').addEventListener('click',function(){
+        s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt((document.querySelector('#maxChips .selected')||{}).dataset.max||4);s.sc=parseInt((document.querySelector('#cashChips .selected')||{}).dataset.cash||10000);s.rt=parseInt((document.querySelector('#timeChips .selected')||{}).dataset.time||30);s.tr=parseInt((document.querySelector('#roundsChips .selected')||{}).dataset.rounds||5);s.ra=(document.querySelector('#accessChips .selected')||{}).dataset.access||'open';s.rm=(document.querySelector('#modeChips .selected')||{}).dataset.mode||'hard';s.bet=parseInt((document.querySelector('#betChips .selected')||{}).dataset.bet||0);
+        if(s.bet>0&&s.pd<s.bet){alert('Недостаточно монет! У вас '+s.pd);return;}if(s.mp>20){alert('Максимум 20 игроков!');return;}if(s.sc>100000){alert('Максимум 100 000 капитал!');return;}if(s.rt>90){alert('Максимум 90 секунд!');return;}if(s.tr>100){alert('Максимум 100 раундов!');return;}
+        document.getElementById('roomModal').classList.remove('show');
+        if(s.inviteFromFriends&&s.rc){db.ref('rooms/'+s.rc).update({rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,access:s.ra,rm:s.rm,bet:s.bet});s.inviteFromFriends=false;}else{cR();}
+    });
     document.getElementById('joinRoomBtn').addEventListener('click',function(){document.getElementById('joinModal').classList.add('show');});
     document.getElementById('joinCloseBtn').addEventListener('click',function(){document.getElementById('joinModal').classList.remove('show');});
     document.getElementById('confirmJoinBtn').addEventListener('click',function(){var code=document.getElementById('joinCodeInput').value.trim().toUpperCase();if(code){window._joinRoom(code);document.getElementById('joinModal').classList.remove('show');}});
@@ -524,7 +564,7 @@ function bind(){
 }
 
 lS();lC();bind();
-cl('v1.0 готов');
+cl('v1.1 готов');
 })();
 </script>
 </body>
