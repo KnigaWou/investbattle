@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v1.1</title>
+    <title>InvestBattle v1.0</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -125,6 +125,9 @@
         .ban-notice h2{color:var(--red);margin-bottom:12px}
         .ban-notice p{color:var(--text);margin:6px 0;font-size:14px}
         .room-info-box{background:var(--surface);border-radius:10px;padding:10px;margin:8px 0;font-size:11px;color:var(--text2);text-align:center}
+        .player-select-row{display:flex;align-items:center;gap:8px;padding:10px;background:var(--surface);border-radius:10px;margin-bottom:4px;font-size:12px;cursor:pointer;border:1px solid var(--border)}
+        .player-select-row:hover{background:rgba(240,160,48,0.15);border-color:var(--gold)}
+        .player-select-row.selected{border-color:var(--gold);background:rgba(240,160,48,0.2)}
     </style>
 </head>
 <body>
@@ -164,29 +167,29 @@
     <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><button class="modal-close" id="adminCloseBtn">✕</button><h3 style="color:var(--green);">🛡️ АДМИН</h3>
         <div class="admin-row" id="adminOnlineBtn2"><span>🟢 Онлайн</span><span class="val" id="aOnline2">0</span></div>
         <div class="admin-row" id="adminTotalBtn2"><span>👥 Всего</span><span class="val" id="aTotal2">0</span></div>
-        <div class="admin-row" id="adminPlayingBtn2"><span>🎮 Игр</span><span class="val" id="aPlaying2">0</span></div>
+        <div class="admin-row" id="adminPlayingBtn2"><span>🎮 Игры</span><span class="val" id="aPlaying2">0</span></div>
         <div class="admin-row" id="adminCoinsBtn2"><span>💰 Монеты</span><span class="val">→</span></div>
         <div class="admin-row" id="adminBanBtn2"><span>🔒 Бан</span><span class="val">→</span></div>
         <div class="admin-row" id="adminStatsBtn2"><span>📊 Статистика</span><span class="val">→</span></div>
         <div class="admin-row" id="adminBroadcastBtn2"><span>📨 Рассылка</span><span class="val">→</span></div>
         <div class="admin-row" id="adminReportsBtn2"><span>📋 Жалобы</span><span class="val">→</span></div>
         <div class="admin-row" id="adminSettingsBtn2"><span>⚙️ Настройки</span><span class="val">→</span></div>
-        <div class="admin-row" id="adminGhostBtn2"><span>👻 Призрак</span><span class="val">→</span></div>
+        <div class="admin-row" id="adminGhostBtn2"><span>👻 Смотреть игру</span><span class="val">→</span></div>
         <div class="admin-row" id="adminScareBtn2"><span>🎃 Страшилки</span><span class="val">→</span></div>
         <button class="btn" id="adminConsoleBtn3" style="margin-top:10px;">📟 Консоль</button>
     </div></div>
     <div class="modal" id="modModal"><div class="modal-content" style="border-color:var(--blue);"><button class="modal-close" id="modCloseBtn">✕</button><h3 style="color:var(--blue);">🛡️ МОДЕРАТОР</h3>
         <div class="admin-row" id="modOnlineBtn"><span>🟢 Онлайн</span><span class="val" id="mOnline">0</span></div>
         <div class="admin-row" id="modTotalBtn"><span>👥 Всего</span><span class="val" id="mTotal">0</span></div>
-        <div class="admin-row" id="modPlayingBtn"><span>🎮 Игр</span><span class="val" id="mPlaying">0</span></div>
-        <div class="admin-row" id="modWatchBtn"><span>👻 Призрак</span><span class="val">→</span></div>
+        <div class="admin-row" id="modPlayingBtn"><span>🎮 Игры</span><span class="val" id="mPlaying">0</span></div>
+        <div class="admin-row" id="modWatchBtn"><span>👻 Смотреть игру</span><span class="val">→</span></div>
         <div class="admin-row" id="modReportsBtn"><span>📋 Жалобы</span><span class="val">→</span></div>
         <button class="btn" id="modConsoleBtn" style="margin-top:10px;">📟 Консоль</button>
     </div></div>
     <div class="modal" id="consoleModal"><div class="modal-content" style="border-color:var(--gold);max-width:500px;"><button class="modal-close" id="consoleCloseBtn">✕</button><h3>📟 Консоль</h3><div id="consoleContent" style="max-height:400px;overflow-y:auto;font-family:monospace;font-size:10px;color:var(--green);background:#000;padding:10px;border-radius:8px;"></div></div></div>
     <div class="modal" id="onlinePlayersModal"><div class="modal-content"><button class="modal-close" id="onlinePlayersCloseBtn">✕</button><h3>🟢 Онлайн</h3><div class="friend-search"><input id="onlineSearchInput2" placeholder="🔍 Поиск..." style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"></div><div id="onlinePlayersList2" style="max-height:300px;overflow-y:auto;"></div></div></div>
     <div class="modal" id="allPlayersModal2"><div class="modal-content"><button class="modal-close" id="allPlayersCloseBtn2">✕</button><h3>👥 Все игроки</h3><div class="friend-search"><input id="allSearchInput2" placeholder="🔍 Поиск..." style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"></div><div id="allPlayersList2" style="max-height:300px;overflow-y:auto;"></div></div></div>
-    <div class="modal" id="activeGamesModal2"><div class="modal-content"><button class="modal-close" id="activeGamesCloseBtn2">✕</button><h3>👻 Призрак</h3><div class="friend-search"><input id="ghostSearchInput" placeholder="🔍 Код комнаты или ник игрока..." style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"></div><div id="ghostRoomsList" style="max-height:300px;overflow-y:auto;"></div><div id="ghostRoomDetail" style="display:none;"></div></div></div>
+    <div class="modal" id="activeGamesModal2"><div class="modal-content"><button class="modal-close" id="activeGamesCloseBtn2">✕</button><h3>👻 Смотреть игру</h3><div class="friend-search"><input id="ghostSearchInput" placeholder="🔍 Код комнаты или ник игрока..." style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"></div><div id="ghostRoomsList" style="max-height:300px;overflow-y:auto;"></div><div id="ghostRoomDetail" style="display:none;"></div></div></div>
     <div class="modal" id="adminScareModal"><div class="modal-content" style="border-color:var(--red);"><button class="modal-close" id="adminScareCloseBtn">✕</button><h3>🎃 Страшилки</h3>
         <button class="btn gold" id="scareFakeCoinsBtn" style="margin-top:8px;">💰 Фейк-выигрыш (+100500 монет)</button>
     </div></div>
@@ -239,7 +242,7 @@ var s={
     logoClickCount:0,logoClickTimer:null,
     customChipCallback:null,customChipKey:'',customChipMin:0,customChipMax:0,
     inviteFromFriends:false,lastSupportTime:0,flUnlocked:false,skipLobby:false,
-    inviteFromRoom:false,isGhost:false,ghostRoomCode:null
+    inviteFromRoom:false,isGhost:false,ghostRoomCode:null,ghostWatchPid:null
 };
 
 function pid(){if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)return'tg_'+tg.initDataUnsafe.user.id;var i=localStorage.getItem('ib_pid_v10');if(!i){i='web_'+Math.random().toString(36).substr(2,9);localStorage.setItem('ib_pid_v10',i);}return i;}
@@ -255,17 +258,14 @@ function sf(){if(!s.pid)return;db.ref('u/'+s.pid).update({n:s.pn,a:s.pa,st:s.ps,
 function lf(cb){db.ref('u/'+s.pid).once('value',function(sn){var d=sn.val();if(d){if(d.banned&&d.banUntil&&d.banUntil>Date.now()){showBanNotice(d.banReason||'Нарушение правил',d.banUntil);return;}if(d.banned&&d.banUntil&&d.banUntil<=Date.now()){db.ref('u/'+s.pid+'/banned').remove();db.ref('u/'+s.pid+'/banReason').remove();db.ref('u/'+s.pid+'/banUntil').remove();}s.pn=d.n||'Трейдер';s.pa=d.a||'icons/avatar1.png';s.ps=typeof d.st==='number'?d.st:0;s.pd=typeof d.do==='number'?d.do:0;s.fr=d.fr||[];s.flUnlocked=d.flUnlocked||false;}else{var rn=generateRandomNick();var sc2=100;db.ref('settings/startCoins').once('value',function(sn2){sc2=sn2.val()!==undefined?sn2.val():100;s.pn=rn;s.pa='icons/avatar'+(Math.floor(Math.random()*5)+1)+'.png';s.pd=sc2;db.ref('u/'+s.pid).set({n:s.pn,a:s.pa,st:0,do:sc2,fr:[]});doCB();});return;}try{var r=localStorage.getItem('ib_v15');if(r){var o=JSON.parse(r);if(s.pn=='Трейдер'&&o.playerName)s.pn=o.playerName;if(s.pa=='icons/avatar1.png'&&o.playerAvatar)s.pa=o.playerAvatar;if(!s.ps&&o.playerStars)s.ps=o.playerStars;if(!s.pd&&o.playerDollars)s.pd=o.playerDollars;if(!s.fr.length&&o.friends)s.fr=o.friends;}}catch(e){}try{var h=localStorage.getItem('ib_history');if(h)s.gh=JSON.parse(h);}catch(e){s.gh=[];}var sl=localStorage.getItem('ib_lang');if(sl)s.lang=sl;s.lastSupportTime=parseInt(localStorage.getItem('ib_lastSupport')||'0');doCB();function doCB(){cb();}},function(e){cl('Ошибка профиля: '+e.message,'error');cb();});}
 function showBanNotice(reason,until){document.getElementById('banReason').textContent='Причина: '+reason;var d=new Date(until);document.getElementById('banUntil').textContent='До: '+d.toLocaleString();document.getElementById('banNotice').classList.add('show');}
 function lS(){s.pid=pid();cl('ID: '+s.pid);lf(function(){loadFriendRequests();loadGameInvites();up();sf();if(isAdmin()){setInterval(upA,5000);upA();cl('Админ');}if(isMod()){setInterval(upA,5000);upA();cl('Модер');}cl('Готов');db.ref('u/'+s.pid+'/do').on('value',function(sn){s.pd=sn.val()||0;up();sS();});db.ref('u/'+s.pid+'/banned').on('value',function(sn){if(sn.val()){db.ref('u/'+s.pid).once('value',function(sn2){var d=sn2.val();if(d&&d.banUntil&&d.banUntil>Date.now())showBanNotice(d.banReason||'Нарушение',d.banUntil);else document.getElementById('banNotice').classList.remove('show');});}else{document.getElementById('banNotice').classList.remove('show');}});db.ref('announcements').limitToLast(1).on('child_added',function(sn){var a=sn.val();if(a.expireAt>Date.now())showBroadcast(a.text,a.coins,Math.ceil((a.expireAt-Date.now())/1000),sn.key);});db.ref('adminActions/scare').on('value',function(sn){var v=sn.val();if(v==='fakeCoins'){showFakeCoins();db.ref('adminActions/scare').remove();}});});
-    // 👈 Авто-очистка пустых комнат каждые 30 секунд
     setInterval(function(){
         db.ref('rooms').once('value',function(sn){
-            var rooms=sn.val();
-            if(!rooms)return;
+            var rooms=sn.val();if(!rooms)return;
             Object.entries(rooms).forEach(function(e){
                 var code=e[0],r=e[1];
-                if(!r||!r.pl||Object.keys(r.pl).length===0||(r.st==='waiting'&&Object.values(r.pl).every(function(p){return p.left;}))){;
+                if(!r||!r.pl||Object.keys(r.pl).length===0||(r.st==='waiting'&&Object.values(r.pl).every(function(p){return p.left;}))){
                     db.ref('rooms/'+code).remove();
                     db.ref('gi').orderByChild('roomCode').equalTo(code).once('value',function(sn2){sn2.forEach(function(child){child.ref.remove();});});
-                    cl('Авто-очистка: '+code);
                 }
             });
         });
@@ -276,22 +276,12 @@ function up(){document.getElementById('profileName').textContent=s.pn;document.g
 function upA(){if(!isAdmin()&&!isMod())return;db.ref('on').once('value',function(sn){var v=sn.val()?Object.keys(sn.val()).length:0;var e2=document.getElementById('aOnline2');if(e2)e2.textContent=v;var me=document.getElementById('mOnline');if(me)me.textContent=v;});db.ref('u').once('value',function(sn){var v=sn.val()?Object.keys(sn.val()).length:0;var e2=document.getElementById('aTotal2');if(e2)e2.textContent=v;var me=document.getElementById('mTotal');if(me)me.textContent=v;});db.ref('rooms').once('value',function(sn){var r=sn.val(),p=0;if(r)Object.values(r).forEach(function(x){if(x&&x.st=='playing')p++;});var e2=document.getElementById('aPlaying2');if(e2)e2.textContent=p;var me=document.getElementById('mPlaying');if(me)me.textContent=p;});}
 function showFakeCoins(){var el=document.createElement('div');el.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.5s';el.innerHTML='<div style="font-size:48px;color:var(--gold);font-weight:900;">+100 500 💰</div><div style="font-size:24px;color:#fff;">Монет зачислено!</div>';document.body.appendChild(el);setTimeout(function(){el.style.opacity='0';setTimeout(function(){el.remove();},500);},2000);setTimeout(function(){var el2=document.createElement('div');el2.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 0.5s';el2.innerHTML='<div style="font-size:60px;">😂</div><div style="font-size:20px;color:#fff;">Шутка!</div>';document.body.appendChild(el2);setTimeout(function(){el2.style.opacity='0';setTimeout(function(){el2.remove();},500);},1500);},2500);}
 
-// 👈 ИСПРАВЛЕНО: рассылка уезжает за экран
 function showBroadcast(text,coins,duration,annId){
     var t=document.getElementById('broadcastToast');
     t.innerHTML=(text||'')+(coins>0?'<br><span style="color:var(--gold);">+'+coins+' монет</span>':'');
     if(t._hideTimeout)clearTimeout(t._hideTimeout);
-    t.style.transition='none';
-    t.style.top='70px';
-    t.style.opacity='1';
-    t.classList.add('show');
-    function hideBroadcast(){
-        t.style.transition='all 0.5s ease-in';
-        t.style.top='-200px';
-        t.style.opacity='0';
-        clearTimeout(t._hideTimeout);
-        t._hideTimeout=setTimeout(function(){t.classList.remove('show');},500);
-    }
+    t.style.transition='none';t.style.top='70px';t.style.opacity='1';t.classList.add('show');
+    function hideBroadcast(){t.style.transition='all 0.5s ease-in';t.style.top='-200px';t.style.opacity='0';clearTimeout(t._hideTimeout);t._hideTimeout=setTimeout(function(){t.classList.remove('show');},500);}
     if(duration>0){t._hideTimeout=setTimeout(hideBroadcast,duration*1000);}
     t.onclick=function(){hideBroadcast();if(annId)db.ref('announcements/'+annId+'/dismissed/'+s.pid).set(true);};
 }
@@ -303,6 +293,7 @@ function sendFriendRequest(targetId){db.ref('frc/'+targetId+'/'+s.pid).set({n:s.
 function acceptFriendRequest(fromId){db.ref('frc/'+s.pid+'/'+fromId).remove();if(!s.fr.includes(fromId))s.fr.push(fromId);db.ref('frc/'+fromId+'/'+s.pid).set({n:s.pn,a:s.pa,accepted:true});sS();up();toast('Друг добавлен!');}
 function declineFriendRequest(fromId){db.ref('frc/'+s.pid+'/'+fromId).remove();toast('Отклонено');}
 
+// 👈 ФИКС: комната создаётся без создателя, приглашённые могут заходить
 function sendGameInvite(targetId){
     s.rc=Math.random().toString(36).substring(2,8).toUpperCase();
     db.ref('rooms/'+s.rc).set({hid:s.pid,rn:'Комната',mp:s.mp||4,sc:s.sc||10000,rt:s.rt||30,tr:s.tr||5,pl:{},st:'waiting',access:'open',rm:s.rm||'hard',bet:s.bet||0});
@@ -334,29 +325,33 @@ function loadOnlinePlayers2(query){db.ref('on').once('value',function(sn){var d=
 function showAllPlayers2(){var m=document.getElementById('allPlayersModal2');m.classList.add('show');var si=document.getElementById('allSearchInput2');si.value='';loadAllPlayers2('');si.oninput=function(){loadAllPlayers2(this.value.trim());};}
 function loadAllPlayers2(query){db.ref('u').once('value',function(sn){var d=sn.val();var list=document.getElementById('allPlayersList2');if(!d){list.innerHTML='<p style="color:var(--text2);">Нет</p>';return;}var items=Object.entries(d).map(function(e){return{id:e[0],name:e[1].n||'Игрок',avatar:e[1].a};});if(query)items=items.filter(function(x){return x.name.toLowerCase().includes(query.toLowerCase())||x.id.toLowerCase().includes(query.toLowerCase());});list.innerHTML=items.length===0?'<p style="color:var(--text2);">Ничего</p>':items.map(function(p){return'<div class="lobby-player" data-pid="'+p.id+'"><span class="avatar">'+av(p.avatar)+'</span><span>'+p.name+'</span></div>';}).join('');bindPlayerClicks2(list);});}
 
+// 👈 ФИКС: показываем все игры
 function showGhostRooms(){var m=document.getElementById('activeGamesModal2');m.classList.add('show');var si=document.getElementById('ghostSearchInput');si.value='';loadGhostRooms('');si.oninput=function(){loadGhostRooms(this.value.trim());};}
 function loadGhostRooms(query){
     db.ref('rooms').once('value',function(sn){
         var d=sn.val();var list=document.getElementById('ghostRoomsList');var allRooms=[];
         if(d){allRooms=Object.entries(d).filter(function(e){return e[1]&&(e[1].st=='playing'||e[1].st=='waiting');});}
         if(query){allRooms=allRooms.filter(function(e){return e[0].toLowerCase().includes(query.toLowerCase())||(e[1].rn||'').toLowerCase().includes(query.toLowerCase())||Object.values(e[1].pl||{}).some(function(p){return(p.n||'').toLowerCase().includes(query.toLowerCase());});});}
-        list.innerHTML=allRooms.length===0?'<p style="color:var(--text2);">Нет комнат</p>':allRooms.map(function(e){var code=e[0],r=e[1];var pc=r.pl?Object.keys(r.pl).length:0;return'<div class="lobby-player ghost-room" data-code="'+code+'"><span>🎮</span><span><b>'+(r.rn||'Комната')+'</b><br><span style="font-size:9px;color:var(--text2);">'+code+' | '+pc+'/'+(r.mp||4)+' | '+(r.st||'—')+'</span></span></div>';}).join('');
+        list.innerHTML=allRooms.length===0?'<p style="color:var(--text2);">Нет игр</p>':allRooms.map(function(e){var code=e[0],r=e[1];var pc=r.pl?Object.keys(r.pl).length:0;return'<div class="lobby-player ghost-room" data-code="'+code+'"><span>🎮</span><span><b>'+(r.rn||'Комната')+'</b><br><span style="font-size:9px;color:var(--text2);">'+code+' | '+pc+'/'+(r.mp||4)+' | '+(r.st||'—')+'</span></span></div>';}).join('');
         list.querySelectorAll('.ghost-room').forEach(function(el){el.addEventListener('click',function(){showGhostDetail(this.dataset.code);});});
     });
 }
 
-// 👈 ИСПРАВЛЕНО: кнопка "Смотреть" работает правильно
+// 👈 ФИКС: показываем список игроков, выбираем одного и смотрим от его лица
 function showGhostDetail(code){
     document.getElementById('ghostRoomsList').style.display='none';var detail=document.getElementById('ghostRoomDetail');detail.style.display='block';
     db.ref('rooms/'+code).once('value',function(sn){
         var r=sn.val();if(!r)return;var pc=r.pl?Object.keys(r.pl).length:0;
-        var ph='';if(r.pl)ph=Object.entries(r.pl).map(function(e){var p=e[1];return'<div class="lobby-player" data-pid="'+e[0]+'"><span class="avatar">'+av(p.a)+'</span><span>'+(p.n||'Игрок')+'</span></div>';}).join('');
-        var ch='';if(r.ch)ch=Object.values(r.ch).sort(function(a,b){return a.t-b.t;}).map(function(m){return'<div class="chat-msg"><span class="author">'+m.n+':</span> '+m.tx+'</div>';}).join('');
-        detail.innerHTML='<div class="admin-detail"><div class="row"><span class="label">Код:</span><span class="value">'+code+'</span></div><div class="row"><span class="label">Название:</span><span class="value">'+(r.rn||'Комната')+'</span></div><div class="row"><span class="label">Статус:</span><span class="value">'+(r.st||'—')+'</span></div><div class="row"><span class="label">Игроков:</span><span class="value">'+pc+'/'+(r.mp||4)+'</span></div></div><div class="section-title">Участники:</div>'+ph+'<div class="section-title">Чат:</div><div class="chat-box">'+ch+'</div><button class="btn gold" id="ghostWatchBtn" style="margin-top:8px;">👁 Смотреть</button><button class="btn" id="ghostBackBtn" style="margin-top:8px;">↩ Назад</button>';
+        var playersList='';var playersData=[];
+        if(r.pl){playersData=Object.entries(r.pl);playersList='<div class="section-title">Выберите игрока:</div>'+playersData.map(function(e){var p=e[1];return'<div class="player-select-row ghost-player-select" data-pid="'+e[0]+'" data-pname="'+(p.n||'Игрок')+'" data-pavatar="'+(p.a||'')+'"><span class="avatar">'+av(p.a)+'</span><span>'+(p.n||'Игрок')+'</span><span style="margin-left:auto;color:var(--text2);font-size:9px;">'+fm2(p.c||0)+'</span></div>';}).join('');}
+        detail.innerHTML='<div class="admin-detail"><div class="row"><span class="label">Код:</span><span class="value">'+code+'</span></div><div class="row"><span class="label">Название:</span><span class="value">'+(r.rn||'Комната')+'</span></div><div class="row"><span class="label">Статус:</span><span class="value">'+(r.st||'—')+'</span></div><div class="row"><span class="label">Игроков:</span><span class="value">'+pc+'/'+(r.mp||4)+'</span></div></div>'+playersList+'<button class="btn gold" id="ghostWatchBtn" style="margin-top:8px;" disabled>👁 Смотреть от лица</button><button class="btn" id="ghostBackBtn" style="margin-top:8px;">↩ Назад</button>';
+        var selectedPid=null,selectedPname=null,selectedPavatar=null;
+        detail.querySelectorAll('.ghost-player-select').forEach(function(el){el.addEventListener('click',function(){detail.querySelectorAll('.ghost-player-select').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');selectedPid=this.dataset.pid;selectedPname=this.dataset.pname;selectedPavatar=this.dataset.pavatar;document.getElementById('ghostWatchBtn').disabled=false;});});
         document.getElementById('ghostBackBtn').addEventListener('click',function(){detail.style.display='none';document.getElementById('ghostRoomsList').style.display='block';document.getElementById('ghostSearchInput').value='';loadGhostRooms('');});
         document.getElementById('ghostWatchBtn').addEventListener('click',function(){
+            if(!selectedPid)return;
             document.getElementById('activeGamesModal2').classList.remove('show');
-            s.rc=code;s.im=false;s.ga=false;s.isGhost=true;s.yc=0;s.yp={};s.lp=[];s.uc=[];s.wp=false;s.mk={};s.fv={};s.cr=0;
+            s.rc=code;s.ghostWatchPid=selectedPid;s.isGhost=true;s.ga=false;s.im=false;
             document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';
             document.getElementById('lobbyModal').classList.remove('show');document.getElementById('finalOverlay').classList.remove('show');document.getElementById('resultOverlay').classList.remove('show');
             document.getElementById('buyBtn').style.display='none';document.getElementById('waitBtn').style.display='none';document.getElementById('sellAllBtn').style.display='none';
@@ -416,12 +411,7 @@ document.getElementById('inviteCloseBtn').addEventListener('click',function(){do
 function searchFriendByName(query){if(!query||query.length<2)return;db.ref('u').orderByChild('n').startAt(query).endAt(query+'\uf8ff').limitToFirst(10).once('value',function(sn){var u=sn.val();var res=document.getElementById('friendSearchResults');if(!u){res.innerHTML='<p style="color:var(--text2);">Ничего</p>';return;}var filtered=Object.entries(u).filter(function(e){return e[0]!==s.pid;});res.innerHTML=filtered.length===0?'<p style="color:var(--text2);">Ничего</p>':filtered.map(function(e){var id=e[0],ud=e[1],isFriend=s.fr.includes(id);return'<div class="lobby-player"><span class="avatar">'+av(ud.a)+'</span><span>'+(ud.n||'Игрок')+'</span>'+(!isFriend?'<button class="btn-sm add-fr-btn" data-id="'+id+'" style="border-color:var(--gold);color:var(--gold);margin-left:auto;">Добавить</button>':'<span style="color:var(--green);margin-left:4px;">✓</span>')+(s.inviteFromRoom?'<button class="btn-sm invite-fr-btn-room" data-id="'+id+'" data-name="'+(ud.n||'Игрок')+'" data-avatar="'+(ud.a||'')+'" style="border-color:var(--blue);color:var(--blue);margin-left:4px;">В комн.</button>':'<button class="btn-sm invite-fr-btn" data-id="'+id+'" data-name="'+(ud.n||'Игрок')+'" data-avatar="'+(ud.a||'')+'" style="border-color:var(--blue);color:var(--blue);margin-left:4px;">Пригл.</button>')+'</div>';}).join('');res.querySelectorAll('.add-fr-btn').forEach(function(b){b.addEventListener('click',function(){sendFriendRequest(b.dataset.id);b.textContent='✓';b.disabled=true;});});res.querySelectorAll('.invite-fr-btn').forEach(function(b){b.addEventListener('click',function(){showInviteModal(b.dataset.id,b.dataset.name,b.dataset.avatar);});});res.querySelectorAll('.invite-fr-btn-room').forEach(function(b){b.addEventListener('click',function(){inviteToGameFromRoom(b.dataset.id);});});},function(e){cl('Ошибка: '+e.message,'error');});}
 document.getElementById('friendSearchInput').addEventListener('input',function(){searchFriendByName(this.value.trim());});
 
-function inviteToGameFromRoom(friendId){
-    if(!s.rc)return;
-    db.ref('gi/'+friendId+'/'+s.rc).set({from:s.pid,fromName:s.pn,fromAvatar:s.pa,roomCode:s.rc,roomName:s.rn,bet:s.bet,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,rm:s.rm,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});
-    toast('Приглашение в комнату!');
-}
-
+function inviteToGameFromRoom(friendId){if(!s.rc)return;db.ref('gi/'+friendId+'/'+s.rc).set({from:s.pid,fromName:s.pn,fromAvatar:s.pa,roomCode:s.rc,roomName:s.rn,bet:s.bet,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,rm:s.rm,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP});toast('Приглашение в комнату!');}
 function inviteToGame(friendId){db.ref('u/'+friendId).once('value',function(sn){var d=sn.val();if(d)showInviteModal(friendId,d.n||'Игрок',d.a||'');});}
 
 function showFriendsModal(){var m=document.getElementById('friendsModal');m.classList.add('show');
@@ -445,7 +435,25 @@ function leaveGame(){if(s.ga){forceLose();if(s.rc){db.ref('rooms/'+s.rc+'/pl/'+s
 function showConfirm(msg,callback){document.getElementById('confirmMsg').textContent=msg;document.getElementById('confirmModal').classList.add('show');document.getElementById('confirmYes').onclick=function(){document.getElementById('confirmModal').classList.remove('show');if(callback)callback(true);};document.getElementById('confirmNo').onclick=function(){document.getElementById('confirmModal').classList.remove('show');if(callback)callback(false);};}
 window.setBuyQty=function(v){var inp=document.getElementById('buyQty');if(v==='max'){inp.value=Math.floor(s.yc/(s.cc?s.mk[s.cc.symbol]||s.cc.price:1));if(inp.value<1)inp.value='1';}else{inp.value=v;}ubb();};
 function upt(){var b=document.getElementById('portfolioBody'),as=Object.entries(s.yp);b.innerHTML=as.length===0?'<tr><td colspan="7">Нет активов</td></tr>':as.map(function(e){var sym=e[0],d=e[1];var pr=s.mk[sym]||d.avgPrice,val=pr*d.qty,pc=d.avgPrice?((pr-d.avgPrice)/d.avgPrice*100):0;var cls=+pc>=0?'up':'down',arr=+pc>=0?'+':'',p=Math.abs(pc).toFixed(1);var rowCls=+pc>=5?'gain':(+pc<=-5?'loss':'');var caseItem=s.acl.find(function(c){return c&&c.symbol===sym;});var comment='';if(caseItem){comment=+pc>=0?(caseItem.reason_up||''):(caseItem.reason_down||'');}return'<tr class="'+rowCls+'"><td class="sym">'+sym+'</td><td>'+d.qty+'</td><td>'+fm2(pr)+'</td><td>'+fm2(val)+'</td><td class="'+cls+'">'+arr+p+'%</td><td class="pf-comment" title="'+(comment||'')+'">'+(comment||'—')+'</td><td><input class="qty-input" id="sq_'+sym+'" value="'+d.qty+'"><button class="btn-sm sell" id="sl_'+sym+'">Продать</button></td></tr>';}).join('');as.forEach(function(e){var sym=e[0];var btn=document.getElementById('sl_'+sym);if(btn)btn.onclick=function(){var d=s.yp[sym];if(!d)return;var inp=document.getElementById('sq_'+sym);var q=Math.max(1,Math.min(d.qty,parseInt((inp||{}).value)||d.qty));s.yc+=(s.mk[sym]||d.avgPrice)*q;d.qty-=q;if(d.qty<=0)delete s.yp[sym];playSellSound();upt();upr();sy();};});}
-function upr(){var activeLP=s.lp.filter(function(p){return!s.leftPlayers.includes(p.id);});var ps=s.im&&activeLP.length>0?activeLP.map(function(p){return{n:p.n,a:p.a,c:p.c||s.sc,you:p.id===s.pid,id:p.id,left:s.leftPlayers.includes(p.id)};}):[{n:s.pn,a:s.pa,c:s.yc,you:true},{n:s.on,a:s.oa,c:s.oc,you:false}];document.getElementById('playersRow').innerHTML=ps.map(function(p){return'<div class="player-card '+(p.you?'you ':'')+(p.left?'left ':'')+'" data-pid="'+(p.id||'')+'" data-pname="'+p.n+'" data-pavatar="'+p.a+'"><div class="avatar">'+av(p.a)+'</div><div class="name">'+p.n+(p.left?' (вышел)':'')+'</div><div class="cash">'+fm2(p.c)+'</div></div>';}).join('');document.querySelectorAll('.player-card:not(.you):not(.left)').forEach(function(card){card.addEventListener('click',function(){showPlayerProfile(card.dataset);});});}
+
+// 👈 ФИКС: upr показывает данные выбранного игрока в режиме призрака
+function upr(){
+    if(s.isGhost&&s.ghostWatchPid&&s.rc){
+        db.ref('rooms/'+s.rc+'/pl/'+s.ghostWatchPid).once('value',function(sn){
+            var pd=sn.val();if(!pd)return;
+            var ghostCash=pd.c||0,ghostPortfolio=pd.p||{};
+            var activeLP=(s.lp||[]).filter(function(p){return!s.leftPlayers.includes(p.id);});
+            var ps=activeLP.map(function(p){return{n:p.n,a:p.a,c:p.c||s.sc,you:p.id===s.ghostWatchPid,id:p.id,left:s.leftPlayers.includes(p.id)};});
+            document.getElementById('playersRow').innerHTML=ps.map(function(p){return'<div class="player-card '+(p.you?'you ':'')+(p.left?'left ':'')+'"><div class="avatar">'+av(p.a)+'</div><div class="name">'+p.n+(p.left?' (вышел)':'')+'</div><div class="cash">'+fm2(p.c)+'</div></div>';}).join('');
+            s.yc=ghostCash;s.yp=ghostPortfolio;upt();
+        });
+        return;
+    }
+    var activeLP=s.lp.filter(function(p){return!s.leftPlayers.includes(p.id);});
+    var ps=s.im&&activeLP.length>0?activeLP.map(function(p){return{n:p.n,a:p.a,c:p.c||s.sc,you:p.id===s.pid,id:p.id,left:s.leftPlayers.includes(p.id)};}):[{n:s.pn,a:s.pa,c:s.yc,you:true},{n:s.on,a:s.oa,c:s.oc,you:false}];
+    document.getElementById('playersRow').innerHTML=ps.map(function(p){return'<div class="player-card '+(p.you?'you ':'')+(p.left?'left ':'')+'" data-pid="'+(p.id||'')+'" data-pname="'+p.n+'" data-pavatar="'+p.a+'"><div class="avatar">'+av(p.a)+'</div><div class="name">'+p.n+(p.left?' (вышел)':'')+'</div><div class="cash">'+fm2(p.c)+'</div></div>';}).join('');
+    document.querySelectorAll('.player-card:not(.you):not(.left)').forEach(function(card){card.addEventListener('click',function(){showPlayerProfile(card.dataset);});});
+}
 function showPlayerProfile(data){if(data.pid===s.pid)return;var c=document.getElementById('ppContent');var isFriend=s.fr.includes(data.pid);c.innerHTML='<h3>'+(data.pname||'Игрок')+'</h3><div class="profile-avatar" style="margin:0 auto 10px;width:64px;height:64px;">'+av(data.pavatar)+'</div><p>'+(data.pname||'Игрок')+'</p>'+(!isFriend&&data.pid?'<button class="btn gold" id="addFriendBtn">Добавить в друзья</button>':'')+'<button class="btn gold" id="offerTradeBtn" style="margin-top:6px;">Купить акции</button>';document.getElementById('playerProfileModal').classList.add('show');var afb=document.getElementById('addFriendBtn');if(afb)afb.addEventListener('click',function(){sendFriendRequest(data.pid);document.getElementById('playerProfileModal').classList.remove('show');});var otb=document.getElementById('offerTradeBtn');if(otb)otb.addEventListener('click',function(){showTradeOffer(data);});}
 function showTradeOffer(data){var c=document.getElementById('tradeContent');c.innerHTML='<h3>Купить акции у '+data.pname+'</h3><div class="section-title">Ваши деньги: '+fm2(s.yc)+'</div><div id="tradeSymbols"></div>';document.getElementById('tradeModal').classList.add('show');var oppPortfolio=s.im&&s.rc?(s.lp.find(function(p){return p.id===data.pid;})||{}).p||{}:s.op||{};var syms=Object.keys(oppPortfolio).filter(function(sym){return oppPortfolio[sym]&&oppPortfolio[sym].qty>0;});if(syms.length===0){c.innerHTML+='<p style="color:var(--text2);">Нет акций</p>';return;}document.getElementById('tradeSymbols').innerHTML=syms.map(function(sym){var pr2=s.mk[sym]||10;return'<div style="background:var(--surface);padding:10px;border-radius:8px;margin:4px 0;cursor:pointer;" class="trade-sym" data-sym="'+sym+'" data-price="'+pr2+'" data-target="'+data.pid+'"><b>'+sym+'</b> | '+fm2(pr2)+' | Доступно: '+oppPortfolio[sym].qty+'</div>';}).join('');document.querySelectorAll('.trade-sym').forEach(function(el){el.addEventListener('click',function(){var sym2=el.dataset.sym,pr3=parseFloat(el.dataset.price),target2=el.dataset.target;if(s.yc>=pr3){var tradeKey=target2+'_'+sym2;if(s.tradeShown[tradeKey]){toast('Предложение уже отправлено!');return;}s.tradeShown[tradeKey]=true;db.ref('rooms/'+s.rc+'/trades/'+tradeKey).set({from:s.pid,to:target2,sym:sym2,price:pr3,qty:1,fromName:s.pn,status:'pending',ts:firebase.database.ServerValue.TIMESTAMP},function(e){if(e){cl('Ошибка: '+e.message,'error');s.tradeShown[tradeKey]=false;}else{toast('Предложение: '+sym2);document.getElementById('tradeModal').classList.remove('show');}});}else{toast('Недостаточно денег');}});});}
 function showTradeRequest(trade){var key=trade.from+'_'+trade.sym;if(s.tradeShown[key])return;s.tradeShown[key]=true;var el2=document.getElementById('tradeNotice');el2.innerHTML='<b>'+trade.fromName+'</b> хочет купить <b>'+trade.sym+'</b> за <b>'+fm2(trade.price)+'</b><br><button class="btn-sm" id="acceptTrade" style="border-color:var(--green);color:var(--green);">Принять</button> <button class="btn-sm" id="declineTrade" style="border-color:var(--red);color:var(--red);">Отклонить</button>';el2.classList.add('show');document.getElementById('acceptTrade').addEventListener('click',function(){if(s.op[trade.sym]&&s.op[trade.sym].qty>0){s.oc+=trade.price;s.op[trade.sym].qty--;if(s.op[trade.sym].qty<=0)delete s.op[trade.sym];db.ref('rooms/'+s.rc+'/pl/'+trade.from).once('value',function(sn){var fd=sn.val();if(fd){var fc=fd.c||0;fc-=trade.price;if(!fd.p)fd.p={};if(!fd.p[trade.sym])fd.p[trade.sym]={qty:0,avgPrice:0};fd.p[trade.sym].qty++;fd.p[trade.sym].avgPrice=trade.price;db.ref('rooms/'+s.rc+'/pl/'+trade.from).update({c:fc,p:fd.p});}});delete s.tradeShown[key];db.ref('rooms/'+s.rc+'/trades/'+key).update({status:'done'});toast('Сделка!');}el2.classList.remove('show');});document.getElementById('declineTrade').addEventListener('click',function(){delete s.tradeShown[key];db.ref('rooms/'+s.rc+'/trades/'+key).update({status:'declined'});el2.classList.remove('show');});setTimeout(function(){el2.classList.remove('show');delete s.tradeShown[key];},15000);}
@@ -461,8 +469,8 @@ function botA(){if(!s.cc||s.im)return;var sym=s.cc.symbol,pr=s.mk[sym]||s.cc.pri
     upr();}
 function botSellAll(){for(var sym in s.op){s.oc+=(s.mk[sym]||s.op[sym].avgPrice)*s.op[sym].qty;}s.op={};}
 function calcRoomParams(r){if(!r.votes||Object.keys(r.votes).length===0)return;var totals={sc:r.sc||10000,rt:r.rt||30,tr:r.tr||5};var cnt=1;for(var k in r.votes){var v=r.votes[k];totals.sc+=v.sc||r.sc;totals.rt+=v.rt||r.rt;totals.tr+=v.tr||r.tr;cnt++;}db.ref('rooms/'+s.rc).update({sc:Math.ceil(totals.sc/cnt),rt:Math.ceil(totals.rt/cnt),tr:Math.ceil(totals.tr/cnt)});}
-function startRoomListener(){if(!s.rc)return;if(s.roomListener)db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=function(sn){var r=sn.val();if(!r){document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.isGhost=false;return;}s.hid=r.hid||'';s.sc=r.sc||10000;s.rt=r.rt||30;s.tr=r.tr||5;s.mp=r.mp||4;s.rm=r.rm||'hard';s.ra=r.access||'open';s.bet=r.bet||0;
-    if(r.pl&&Object.keys(r.pl).length===0&&r.st==='waiting'){if(s.pid===r.hid&&!s.skipLobby){}else{db.ref('rooms/'+s.rc).remove();s.rc=null;s.im=false;s.isGhost=false;document.getElementById('lobbyModal').classList.remove('show');return;}}
+function startRoomListener(){if(!s.rc)return;if(s.roomListener)db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=function(sn){var r=sn.val();if(!r){document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.isGhost=false;s.ghostWatchPid=null;return;}s.hid=r.hid||'';s.sc=r.sc||10000;s.rt=r.rt||30;s.tr=r.tr||5;s.mp=r.mp||4;s.rm=r.rm||'hard';s.ra=r.access||'open';s.bet=r.bet||0;
+    if(r.pl&&Object.keys(r.pl).length===0&&r.st==='waiting'){if(s.pid===r.hid&&!s.skipLobby){}else{db.ref('rooms/'+s.rc).remove();s.rc=null;s.im=false;s.isGhost=false;s.ghostWatchPid=null;document.getElementById('lobbyModal').classList.remove('show');return;}}
     if(r.cs&&r.cs.length>0&&s.cr<r.cs.length){var cs2=r.cs[s.cr];if(cs2&&cs2.symbol){s.cc={symbol:cs2.symbol,name:cs2.name||'',desc:cs2.desc||'',price:s.mk[cs2.symbol]||10};}}
     if(r.pl){var prevLP=s.lp.slice();s.lp=Object.keys(r.pl).map(function(id){var p=r.pl[id];return{id:id,n:p.n||'Игрок',a:p.a||'?',c:p.c||s.sc,p:p.p||{},left:p.left||false};});if(s.ga&&prevLP.length>s.lp.length){var left=prevLP.find(function(pp){return!s.lp.find(function(lp){return lp.id===pp.id;});});if(left&&!s.leftPlayers.includes(left.id)){s.leftPlayers.push(left.id);showLeftNotice(left.n);}}if(!s.isGhost){var myData=r.pl[s.pid];if(myData&&myData.left){forceLose();eG();return;}}}
     if(r.st=='playing'&&!s.ga&&!s.skipLobby&&!s.isGhost){document.getElementById('lobbyModal').classList.remove('show');smg();return;}
@@ -474,9 +482,10 @@ function startRoomListener(){if(!s.rc)return;if(s.roomListener)db.ref('rooms/'+s
     if(r.rm=='free'&&r.votes)calcRoomParams(r);
     if(s.ga&&r.pl&&!s.isGhost){var oe=Object.keys(r.pl).find(function(id){return id!==s.pid&&!s.leftPlayers.includes(id)&&!r.pl[id]?.left;});if(oe){s.oc=r.pl[oe].c||s.sc;s.op=r.pl[oe].p||{};s.on=r.pl[oe].n||'Игрок';s.oa=r.pl[oe].a||'?';}else{if(s.lp.filter(function(p){return!s.leftPlayers.includes(p.id)&&!p.left;}).length<=1&&s.im){eG();}}upr();}
     if(r.trades){Object.values(r.trades).forEach(function(t){if(t&&t.to===s.pid&&t.status=='pending'){showTradeRequest(t);}});}
+    // 👈 ФИКС: обновляем экран призрака
+    if(s.isGhost&&s.ghostWatchPid){upr();}
     };db.ref('rooms/'+s.rc).on('value',s.roomListener);}
 
-// 👈 ИСПРАВЛЕНО: кнопка настроек + описание комнаты
 function ulc(r){
     var c=document.getElementById('lobbyContent'),isH=s.pid===r.hid;
     var modeText=r.rm==='free'?'Свободная':'Жёсткая',accessText=r.access==='open'?'Открытая':'Закрытая';
@@ -523,51 +532,27 @@ function ulc(r){
     },50);
 }
 
-// 👇 НОВАЯ функция установки чипсов
 function resetChipsToValue(rowId,key,value){
     var row=document.getElementById(rowId);if(!row)return;
     row.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});
     row.querySelectorAll('.chip.custom-selected').forEach(function(c){c.remove();});
     var found=false;
     row.querySelectorAll('.chip:not(.custom)').forEach(function(c){if(c.dataset[key]==value){c.classList.add('selected');found=true;}});
-    if(!found){
-        var newChip=document.createElement('div');newChip.className='chip selected custom-selected';
-        newChip.dataset[key]=value;newChip.textContent=value;
-        newChip.addEventListener('click',function(){row.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});newChip.classList.add('selected');});
-        var customBtn=row.querySelector('.chip.custom');
-        if(customBtn){customBtn.parentNode.insertBefore(newChip,customBtn);}else{row.appendChild(newChip);}
-    }
+    if(!found){var newChip=document.createElement('div');newChip.className='chip selected custom-selected';newChip.dataset[key]=value;newChip.textContent=value;newChip.addEventListener('click',function(){row.querySelectorAll('.chip').forEach(function(c){c.classList.remove('selected');});newChip.classList.add('selected');});var customBtn=row.querySelector('.chip.custom');if(customBtn){customBtn.parentNode.insertBefore(newChip,customBtn);}else{row.appendChild(newChip);}}
 }
 
 function sdCh(){var inp=document.getElementById('chatInput');if(!inp||!inp.value.trim()||!s.rc)return;db.ref('rooms/'+s.rc+'/ch').push({n:s.pn,tx:inp.value.trim().substring(0,100),t:firebase.database.ServerValue.TIMESTAMP});inp.value='';}
 
-// 👈 ИСПРАВЛЕНО: таймер для произвольного режима
-function hsg(){
-    if(!s.rc)return;
-    if(s.rm==='free'){
-        db.ref('rooms/'+s.rc+'/starting').set(true);
-        var countdown=5,startBtn=document.getElementById('startLobbyBtn');if(startBtn)startBtn.disabled=true;
-        var cdInterval=setInterval(function(){
-            countdown--;if(startBtn)startBtn.textContent='СТАРТ ЧЕРЕЗ '+countdown+'...';
-            if(countdown<=0){clearInterval(cdInterval);db.ref('rooms/'+s.rc+'/starting').remove();
-                var cs=[],ui=[];for(var i=0;i<s.tr;i++){var v=s.acl.filter(function(c){return c&&c.symbol&&!ui.includes(c.id);});var k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1,name:k.name||'',desc:k.desc||''});}
-                db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});
-            }
-        },1000);
-    }else{
-        var cs=[],ui=[];for(var i=0;i<s.tr;i++){var v=s.acl.filter(function(c){return c&&c.symbol&&!ui.includes(c.id);});var k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1,name:k.name||'',desc:k.desc||''});}
-        db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});
-    }
-}
+function hsg(){if(!s.rc)return;if(s.rm==='free'){db.ref('rooms/'+s.rc+'/starting').set(true);var countdown=5,startBtn=document.getElementById('startLobbyBtn');if(startBtn)startBtn.disabled=true;var cdInterval=setInterval(function(){countdown--;if(startBtn)startBtn.textContent='СТАРТ ЧЕРЕЗ '+countdown+'...';if(countdown<=0){clearInterval(cdInterval);db.ref('rooms/'+s.rc+'/starting').remove();var cs=[],ui=[];for(var i=0;i<s.tr;i++){var v=s.acl.filter(function(c){return c&&c.symbol&&!ui.includes(c.id);});var k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1,name:k.name||'',desc:k.desc||''});}db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});}},1000);}else{var cs=[],ui=[];for(var i=0;i<s.tr;i++){var v=s.acl.filter(function(c){return c&&c.symbol&&!ui.includes(c.id);});var k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1,name:k.name||'',desc:k.desc||''});}db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});}}
 
-// 👈 ИСПРАВЛЕНО: выход с передачей прав
+// 👈 ФИКС: выход с полной очисткой
 function lvR(){
     if(!s.rc)return;
     if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}
     db.ref('rooms/'+s.rc+'/pl').once('value',function(sn){
         var players=sn.val();
         var otherPlayers=players?Object.keys(players).filter(function(id){return id!==s.pid&&!players[id]?.left;}):[];
-        if(s.pid===s.hid||otherPlayers.length>=1){
+        if(s.pid===s.hid){
             if(otherPlayers.length>0){
                 var newHost=otherPlayers[0];
                 db.ref('rooms/'+s.rc+'/hid').set(newHost);
@@ -580,7 +565,7 @@ function lvR(){
             db.ref('rooms/'+s.rc+'/pl/'+s.pid).remove();db.ref('rooms/'+s.rc+'/rd/'+s.pid).remove();db.ref('rooms/'+s.rc+'/votes/'+s.pid).remove();
         }
     });
-    document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];s.isGhost=false;s.inviteFromRoom=false;
+    document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];s.isGhost=false;s.inviteFromRoom=false;s.ghostWatchPid=null;
 }
 
 function cR(){if(!s.rc){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();}var pd={n:s.pn||'Игрок',a:s.pa||'?',c:s.sc};s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];document.getElementById('lobbyModal').classList.add('show');ulc({rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:{},hid:s.pid,rm:s.rm,access:s.ra,bet:s.bet});var pl={};pl[s.pid]=pd;startRoomListener();var roomData={hid:s.pid,rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:pl,st:'waiting',access:s.ra,rm:s.rm,bet:s.bet};if(s.rm=='free'){var votes={};votes[s.pid]={sc:s.sc,rt:s.rt,tr:s.tr};roomData.votes=votes;}db.ref('rooms/'+s.rc).set(roomData);cl('Комната: '+s.rc);}
@@ -589,12 +574,14 @@ window._joinRoom=function(code){code=code.toUpperCase().trim();db.ref('rooms/'+c
 function smg(){s.yc=s.sc;s.yp={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;s.leftPlayers=[];s.roundOk=false;s.tradeShown={};document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';document.getElementById('readyStatus').textContent='NO: 0/0';['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});upt();upr();nr();}
 function nr(){if(s.cr>=s.tr){stF();return;}s.cr++;ump();s.wp=false;document.getElementById('waitBtn').classList.remove('held');s.roundOk=false;var activeCount=s.lp.filter(function(p){return!s.leftPlayers.includes(p.id)&&!p.left;}).length||1;document.getElementById('readyStatus').textContent='NO: 0/'+activeCount;if(s.rc)db.ref('rooms/'+s.rc+'/rd').remove();var k=grc();if(!k){nr();return;}s.uc.push(k.id);shc(k);if(!s.im)botA();stT();}
 function stT(){var t=s.rt;document.getElementById('timer').textContent=t;document.getElementById('timer').classList.remove('urgent');clearInterval(s.rtimer);s.rtimer=setInterval(function(){t--;document.getElementById('timer').textContent=t;if(t<=5)document.getElementById('timer').classList.add('urgent');if(t<=0){clearInterval(s.rtimer);s.roundOk=false;nr();}},1000);}
+
+// 👈 ФИКС: соло игра создаёт и удаляет комнату
 function sG(){if(!s.crdy){alert('Загрузка...');return;}s.yc=s.sc;s.oc=s.sc;s.yp={};s.op={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;s.leftPlayers=[];s.roundOk=false;s.tradeShown={};var ghostCode='solo_'+s.pid;db.ref('rooms/'+ghostCode).set({hid:s.pid,rn:s.pn+' (соло)',mp:1,sc:s.sc,rt:s.rt,tr:s.tr,pl:{[s.pid]:{n:s.pn,a:s.pa,c:s.sc}},st:'playing',access:'open',rm:'hard',bet:0});s.ghostRoomCode=ghostCode;document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';document.getElementById('readyStatus').textContent='NO: 0/0';['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});if(!s.im){s.on='Бот-Трейдер';s.oa='Бот';}upt();upr();nr();}
 function stF(){s.fi=true;s.ft=90;clearInterval(s.fi2);clearInterval(s.fi3);document.getElementById('gameScreen').style.display='none';document.getElementById('finalOverlay').classList.add('show');upF();upFP();s.fi3=setInterval(function(){if(!s.im)botA();upFP();},3000);s.fi2=setInterval(function(){s.ft-=5;if(s.ft<0)s.ft=0;document.getElementById('finalTimer').textContent=s.ft;for(var sym in s.mk)s.mk[sym]=Math.max(0.02,s.mk[sym]*(1+(Math.random()-0.46)*14/100));upF();upFP();if(s.ft<=0){clearInterval(s.fi2);clearInterval(s.fi3);if(!s.im)botSellAll();slL();eG();}},5000);setTimeout(function(){if(!s.im)botSellAll();},85000);}
 function upF(){var b=document.getElementById('finalBody'),as=Object.entries(s.yp);b.innerHTML=as.length===0?'<tr><td colspan="6">Нет активов</td></tr>':as.map(function(e){var sym=e[0],d=e[1];var pr=s.mk[sym]||d.avgPrice,val=pr*d.qty,pc=d.avgPrice?((pr-d.avgPrice)/d.avgPrice*100):0,pnl=(pr-d.avgPrice)*d.qty;var cls=+pc>=0?'up':'down',arr=+pc>=0?'+':'',p=Math.abs(pc).toFixed(1);var pnlCls=pnl>=0?'pos':'neg',pnlSign=pnl>=0?'+':'';return'<tr><td class="sym">'+sym+'</td><td>'+d.qty+'</td><td>'+fm2(pr)+'</td><td>'+fm2(val)+'</td><td class="'+cls+'">'+arr+p+'%</td><td class="final-pnl"><span class="'+pnlCls+'">'+pnlSign+fm2(pnl)+'</span></td></tr>';}).join('');var totalPnl=s.yc-s.sc;for(var sym in s.yp){totalPnl+=(s.mk[sym]-s.yp[sym].avgPrice)*s.yp[sym].qty;}var totalVal=s.yc+as.reduce(function(sum,e){return sum+(s.mk[e[0]]||e[1].avgPrice)*e[1].qty;},0);var pnlCls2=totalPnl>=0?'pos':'neg',pnlSign2=totalPnl>=0?'+':'';document.getElementById('finalTotal').innerHTML=fm2(totalVal)+' <span class="final-pnl"><span class="'+pnlCls2+'">('+pnlSign2+fm2(totalPnl)+')</span></span>';}
 function upFP(){var el=document.getElementById('finalPlayers');var myTotal=s.yc+Object.entries(s.yp).reduce(function(sum,e){return sum+(s.mk[e[0]]||e[1].avgPrice)*e[1].qty;},0);var opTotal=s.oc+Object.entries(s.op).reduce(function(sum,e){return sum+(s.mk[e[0]]||e[1].avgPrice)*e[1].qty;},0);var iWin=myTotal>opTotal;var myPnl=myTotal-s.sc,opPnl=opTotal-s.sc;var mCls=iWin?'win':'lose',oCls=iWin?'lose':'win';var mpCls=myPnl>=0?'pos':'neg',mpSign=myPnl>=0?'+':'';var opCls2=opPnl>=0?'pos':'neg',opSign=opPnl>=0?'+':'';el.innerHTML='<div class="final-player"><div class="fp-name">'+s.pn+' (Вы)</div><div><div class="fp-cash '+mCls+'">'+fm2(myTotal)+'</div><div class="final-pnl"><span class="'+mpCls+'">'+mpSign+fm2(myPnl)+'</span></div></div></div><div class="final-player"><div class="fp-name">'+s.on+'</div><div><div class="fp-cash '+oCls+'">'+fm2(opTotal)+'</div><div class="final-pnl"><span class="'+opCls2+'">'+opSign+fm2(opPnl)+'</span></div></div></div>';}
 function slL(){for(var sym in s.yp){s.yc+=(s.mk[sym]||s.yp[sym].avgPrice)*s.yp[sym].qty;}s.yp={};}
-function eG(){s.ga=false;s.fi=false;clearInterval(s.fi2);clearInterval(s.fi3);document.getElementById('finalOverlay').classList.remove('show');if(s.ghostRoomCode){db.ref('rooms/'+s.ghostRoomCode).remove();s.ghostRoomCode=null;}if(s.fa){var er=s.yc-100;if(s.fw){db.ref('fr/'+s.fw+'/'+s.pid).update({te:firebase.database.ServerValue.increment(er>0?er:-er),lb:s.yc,gp:firebase.database.ServerValue.increment(1),lu:firebase.database.ServerValue.TIMESTAMP});}document.getElementById('resultOverlay').classList.add('show');document.getElementById('resultEmoji').textContent=er>0?'📈':'📉';document.getElementById('resultTitle').textContent=er>0?'ПРИБЫЛЬ!':'УБЫТОК';document.getElementById('resultCash').textContent=fm2(s.yc);s.fa=false;sS();up();setTimeout(function(){document.getElementById('resultOverlay').classList.remove('show');document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';resetBottomNav();},2000);return;}var myTotal=s.yc,opTotal=s.oc,win=myTotal>opTotal;document.getElementById('resultOverlay').classList.add('show');document.getElementById('resultEmoji').textContent=win?'🏆':'💔';document.getElementById('resultTitle').textContent=win?'ПОБЕДА!':'ПОРАЖЕНИЕ';document.getElementById('resultCash').textContent=fm2(myTotal);var myPnl=myTotal-s.sc;var prizeText=s.on+': '+fm2(opTotal)+'<br>P&L: <span style="color:'+(myPnl>=0?'var(--green)':'var(--red)')+'">'+(myPnl>=0?'+':'')+fm2(myPnl)+'</span>';if(win){s.pd+=100;if(s.bet>0){var winBet=s.bet*(s.lp.filter(function(p){return!p.left;}).length);s.pd+=winBet;prizeText+='<br>Выигрыш ставки: +'+winBet+' монет';}}else{s.pd=Math.max(0,s.pd-100);if(s.bet>0){prizeText+='<br>Проигрыш ставки: -'+s.bet+' монет';}}document.getElementById('resultPrize').innerHTML=prizeText;s.gh.push({date:new Date().toISOString(),cash:myTotal,result:win?'win':'lose',rounds:s.tr,opponent:s.on,pnl:myPnl});sS();up();if(s.rc){if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}db.ref('gi').orderByChild('roomCode').equalTo(s.rc).once('value',function(sn){sn.forEach(function(child){child.ref.remove();});});db.ref('rooms/'+s.rc).remove();s.rc=null;s.im=false;s.isGhost=false;}cl('Игра: '+(win?'Победа':'Поражение')+' '+fm2(myTotal));}
+function eG(){s.ga=false;s.fi=false;clearInterval(s.fi2);clearInterval(s.fi3);document.getElementById('finalOverlay').classList.remove('show');if(s.ghostRoomCode){db.ref('rooms/'+s.ghostRoomCode).remove();s.ghostRoomCode=null;}if(s.fa){var er=s.yc-100;if(s.fw){db.ref('fr/'+s.fw+'/'+s.pid).update({te:firebase.database.ServerValue.increment(er>0?er:-er),lb:s.yc,gp:firebase.database.ServerValue.increment(1),lu:firebase.database.ServerValue.TIMESTAMP});}document.getElementById('resultOverlay').classList.add('show');document.getElementById('resultEmoji').textContent=er>0?'📈':'📉';document.getElementById('resultTitle').textContent=er>0?'ПРИБЫЛЬ!':'УБЫТОК';document.getElementById('resultCash').textContent=fm2(s.yc);s.fa=false;sS();up();setTimeout(function(){document.getElementById('resultOverlay').classList.remove('show');document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';resetBottomNav();},2000);return;}var myTotal=s.yc,opTotal=s.oc,win=myTotal>opTotal;document.getElementById('resultOverlay').classList.add('show');document.getElementById('resultEmoji').textContent=win?'🏆':'💔';document.getElementById('resultTitle').textContent=win?'ПОБЕДА!':'ПОРАЖЕНИЕ';document.getElementById('resultCash').textContent=fm2(myTotal);var myPnl=myTotal-s.sc;var prizeText=s.on+': '+fm2(opTotal)+'<br>P&L: <span style="color:'+(myPnl>=0?'var(--green)':'var(--red)')+'">'+(myPnl>=0?'+':'')+fm2(myPnl)+'</span>';if(win){s.pd+=100;if(s.bet>0){var winBet=s.bet*(s.lp.filter(function(p){return!p.left;}).length);s.pd+=winBet;prizeText+='<br>Выигрыш ставки: +'+winBet+' монет';}}else{s.pd=Math.max(0,s.pd-100);if(s.bet>0){prizeText+='<br>Проигрыш ставки: -'+s.bet+' монет';}}document.getElementById('resultPrize').innerHTML=prizeText;s.gh.push({date:new Date().toISOString(),cash:myTotal,result:win?'win':'lose',rounds:s.tr,opponent:s.on,pnl:myPnl});sS();up();if(s.rc){if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}db.ref('gi').orderByChild('roomCode').equalTo(s.rc).once('value',function(sn){sn.forEach(function(child){child.ref.remove();});});db.ref('rooms/'+s.rc).remove();s.rc=null;s.im=false;s.isGhost=false;s.ghostWatchPid=null;}cl('Игра: '+(win?'Победа':'Поражение')+' '+fm2(myTotal));}
 function eF(){if(!s.flUnlocked){if(s.pd<5000){alert('Недостаточно! Нужно 5 000');return;}s.pd-=5000;s.flUnlocked=true;db.ref('u/'+s.pid+'/flUnlocked').set(true);db.ref('u/'+s.pid+'/do').set(s.pd);sS();up();toast('Фрилансер разблокирован на неделю!');}if(!s.crdy){alert('Загрузка...');return;}s.fw=gwk();s.fa=true;s.sc=100;s.yc=100;s.oc=100;s.tr=10;s.rt=30;s.yp={};s.op={};s.mk={};s.fv={};s.cr=0;s.im=false;s.on='Бот-Фрилансер';s.oa='?';s.ga=false;s.fi=false;s.uc=[];s.wp=false;sS();up();document.getElementById('freelancerIntroModal').classList.remove('show');document.getElementById('flConfirmModal').classList.add('show');db.ref('fr/'+s.fw+'/'+s.pid).set({n:s.pn,a:s.pa,te:0,gp:0,lu:firebase.database.ServerValue.TIMESTAMP});}
 function shFR(){document.getElementById('freelancerRatingModal').classList.add('show');var wk=gwk();var now=new Date(),day=now.getDay(),nm=new Date(now);nm.setDate(now.getDate()+(day===0?1:8-day));nm.setHours(0,0,0,0);var diff=nm-now,ds=Math.floor(diff/86400000),hs=Math.floor((diff%86400000)/3600000);document.getElementById('ratingTimer').textContent='До конца: '+ds+'д '+hs+'ч';db.ref('fr/'+wk).orderByChild('te').limitToLast(20).once('value',function(sn){var r=sn.val();var l=document.getElementById('ratingList');if(!r){l.innerHTML='<p>Нет</p>';return;}var so=Object.entries(r).sort(function(a,b){return(b[1].te||0)-(a[1].te||0);});l.innerHTML=so.map(function(e,i){var id=e[0],rd=e[1];return'<div class="lobby-player"><span>'+(i+1)+'.</span><span class="avatar">'+av(rd.a)+'</span><span>'+(rd.n||'Игрок')+'</span><span style="margin-left:auto;color:var(--gold);">'+(rd.te||0).toFixed(0)+'</span></div>';}).join('');});}
 function shGH(){document.getElementById('historyModal').classList.add('show');var l=document.getElementById('historyList');if(s.gh.length===0){l.innerHTML='<p style="color:var(--text2);">Нет</p>';return;}l.innerHTML=s.gh.slice().reverse().map(function(g){var pnl=g.pnl||0;return'<div style="background:var(--surface);padding:8px;margin:4px 0;font-size:10px"><div style="color:'+(g.result=='win'?'var(--green)':'var(--red)')+';">'+(g.result=='win'?'Победа':'Поражение')+'</div><div>'+fm2(g.cash)+' | '+g.rounds+' раундов</div><div style="color:'+(pnl>=0?'var(--green)':'var(--red)')+';">P&L: '+(pnl>=0?'+':'')+pnl+'</div></div>';}).join('');}
@@ -631,11 +618,9 @@ function bind(){
     document.getElementById('qtyMinus').addEventListener('click',function(){var i=document.getElementById('buyQty');var v=parseInt(i.value)||1;i.value=Math.max(1,v-1);ubb();});
     document.getElementById('qtyPlus').addEventListener('click',function(){var i=document.getElementById('buyQty');var v=parseInt(i.value)||1;i.value=Math.min(1000,v+1);ubb();});
     document.getElementById('buyQty').addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'');if(!this.value||parseInt(this.value)<1)this.value='1';ubb();});
-    document.getElementById('menuBtn').addEventListener('click',function(){clearInterval(s.rtimer);clearInterval(s.fi2);clearInterval(s.fi3);if(s.roomListener&&s.rc){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}if(s.ghostRoomCode){db.ref('rooms/'+s.ghostRoomCode).remove();s.ghostRoomCode=null;}['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';document.getElementById('compMenu').style.display='none';resetBottomNav();s.ga=false;s.fi=false;s.fa=false;s.isGhost=false;s.rc=null;});
+    document.getElementById('menuBtn').addEventListener('click',function(){clearInterval(s.rtimer);clearInterval(s.fi2);clearInterval(s.fi3);if(s.roomListener&&s.rc){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}if(s.ghostRoomCode){db.ref('rooms/'+s.ghostRoomCode).remove();s.ghostRoomCode=null;}['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';document.getElementById('compMenu').style.display='none';resetBottomNav();s.ga=false;s.fi=false;s.fa=false;s.isGhost=false;s.ghostWatchPid=null;s.rc=null;});
     document.getElementById('shareBtn').addEventListener('click',function(){var t='InvestBattle: '+fm2(s.yc);navigator.share?navigator.share({title:'InvestBattle',text:t}):cp(t);});
     document.getElementById('createRoomBtn').addEventListener('click',function(){s.inviteFromFriends=false;s.skipLobby=false;s.rc=null;document.getElementById('roomCodePreview').style.display='none';document.getElementById('roomModalTitle').textContent='👥 Создать комнату';document.getElementById('confirmRoomBtn').textContent='🏆 Создать';document.getElementById('roomModal').classList.add('show');});
-    
-    // 👈 ИСПРАВЛЕНО: закрытие настроек
     document.getElementById('roomCloseBtn').addEventListener('click',function(){
         document.getElementById('roomModal').classList.remove('show');
         if(s.inviteFromFriends&&s.rc){
@@ -643,8 +628,7 @@ function bind(){
                 var players=sn.val();
                 var otherPlayers=players?Object.keys(players).filter(function(id){return id!==s.pid;}):[];
                 if(otherPlayers.length>0){
-                    var newHost=otherPlayers[0];
-                    db.ref('rooms/'+s.rc+'/hid').set(newHost);
+                    var newHost=otherPlayers[0];db.ref('rooms/'+s.rc+'/hid').set(newHost);
                     db.ref('gi/'+newHost+'/'+s.rc).set({from:s.pid,fromName:s.pn,fromAvatar:s.pa,roomCode:s.rc,roomName:s.rn,bet:s.bet,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,rm:s.rm,status:'host_transfer',ts:firebase.database.ServerValue.TIMESTAMP});
                     db.ref('rooms/'+s.rc+'/pl/'+s.pid).remove();db.ref('rooms/'+s.rc+'/rd/'+s.pid).remove();db.ref('rooms/'+s.rc+'/votes/'+s.pid).remove();
                 }else{
@@ -655,19 +639,12 @@ function bind(){
             s.rc=null;s.inviteFromFriends=false;s.skipLobby=false;
         }
     });
-    
     document.getElementById('confirmRoomBtn').addEventListener('click',function(){
         s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt((document.querySelector('#maxChips .selected')||{}).dataset.max||4);s.sc=parseInt((document.querySelector('#cashChips .selected')||{}).dataset.cash||10000);s.rt=parseInt((document.querySelector('#timeChips .selected')||{}).dataset.time||30);s.tr=parseInt((document.querySelector('#roundsChips .selected')||{}).dataset.rounds||5);s.ra=(document.querySelector('#accessChips .selected')||{}).dataset.access||'open';s.rm=(document.querySelector('#modeChips .selected')||{}).dataset.mode||'hard';s.bet=parseInt((document.querySelector('#betChips .selected')||{}).dataset.bet||0);
-        if(s.bet>0&&s.pd<s.bet){alert('Недостаточно монет!');return;}
-        if(s.mp>20||s.sc>100000||s.rt>90||s.tr>100){alert('Превышен лимит!');return;}
+        if(s.bet>0&&s.pd<s.bet){alert('Недостаточно монет!');return;}if(s.mp>20||s.sc>100000||s.rt>90||s.tr>100){alert('Превышен лимит!');return;}
         document.getElementById('roomModal').classList.remove('show');
-        if(s.inviteFromFriends&&s.rc){
-            db.ref('rooms/'+s.rc).update({rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,access:s.ra,rm:s.rm,bet:s.bet});
-            db.ref('rooms/'+s.rc+'/pl/'+s.pid).set({n:s.pn,a:s.pa,c:s.sc});
-            s.im=true;s.lp=[];document.getElementById('lobbyModal').classList.add('show');startRoomListener();s.inviteFromFriends=false;s.skipLobby=false;
-        }else{cR();}
+        if(s.inviteFromFriends&&s.rc){db.ref('rooms/'+s.rc).update({rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,access:s.ra,rm:s.rm,bet:s.bet});db.ref('rooms/'+s.rc+'/pl/'+s.pid).set({n:s.pn,a:s.pa,c:s.sc});s.im=true;s.lp=[];document.getElementById('lobbyModal').classList.add('show');startRoomListener();s.inviteFromFriends=false;s.skipLobby=false;}else{cR();}
     });
-    
     document.getElementById('joinRoomBtn').addEventListener('click',function(){document.getElementById('joinModal').classList.add('show');});
     document.getElementById('joinCloseBtn').addEventListener('click',function(){document.getElementById('joinModal').classList.remove('show');});
     document.getElementById('confirmJoinBtn').addEventListener('click',function(){var code=document.getElementById('joinCodeInput').value.trim().toUpperCase();if(code){window._joinRoom(code);document.getElementById('joinModal').classList.remove('show');}});
