@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v1.1</title>
+    <title>InvestBattle v1.0</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -247,7 +247,7 @@ function isAdmin(){return adminIDs.includes(s.pid);}
 function isMod(){return modIDs.includes(s.pid)&&!isAdmin();}
 function av(a){if(a&&a.indexOf('icons/')===0)return'<img src="'+a+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';return a||'?';}
 function fm(n){return Math.round(n).toLocaleString('en-US');}
-function fm2(n){return '$'+fm(n);}
+function fm2(n){return'$'+fm(n);}
 function gwk(){var n=new Date(),d=n.getDay();n.setDate(n.getDate()-(d===0?6:d-1));n.setHours(0,0,0,0);return'week_'+n.toISOString().split('T')[0];}
 function toast(msg){var t=document.getElementById('copiedToast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1500);}
 function cp(tx){navigator.clipboard.writeText(tx).then(function(){toast('Скопировано!');}).catch(function(){var t=document.createElement('textarea');t.value=tx;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('Скопировано!');});}
@@ -388,8 +388,38 @@ function startRoomListener(){if(!s.rc)return;if(s.roomListener)db.ref('rooms/'+s
 function ulc(r){var c=document.getElementById('lobbyContent'),isH=s.pid===r.hid,deep='https://t.me/InvestBattleBot?start='+s.rc;c.innerHTML='<h3>'+(r.rn||'Комната')+'</h3>'+(r.bet>0?'<div style="text-align:center;color:var(--gold);">Ставка: '+r.bet+' монет</div>':'')+'<div class="room-link" id="copyRoomCode">Код: '+s.rc+'</div><div class="room-link" id="copyDeepLink">Пригласить</div><p style="text-align:center;color:var(--text2);">'+s.lp.length+'/'+(r.mp||4)+' | '+fm2(r.sc||10000)+' | '+(r.rt||30)+'с | '+(r.tr||5)+' раундов | '+(r.rm=='free'?'Свободная':'Жёсткая')+'</p><div class="section-title">Участники:</div>'+s.lp.map(function(p){return'<div class="lobby-player"><span class="avatar">'+av(p.a)+'</span>'+p.n+' '+(p.id===s.pid?'(Вы)':'')+' '+(p.id===r.hid?'*':'')+'</div>';}).join('')+'<div class="chat-box" id="chatMsgs"></div><div class="chat-input-row"><input id="chatInput" placeholder="Сообщение..." maxlength="100"><button class="btn-sm" id="chatSend">Отпр.</button></div>'+(isH?'<button class="btn gold" id="startLobbyBtn" style="margin-top:10px;" '+(s.lp.length<2?'disabled':'')+'>НАЧАТЬ ('+s.lp.length+'/'+(r.mp||4)+')</button>':'<p style="text-align:center;color:var(--text2);">Ожидание...</p>')+'<button class="btn" id="leaveLobbyBtn" style="margin-top:6px;">Выйти</button>';setTimeout(function(){document.getElementById('copyRoomCode').addEventListener('click',function(){cp(s.rc);});document.getElementById('copyDeepLink').addEventListener('click',function(){if(navigator.share){navigator.share({title:'InvestBattle',text:'Заходи поиграем! Код: '+s.rc+'\nhttps://t.me/InvestBattleBot?start='+s.rc});}else{cp('Заходи поиграем! Код: '+s.rc);}});var slb=document.getElementById('startLobbyBtn');if(slb)slb.addEventListener('click',hsg);document.getElementById('leaveLobbyBtn').addEventListener('click',lvR);document.getElementById('chatSend').addEventListener('click',sdCh);document.getElementById('chatInput').addEventListener('keypress',function(e){if(e.key=='Enter')sdCh();});},50);}
 function sdCh(){var inp=document.getElementById('chatInput');if(!inp||!inp.value.trim()||!s.rc)return;db.ref('rooms/'+s.rc+'/ch').push({n:s.pn,tx:inp.value.trim().substring(0,100),t:firebase.database.ServerValue.TIMESTAMP});inp.value='';}
 function hsg(){if(!s.rc)return;var cs=[],ui=[];for(var i=0;i<s.tr;i++){var v=s.acl.filter(function(c){return c&&c.symbol&&!ui.includes(c.id);});var k=v.length>0?v[Math.floor(Math.random()*v.length)]:s.acl[0];if(!k)continue;ui.push(k.id);cs.push({id:k.id,symbol:k.symbol,round:i+1,name:k.name||'',desc:k.desc||''});}db.ref('rooms/'+s.rc).update({st:'playing',cs:cs});}
-function lvR(){if(!s.rc)return;if(s.roomListener){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}db.ref('gi').orderByChild('roomCode').equalTo(s.rc).once('value',function(sn){sn.forEach(function(child){child.ref.remove();});});if(s.pid===s.hid){db.ref('rooms/'+s.rc).remove();}else{db.ref('rooms/'+s.rc+'/pl/'+s.pid).remove();db.ref('rooms/'+s.rc+'/rd/'+s.pid).remove();db.ref('rooms/'+s.rc+'/votes/'+s.pid).remove();var empty=true;if(s.lp&&s.lp.length>1)empty=false;if(empty&&s.pid===s.hid){db.ref('rooms/'+s.rc).remove();}}document.getElementById('lobbyModal').classList.remove('show');s.rc=null;s.im=false;s.lp=[];}
-function cR(){s.rc=Math.random().toString(36).substring(2,8).toUpperCase();var pd={n:s.pn||'Игрок',a:s.pa||'?',c:s.sc};s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];document.getElementById('lobbyModal').classList.add('show');ulc({rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:{},hid:s.pid,rm:s.rm,access:s.ra,bet:s.bet});var pl={};pl[s.pid]=pd;startRoomListener();var roomData={hid:s.pid,rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:pl,st:'waiting',access:s.ra,rm:s.rm,bet:s.bet};if(s.rm=='free'){var votes={};votes[s.pid]={sc:s.sc,rt:s.rt,tr:s.tr};roomData.votes=votes;}db.ref('rooms/'+s.rc).set(roomData);cl('Комната: '+s.rc);}
+function lvR(){
+    if(!s.rc) return;
+    if(s.roomListener){
+        db.ref('rooms/'+s.rc).off('value', s.roomListener);
+        s.roomListener = null;
+    }
+    db.ref('gi').orderByChild('roomCode').equalTo(s.rc).once('value',function(sn){
+        sn.forEach(function(child){ child.ref.remove(); });
+    });
+    
+    // 👇 ИСПРАВЛЕНО: логика выхода из комнаты
+    if(s.pid === s.hid){
+        // Хост выходит — удаляем комнату полностью
+        db.ref('rooms/'+s.rc).remove();
+    } else {
+        // Не-хост выходит — удаляем только себя
+        db.ref('rooms/'+s.rc+'/pl/'+s.pid).remove();
+        db.ref('rooms/'+s.rc+'/rd/'+s.pid).remove();
+        db.ref('rooms/'+s.rc+'/votes/'+s.pid).remove();
+    }
+    
+    document.getElementById('lobbyModal').classList.remove('show');
+    s.rc = null;
+    s.im = false;
+    s.lp = [];
+}
+function cR(){
+    // 👇 ИСПРАВЛЕНО: создаём код только если его ещё нет
+    if(!s.rc){
+        s.rc = Math.random().toString(36).substring(2,8).toUpperCase();
+    }
+    var pd={n:s.pn||'Игрок',a:s.pa||'?',c:s.sc};s.im=true;s.lp=[{id:s.pid,n:pd.n,a:pd.a,c:s.sc}];document.getElementById('lobbyModal').classList.add('show');ulc({rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:{},hid:s.pid,rm:s.rm,access:s.ra,bet:s.bet});var pl={};pl[s.pid]=pd;startRoomListener();var roomData={hid:s.pid,rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,pl:pl,st:'waiting',access:s.ra,rm:s.rm,bet:s.bet};if(s.rm=='free'){var votes={};votes[s.pid]={sc:s.sc,rt:s.rt,tr:s.tr};roomData.votes=votes;}db.ref('rooms/'+s.rc).set(roomData);cl('Комната: '+s.rc);}
 function joinRoom(code,params){code=code.toUpperCase().trim();db.ref('rooms/'+code).once('value',function(sn){var r=sn.val();if(!r){alert('Комната не найдена');return;}if(r.st!=='waiting'){alert('Игра уже идёт');return;}if(r.pl&&Object.keys(r.pl).length>=(r.mp||4)){alert('Комната заполнена');return;}if(r.bet>0&&s.pd<r.bet){alert('Недостаточно монет! Нужно '+r.bet);return;}s.rc=code;s.hid=r.hid||'';s.sc=r.sc||10000;s.rt=r.rt||30;s.tr=r.tr||5;s.mp=r.mp||4;s.rm=r.rm||'hard';s.ra=r.access||'open';s.bet=r.bet||0;if(s.bet>0){s.pd-=s.bet;sS();up();}if(s.rm=='free'&&params&&s.pid!==r.hid){db.ref('rooms/'+code+'/votes/'+s.pid).set(params);}s.im=true;s.lp=[];document.getElementById('lobbyModal').classList.add('show');startRoomListener();db.ref('rooms/'+code+'/pl/'+s.pid).set({n:s.pn,a:s.pa,c:s.sc});cl('Вход: '+code);});}
 window._joinRoom=function(code){code=code.toUpperCase().trim();db.ref('rooms/'+code).once('value',function(sn){var r=sn.val();if(!r){alert('Не найдена');return;}if(s.pid!==r.hid&&r.rm=='free'){s.pendingJoin=code;document.getElementById('joinParamsModal').classList.add('show');}else{joinRoom(code,null);}});};
 function smg(){s.yc=s.sc;s.yp={};s.mk={};s.fv={};s.cr=0;s.ga=true;s.fi=false;s.uc=[];s.wp=false;s.leftPlayers=[];s.roundOk=false;s.tradeShown={};document.getElementById('menuScreen').style.display='none';document.getElementById('gameScreen').style.display='block';document.getElementById('readyStatus').textContent='NO: 0/0';['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});upt();upr();nr();}
@@ -439,9 +469,56 @@ function bind(){
     document.getElementById('buyQty').addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'');if(!this.value||parseInt(this.value)<1)this.value='1';ubb();});
     document.getElementById('menuBtn').addEventListener('click',function(){clearInterval(s.rtimer);clearInterval(s.fi2);clearInterval(s.fi3);if(s.roomListener&&s.rc){db.ref('rooms/'+s.rc).off('value',s.roomListener);s.roomListener=null;}['resultOverlay','finalOverlay'].forEach(function(id){document.getElementById(id).classList.remove('show');});document.getElementById('gameScreen').style.display='none';document.getElementById('menuScreen').style.display='block';document.getElementById('playMenu').style.display='block';document.getElementById('playMenuBtn').style.display='none';document.getElementById('historyBtn').style.display='none';document.getElementById('compMenu').style.display='none';resetBottomNav();s.ga=false;s.fi=false;s.fa=false;});
     document.getElementById('shareBtn').addEventListener('click',function(){var t='InvestBattle: '+fm2(s.yc);navigator.share?navigator.share({title:'InvestBattle',text:t}):cp(t);});
-    document.getElementById('createRoomBtn').addEventListener('click',function(){s.inviteFromFriends=false;s.skipLobby=false;document.getElementById('roomCodePreview').style.display='none';document.getElementById('roomModalTitle').textContent='👥 Создать комнату';document.getElementById('confirmRoomBtn').textContent='🏆 Создать';document.getElementById('roomModal').classList.add('show');});
+    
+    // 👇 ИСПРАВЛЕНО: createRoomBtn — сбрасываем rc
+    document.getElementById('createRoomBtn').addEventListener('click',function(){
+        s.inviteFromFriends = false;
+        s.skipLobby = false;
+        s.rc = null;
+        document.getElementById('roomCodePreview').style.display = 'none';
+        document.getElementById('roomModalTitle').textContent = '👥 Создать комнату';
+        document.getElementById('confirmRoomBtn').textContent = '🏆 Создать';
+        document.getElementById('roomModal').classList.add('show');
+    });
+    
     document.getElementById('roomCloseBtn').addEventListener('click',function(){document.getElementById('roomModal').classList.remove('show');if(s.inviteFromFriends&&s.rc){lvR();s.inviteFromFriends=false;s.skipLobby=false;}});
-    document.getElementById('confirmRoomBtn').addEventListener('click',function(){s.rn=document.getElementById('roomNameInput').value||'Комната';s.mp=parseInt((document.querySelector('#maxChips .selected')||{}).dataset.max||4);s.sc=parseInt((document.querySelector('#cashChips .selected')||{}).dataset.cash||10000);s.rt=parseInt((document.querySelector('#timeChips .selected')||{}).dataset.time||30);s.tr=parseInt((document.querySelector('#roundsChips .selected')||{}).dataset.rounds||5);s.ra=(document.querySelector('#accessChips .selected')||{}).dataset.access||'open';s.rm=(document.querySelector('#modeChips .selected')||{}).dataset.mode||'hard';s.bet=parseInt((document.querySelector('#betChips .selected')||{}).dataset.bet||0);if(s.bet>0&&s.pd<s.bet){alert('Недостаточно монет!');return;}if(s.mp>20||s.sc>100000||s.rt>90||s.tr>100){alert('Превышен лимит!');return;}if(s.inviteFromFriends&&s.rc){db.ref('rooms/'+s.rc).update({rn:s.rn,mp:s.mp,sc:s.sc,rt:s.rt,tr:s.tr,access:s.ra,rm:s.rm,bet:s.bet});document.getElementById('roomModal').classList.remove('show');s.inviteFromFriends=false;s.skipLobby=true;}else{cR();document.getElementById('roomModal').classList.remove('show');}});
+    
+    // 👇 ИСПРАВЛЕНО: confirmRoomBtn — комната создаётся только сейчас
+    document.getElementById('confirmRoomBtn').addEventListener('click',function(){
+        s.rn = document.getElementById('roomNameInput').value || 'Комната';
+        s.mp = parseInt((document.querySelector('#maxChips .selected')||{}).dataset.max||4);
+        s.sc = parseInt((document.querySelector('#cashChips .selected')||{}).dataset.cash||10000);
+        s.rt = parseInt((document.querySelector('#timeChips .selected')||{}).dataset.time||30);
+        s.tr = parseInt((document.querySelector('#roundsChips .selected')||{}).dataset.rounds||5);
+        s.ra = (document.querySelector('#accessChips .selected')||{}).dataset.access||'open';
+        s.rm = (document.querySelector('#modeChips .selected')||{}).dataset.mode||'hard';
+        s.bet = parseInt((document.querySelector('#betChips .selected')||{}).dataset.bet||0);
+        
+        if(s.bet > 0 && s.pd < s.bet){
+            alert('Недостаточно монет!');
+            return;
+        }
+        if(s.mp > 20 || s.sc > 100000 || s.rt > 90 || s.tr > 100){
+            alert('Превышен лимит!');
+            return;
+        }
+        
+        document.getElementById('roomModal').classList.remove('show');
+        
+        if(s.inviteFromFriends && s.rc){
+            // Обновляем существующую комнату для приглашения
+            db.ref('rooms/'+s.rc).update({
+                rn: s.rn, mp: s.mp, sc: s.sc, rt: s.rt, tr: s.tr,
+                access: s.ra, rm: s.rm, bet: s.bet
+            });
+            s.inviteFromFriends = false;
+            s.skipLobby = true;
+        } else {
+            // Создаём комнату только сейчас (после настроек)
+            cR();
+        }
+    });
+    
     document.getElementById('joinRoomBtn').addEventListener('click',function(){document.getElementById('joinModal').classList.add('show');});
     document.getElementById('joinCloseBtn').addEventListener('click',function(){document.getElementById('joinModal').classList.remove('show');});
     document.getElementById('confirmJoinBtn').addEventListener('click',function(){var code=document.getElementById('joinCodeInput').value.trim().toUpperCase();if(code){window._joinRoom(code);document.getElementById('joinModal').classList.remove('show');}});
