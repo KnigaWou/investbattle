@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v1.0</title>
+    <title>InvestBattle v1.1</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     <style>
@@ -281,7 +281,8 @@ var s={
     customChipCallback:null,customChipKey:'',customChipMin:0,customChipMax:0,
     inviteFromFriends:false,lastSupportTime:0,flUnlocked:false,skipLobby:false,
     inviteFromRoom:false,isGhost:false,ghostRoomCode:null,ghostWatchPid:null,
-    gameCases:[],gameRound:0,cheats:{predictOutcome:false},_hostNotified:false,flWeek:null
+    gameCases:[],gameRound:0,cheats:{predictOutcome:false},_hostNotified:false,flWeek:null,
+    _countdownActive:false,_countdownInterval:null
 };
 
 s.pid=pid();
@@ -383,7 +384,7 @@ function ulc(r){var c=document.getElementById('lobbyContent'),isH=s.pid===r.hid;
         var slb=document.getElementById('startLobbyBtn');
         if(slb){
             slb.disabled=s.lp.filter(function(p){return !p.left;}).length<2;
-            slb.addEventListener('click',hsg);
+            slb.addEventListener('click',function(){if(s._countdownActive)return;startCountdown();});
         }
         document.getElementById('leaveLobbyBtn').addEventListener('click',lvR);
         document.getElementById('chatSend').addEventListener('click',sdCh);
