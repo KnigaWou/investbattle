@@ -15,8 +15,8 @@
     }
 
     // ========== 3. ПРАВА ДОСТУПА ==========
-    const ADMIN_IDS = ['web_rfzuxppca', 'web_xg6jxslm7', 'tg_5909465804'];
-    const MOD_IDS = ['web_rfzuxppca', 'web_xg6jxslm7', 'tg_5909465804'];
+    const ADMIN_IDS = ['web_rfzuxppca', 'web_xg6jxslm7', 'web_d5keb8o6f', 'tg_5909465804'];
+    const MOD_IDS = ['web_rfzuxppca', 'web_xg6jxslm7', 'web_d5keb8o6f', 'tg_5909465804'];
     let adminButtonVisible = false;
     let modButtonVisible = false;
 
