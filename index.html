@@ -3,91 +3,709 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>InvestBattle v1.0</title>
+    <title>InvestBattle</title>
+    
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
+    
+    <!-- Styles & Scripts -->
     <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
+
 <div class="app" id="app">
+    <!-- ==================== ЭКРАНЫ ЗАГРУЗКИ И БЛОКИРОВКИ ==================== -->
     <div class="loading-screen" id="loadingScreen">Загрузка...</div>
-    <div class="ban-notice" id="banNotice"><h2>🚫 ВЫ ЗАБАНЕНЫ</h2><p id="banReason"></p><p id="banUntil"></p></div>
-    <div id="menuScreen" style="display:none;">
-        <div class="header"><div class="logo" id="logoClick"><span>InvestBattle</span></div><div class="badge">v1.0</div></div>
-        <div class="profile-section"><div class="profile-avatar" id="profileAvatar">?</div><div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#fff;" id="profileName"></div><div style="font-size:11px;color:var(--gold);"><span id="profileStars">0</span> | <span id="profileDollars">0</span></div></div><button class="profile-btn" id="settingsBtn">⚙️</button></div>
-        <button class="btn gold" id="playMenuBtn" style="font-size:18px;padding:20px;">🎮 ИГРАТЬ</button>
-        <button class="btn" id="historyBtn" style="margin-top:6px;">📜 ИСТОРИЯ ИГР</button>
-        <div id="playMenu" style="display:none;margin-top:10px;"><button class="btn gold" id="soloBtn">🤖 Тренировка с ботом</button><button class="btn" id="createRoomBtn">👥 Создать комнату</button><button class="btn" id="joinRoomBtn">🔗 Подключиться</button><button class="btn" id="openRoomsBtn">🌍 Открытые комнаты</button><button class="btn gold" id="compBtn">🏆 Соревнования</button><button class="btn" id="backMenuBtn">↩ Назад</button></div>
-        <div id="compMenu" style="display:none;margin-top:10px;"><button class="btn gold" id="freelancerBtn">💼 Начинающий фрилансер</button><button class="btn" id="compBackBtn">↩ Назад</button></div>
+    <div class="ban-notice" id="banNotice">
+        <h2>🚫 ВЫ ЗАБАНЕНЫ</h2>
+        <p id="banReason"></p>
+        <p id="banUntil"></p>
     </div>
-    <div class="bottom-nav" id="bottomNav"><div class="nav-btn active" data-tab="menu">🏠 Главная</div><div class="nav-btn" data-tab="friends" id="friendsNavBtn">👥 Друзья<span class="dot" id="friendsDot" style="display:none;"></span></div></div>
+
+    <!-- ==================== ГЛАВНОЕ МЕНЮ ==================== -->
+    <div id="menuScreen" style="display:none;">
+        <!-- Шапка -->
+        <div class="header">
+            <div class="logo" id="logoClick">
+                <span>InvestBattle</span>
+            </div>
+        </div>
+
+        <!-- Профиль -->
+        <div class="profile-section">
+            <div class="profile-avatar" id="profileAvatar">?</div>
+            <div style="flex:1;">
+                <div class="profile-name" id="profileName"></div>
+                <div class="profile-stats">
+                    <span id="profileStars">0</span> | <span id="profileDollars">0</span>
+                </div>
+            </div>
+            <button class="profile-btn" id="settingsBtn">⚙️</button>
+            
+        </div>
+
+        <!-- Кнопки меню -->
+        <button class="btn gold play-btn" id="playMenuBtn">🎮 ИГРАТЬ</button>
+        <button class="btn" id="historyBtn">📜 ИСТОРИЯ ИГР</button>
+
+        <!-- Подменю игры -->
+        <div id="playMenu" class="submenu" style="display:none;">
+            <button class="btn gold" id="soloBtn">🤖 Тренировка с ботом</button>
+            <button class="btn" id="createRoomBtn">👥 Создать комнату</button>
+            <button class="btn" id="joinRoomBtn">🔗 Подключиться</button>
+            <button class="btn" id="openRoomsBtn">🌍 Открытые комнаты</button>
+            <button class="btn gold" id="compBtn">🏆 Соревнования</button>
+            <button class="btn" id="backMenuBtn">↩ Назад</button>
+        </div>
+
+        <!-- Подменю соревнований -->
+        <div id="compMenu" class="submenu" style="display:none;">
+            <button class="btn gold" id="freelancerBtn">💼 Начинающий фрилансер</button>
+            <button class="btn" id="compBackBtn">↩ Назад</button>
+        </div>
+    </div>
+
+    <!-- ==================== НИЖНЯЯ НАВИГАЦИЯ ==================== -->
+    <div class="bottom-nav" id="bottomNav">
+        <div class="nav-btn active" data-tab="menu">🏠 Главная</div>
+        <div class="nav-btn" data-tab="friends" id="friendsNavBtn">
+            👥
+            <span class="dot" id="friendsDot" style="display:none;"></span>
+        </div>
+    </div>
+
+    <!-- ==================== УВЕДОМЛЕНИЯ ==================== -->
     <div id="copiedToast" class="copied-toast">✅ Скопировано!</div>
     <div id="broadcastToast" class="broadcast-toast"></div>
+    <div id="leftNotice" class="left-notice"></div>
+    <div id="tradeNotice" class="trade-notice"></div>
+
+    <!-- ==================== ЭКРАН ИГРЫ ==================== -->
     <div id="gameScreen" style="display:none;">
-        <div class="game-top"><div class="header"><div class="logo"><span>InvestBattle</span></div><div class="timer" id="timer">30</div><div class="badge" id="roundBadge">1/10</div></div><div class="vs-row" id="playersRow"></div><button class="sell-all-btn" id="sellAllBtn">💰 ПРОДАТЬ ВСЁ</button><div class="portfolio-scroll"><table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th>±</th><th>Прогноз</th><th>Комм.</th><th></th></tr></thead><tbody id="portfolioBody"></tbody></table></div><div class="case-box"><div class="case-title" id="caseTitle"></div><div class="case-desc" id="caseDesc"></div><div class="case-price" id="casePrice"></div></div><div class="ghost-predict-box" id="ghostPredictBox" style="display:none;"></div></div>
-        <div class="game-bottom"><div class="action-row"><div class="qty-control"><button id="qtyMinus">−</button><input type="text" id="buyQty" value="1"><button id="qtyPlus">+</button></div><button class="btn green btn-inline" id="buyBtn">КУПИТЬ</button><button class="btn red btn-inline" id="waitBtn">NO</button></div><div class="quick-qty"><button onclick="setBuyQty(1)">1</button><button onclick="setBuyQty(5)">5</button><button onclick="setBuyQty(10)">10</button><button onclick="setBuyQty('max')">MAX</button></div><div class="ready-counter" id="readyStatus">NO: 0/0</div></div>
+        <div class="game-top">
+            <!-- Верхняя панель -->
+            <div class="header">
+                <div class="logo"><span>InvestBattle</span></div>
+                <div class="timer" id="timer">30</div>
+                <div class="badge" id="roundBadge">1/10</div>
+            </div>
+
+            <!-- Игроки -->
+            <div class="vs-row" id="playersRow"></div>
+
+            <!-- Кнопка продажи -->
+            <button class="sell-all-btn" id="sellAllBtn">💰 ПРОДАТЬ ВСЁ</button>
+
+            <!-- Портфель -->
+            <div class="portfolio-scroll">
+                <table class="portfolio">
+                    <thead>
+                        <tr>
+                            <th>Актив</th><th>Кол</th><th>Цена</th>
+                            <th>Стоим</th><th>±</th><th>Прогноз</th><th>Комм.</th><th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="portfolioBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Кейс -->
+            <div class="case-box">
+                <div class="case-title" id="caseTitle"></div>
+                <div class="case-desc" id="caseDesc"></div>
+                <div class="case-price" id="casePrice"></div>
+            </div>
+
+            <!-- Призрачный прогноз -->
+            <div class="ghost-predict-box" id="ghostPredictBox" style="display:none;"></div>
+        </div>
+
+        <div class="game-bottom">
+            <!-- Управление покупкой -->
+            <div class="action-row">
+                <div class="qty-control">
+                    <button id="qtyMinus">−</button>
+                    <input type="text" id="buyQty" value="1">
+                    <button id="qtyPlus">+</button>
+                </div>
+                <button class="btn green btn-inline" id="buyBtn">КУПИТЬ</button>
+                <button class="btn red btn-inline" id="waitBtn">NO</button>
+            </div>
+
+            <!-- Быстрый выбор количества -->
+            <div class="quick-qty">
+                <button onclick="setBuyQty(1)">1</button>
+                <button onclick="setBuyQty(5)">5</button>
+                <button onclick="setBuyQty(10)">10</button>
+                <button onclick="setBuyQty('max')">MAX</button>
+            </div>
+
+            <!-- Статус готовности -->
+            <div class="ready-counter" id="readyStatus">NO: 0/0</div>
+        </div>
     </div>
-    <div class="overlay" id="finalOverlay"><div class="inner"><div style="font-size:32px;">🏁</div><div class="timer" id="finalTimer">90</div><div id="finalPlayers" style="margin:8px 0;"></div><div class="portfolio-scroll"><table class="portfolio"><thead><tr><th>Актив</th><th>Кол</th><th>Цена</th><th>Стоим</th><th>±</th><th>P&amp;L</th></tr></thead><tbody id="finalBody"></tbody></table></div><div style="font-weight:900;font-size:18px;color:var(--gold);margin:12px 0;" id="finalTotal">$0</div><button class="btn gold" id="sellAllFinalBtn">💰 ПРОДАТЬ ВСЁ</button></div></div>
-    <div class="overlay" id="resultOverlay"><div class="inner"><div style="font-size:52px;" id="resultEmoji">🏆</div><div style="font-size:24px;font-weight:900;" id="resultTitle"></div><div style="font-size:30px;font-weight:900;color:var(--gold);margin:10px 0;" id="resultCash"></div><div id="resultPrize" style="font-size:12px;color:var(--text2);"></div><button class="btn gold" id="shareBtn" style="margin-top:10px;">📤 ПОДЕЛИТЬСЯ</button><button class="btn" id="menuBtn" style="margin-top:6px;">↩ В МЕНЮ</button></div></div>
-    <div class="modal" id="profileModal"><div class="modal-content"><button class="modal-close" id="profileCloseBtn">✕</button><h3>👤 Профиль</h3><div class="profile-avatar" id="editAvatarBig" style="margin:0 auto 10px;width:64px;height:64px;">?</div><input class="input" id="editName" placeholder="Никнейм" maxlength="20"><div class="section-title">Аватар</div><div class="chip-row" id="avatarChips"><div class="chip" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" style="width:32px;height:32px;border-radius:50%;"></div><div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" style="width:32px;height:32px;border-radius:50%;"></div></div><button class="btn gold" id="saveProfileBtn" style="margin-top:10px;">💾 Сохранить</button></div></div>
-    <div class="modal" id="settingsModal"><div class="modal-content"><button class="modal-close" id="settingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Язык / Language</div><div class="chip-row" id="langChips"><div class="chip" data-lang="ru">🇷🇺 Русский</div><div class="chip" data-lang="en">🇬🇧 English</div></div><button class="btn" id="musicToggleBtn">🔊 Выкл</button><button class="btn" id="supportBtn" style="margin-top:6px;border-color:var(--gold);color:var(--gold);">📞 Поддержка</button></div></div>
-    <div class="modal" id="supportModal"><div class="modal-content"><button class="modal-close" id="supportCloseBtn">✕</button><h3>📞 Поддержка</h3><textarea id="supportMsg" placeholder="Опишите проблему..." style="width:100%;height:100px;background:#000;border:1px solid var(--gold);color:#fff;padding:10px;border-radius:8px;font-size:12px;resize:none;"></textarea><button class="btn gold" id="supportSendBtn" style="margin-top:8px;">Отправить</button><p id="supportCd" style="font-size:10px;color:var(--text2);text-align:center;margin-top:4px;"></p></div></div>
-    <div class="modal" id="soloModal"><div class="modal-content"><button class="modal-close" id="soloCloseBtn">✕</button><h3>🤖 Тренировка</h3><div class="section-title">💰 Капитал</div><div class="chip-row" id="sCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">📊 Раунды</div><div class="chip-row" id="sRoundsChips"><div class="chip" data-rounds="5">5</div><div class="chip selected" data-rounds="10">10</div><div class="chip" data-rounds="15">15</div></div><div class="section-title">⏱ Сек/раунд</div><div class="chip-row" id="sTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div></div><button class="btn gold" id="startSoloBtn" style="margin-top:10px;">🚀 Начать</button></div></div>
-    <div class="modal" id="roomModal"><div class="modal-content"><button class="modal-close" id="roomCloseBtn">✕</button><h3 id="roomModalTitle">👥 Создать комнату</h3><div id="roomCodePreview" style="display:none;text-align:center;color:var(--gold);">Код: <span id="roomCodeText"></span></div><input class="input" id="roomNameInput" placeholder="Название" value="Комната"><div class="section-title">Доступ</div><div class="chip-row" id="accessChips"><div class="chip selected" data-access="open">Открытая</div><div class="chip" data-access="closed">Закрытая</div></div><div class="section-title">Режим</div><div class="chip-row" id="modeChips"><div class="chip selected" data-mode="hard">Жёсткая</div><div class="chip" data-mode="free">Произвольная</div></div><div class="section-title">Ставка</div><div class="chip-row" id="betChips"><div class="chip selected" data-bet="0">Без ставки</div><div class="chip" data-bet="100">100</div><div class="chip" data-bet="500">500</div><div class="chip" data-bet="1000">1K</div><div class="chip" data-bet="5000">5K</div><div class="chip custom" data-bet="custom">Своё</div></div><div class="section-title">Макс игроков</div><div class="chip-row" id="maxChips"><div class="chip" data-max="2">2</div><div class="chip selected" data-max="4">4</div><div class="chip" data-max="6">6</div><div class="chip" data-max="10">10</div><div class="chip custom" data-max="custom">Своё</div></div><div class="section-title">Капитал</div><div class="chip-row" id="cashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div><div class="chip custom" data-cash="custom">Своё</div></div><div class="section-title">Сек/раунд</div><div class="chip-row" id="timeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div><div class="chip custom" data-time="custom">Своё</div></div><div class="section-title">Раунды</div><div class="chip-row" id="roundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div><div class="chip custom" data-rounds="custom">Своё</div></div><button class="btn gold" id="confirmRoomBtn" style="margin-top:10px;">🏆 Создать</button></div></div>
-    <div class="modal" id="joinParamsModal"><div class="modal-content"><button class="modal-close" id="joinParamsCloseBtn">✕</button><h3>🎲 Параметры</h3><div class="section-title">Капитал</div><div class="chip-row" id="jpCashChips"><div class="chip" data-cash="1000">$1K</div><div class="chip selected" data-cash="10000">$10K</div><div class="chip" data-cash="50000">$50K</div></div><div class="section-title">Сек/раунд</div><div class="chip-row" id="jpTimeChips"><div class="chip" data-time="15">15с</div><div class="chip selected" data-time="30">30с</div><div class="chip" data-time="45">45с</div><div class="chip" data-time="60">60с</div></div><div class="section-title">Раунды</div><div class="chip-row" id="jpRoundsChips"><div class="chip selected" data-rounds="5">5</div><div class="chip" data-rounds="10">10</div><div class="chip" data-rounds="20">20</div></div><button class="btn gold" id="confirmJoinParamsBtn" style="margin-top:10px;">✅ Войти</button></div></div>
-    <div class="modal" id="lobbyModal"><div class="modal-content"><button class="modal-close" id="lobbyCloseX">✕</button><div id="lobbyContent"></div></div></div>
-    <div class="modal" id="joinModal"><div class="modal-content"><button class="modal-close" id="joinCloseBtn">✕</button><h3>🔗 Подключиться</h3><input class="input" id="joinCodeInput" placeholder="Код комнаты"><button class="btn gold" id="confirmJoinBtn" style="margin-top:10px;">Подключиться</button></div></div>
-    <div class="modal" id="playerProfileModal"><div class="modal-content"><button class="modal-close" id="ppCloseBtn">✕</button><div id="ppContent"></div></div></div>
-    <div class="modal" id="tradeModal"><div class="modal-content"><button class="modal-close" id="tradeCloseBtn">✕</button><div id="tradeContent"></div></div></div>
-    <div class="modal" id="confirmModal"><div class="modal-content"><h3 id="confirmTitle">Подтверждение</h3><p id="confirmMsg"></p><div style="display:flex;gap:10px;margin-top:10px;"><button class="btn green" id="confirmYes">✅ Да</button><button class="btn red" id="confirmNo">✕ Нет</button></div></div></div>
-    <div class="modal" id="friendsModal"><div class="modal-content"><button class="modal-close" id="friendsCloseBtn">✕</button><h3>👥 Друзья</h3><div class="section-title">🔍 Поиск</div><div class="friend-search"><input id="friendSearchInput" placeholder="Введите ник..." style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"></div><div class="friend-search-results" id="friendSearchResults"></div><div class="section-title">📨 Заявки</div><div id="frcList"></div><div class="section-title">🎮 Приглашения</div><div id="gameInvitesList"></div><div class="section-title">👥 Друзья</div><div id="friendsList"></div></div></div>
-    <div class="modal" id="inviteModal"><div class="modal-content"><button class="modal-close" id="inviteCloseBtn">✕</button><h3>📨 Пригласить</h3><div class="section-title">Отправить</div><div id="inviteFriendList"></div></div></div>
-    <div class="modal" id="adminModal"><div class="modal-content" style="border-color:var(--green);"><button class="modal-close" id="adminCloseBtn">✕</button><h3 style="color:var(--green);">🛡️ АДМИН</h3>
-        <div class="admin-row" id="adminOnlineBtn2"><span>🟢 Онлайн</span><span class="val" id="aOnline2">0</span></div>
-        <div class="admin-row" id="adminTotalBtn2"><span>👥 Всего</span><span class="val" id="aTotal2">0</span></div>
-        <div class="admin-row" id="adminPlayingBtn2"><span>🎮 Игры</span><span class="val" id="aPlaying2">0</span></div>
-        <div class="admin-row" id="adminCoinsBtn2"><span>💰 Монеты</span><span class="val">→</span></div>
-        <div class="admin-row" id="adminBanBtn2"><span>🔒 Бан</span><span class="val">→</span></div>
-        <div class="admin-row" id="adminStatsBtn2"><span>📊 Статистика</span><span class="val">→</span></div>
-        <div class="admin-row" id="adminBroadcastBtn2"><span>📨 Рассылка</span><span class="val">→</span></div>
-        <div class="admin-row" id="adminReportsBtn2"><span>📋 Жалобы</span><span class="val">→</span></div>
-        <div class="admin-row" id="adminSettingsBtn2"><span>⚙️ Настройки</span><span class="val">→</span></div>
-        <div class="admin-row" id="adminCheatsBtn2"><span>🎮 Читы</span><span class="val">→</span></div>
-        <div class="admin-row" id="adminScareBtn2"><span>🎃 Страшилки</span><span class="val">→</span></div>
-        <button class="btn" id="adminConsoleBtn3" style="margin-top:10px;">📟 Консоль</button>
-    </div></div>
-    <div class="modal" id="adminCheatsModal"><div class="modal-content" style="border-color:var(--gold);"><button class="modal-close" id="adminCheatsCloseBtn">✕</button><h3>🎮 Читы</h3><div id="cheatsList"></div></div></div>
-    <div class="modal" id="modModal"><div class="modal-content" style="border-color:var(--blue);"><button class="modal-close" id="modCloseBtn">✕</button><h3 style="color:var(--blue);">🛡️ МОДЕРАТОР</h3>
-        <div class="admin-row" id="modOnlineBtn"><span>🟢 Онлайн</span><span class="val" id="mOnline">0</span></div>
-        <div class="admin-row" id="modTotalBtn"><span>👥 Всего</span><span class="val" id="mTotal">0</span></div>
-        <div class="admin-row" id="modPlayingBtn"><span>🎮 Игры</span><span class="val" id="mPlaying">0</span></div>
-        <div class="admin-row" id="modWatchBtn"><span>👻 Смотреть игру</span><span class="val">→</span></div>
-        <div class="admin-row" id="modReportsBtn"><span>📋 Жалобы</span><span class="val">→</span></div>
-        <button class="btn" id="modConsoleBtn" style="margin-top:10px;">📟 Консоль</button>
-    </div></div>
-    <div class="modal" id="consoleModal"><div class="modal-content" style="border-color:var(--gold);max-width:500px;"><button class="modal-close" id="consoleCloseBtn">✕</button><h3>📟 Консоль</h3><div id="consoleContent" style="max-height:400px;overflow-y:auto;font-family:monospace;font-size:10px;color:var(--green);background:#000;padding:10px;border-radius:8px;"></div></div></div>
-    <div class="modal" id="onlinePlayersModal"><div class="modal-content"><button class="modal-close" id="onlinePlayersCloseBtn">✕</button><h3>🟢 Онлайн</h3><div class="friend-search"><input id="onlineSearchInput2" placeholder="🔍 Поиск..." style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"></div><div id="onlinePlayersList2" style="max-height:300px;overflow-y:auto;"></div></div></div>
-    <div class="modal" id="allPlayersModal2"><div class="modal-content"><button class="modal-close" id="allPlayersCloseBtn2">✕</button><h3>👥 Все игроки</h3><div class="friend-search"><input id="allSearchInput2" placeholder="🔍 Поиск..." style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"></div><div id="allPlayersList2" style="max-height:300px;overflow-y:auto;"></div></div></div>
-    <div class="modal" id="activeGamesModal2"><div class="modal-content"><button class="modal-close" id="activeGamesCloseBtn2">✕</button><h3>🎮 Игры</h3><div class="friend-search"><input id="ghostSearchInput" placeholder="🔍 Код комнаты или ник игрока..." style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"></div><div id="ghostRoomsList" style="max-height:300px;overflow-y:auto;"></div><div id="ghostRoomDetail" style="display:none;"></div></div></div>
-    <div class="modal" id="adminScareModal"><div class="modal-content" style="border-color:var(--red);"><button class="modal-close" id="adminScareCloseBtn">✕</button><h3>🎃 Страшилки</h3><button class="btn gold" id="scareFakeCoinsBtn" style="margin-top:8px;">💰 Фейк-выигрыш (+100500 монет)</button></div></div>
-    <div class="modal" id="adminCoinsModal"><div class="modal-content" style="border-color:var(--gold);"><button class="modal-close" id="adminCoinsCloseBtn">✕</button><h3>💰 Монеты</h3><div class="friend-search"><input id="coinsSearchInput" placeholder="🔍 Поиск..." autocomplete="off" style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"><div class="autocomplete-suggestions" id="coinsAc" style="display:none;"></div></div><div id="coinsSearchList" style="max-height:300px;overflow-y:auto;"></div><div id="coinsDetail" style="display:none;"></div></div></div>
-    <div class="modal" id="adminBanModal"><div class="modal-content" style="border-color:var(--red);"><button class="modal-close" id="adminBanCloseBtn">✕</button><h3>🔒 Бан / Мут</h3><div class="friend-search"><input id="banSearchInput" placeholder="🔍 Поиск..." autocomplete="off" style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"><div class="autocomplete-suggestions" id="banAc" style="display:none;"></div></div><div id="banSearchList" style="max-height:250px;overflow-y:auto;"></div><div id="banDetail" style="display:none;"></div></div></div>
-    <div class="modal" id="adminStatsModal"><div class="modal-content"><button class="modal-close" id="adminStatsCloseBtn">✕</button><h3>📊 Статистика</h3><div id="statsContent"></div></div></div>
-    <div class="modal" id="adminBroadcastModal"><div class="modal-content" style="border-color:var(--gold);"><button class="modal-close" id="adminBroadcastCloseBtn">✕</button><h3>📨 Рассылка</h3><textarea id="broadcastMsg" placeholder="Сообщение..." style="width:100%;height:80px;background:#000;border:1px solid var(--gold);color:#fff;padding:10px;border-radius:8px;font-size:12px;resize:none;"></textarea><div class="coin-input-row"><input type="number" id="broadcastCoins" placeholder="Монеты (0 если без)" value="0"></div><div class="coin-input-row"><input type="number" id="broadcastDuration" placeholder="Секунд показа" value="10"></div><button class="btn gold" id="broadcastSendBtn" style="margin-top:8px;">Отправить</button></div></div>
-    <div class="modal" id="adminReportsModal"><div class="modal-content"><button class="modal-close" id="adminReportsCloseBtn">✕</button><h3>📋 Жалобы</h3><div id="reportsList" style="max-height:300px;overflow-y:auto;"></div></div></div>
-    <div class="modal" id="adminSettingsModal"><div class="modal-content" style="border-color:var(--gold);"><button class="modal-close" id="adminSettingsCloseBtn">✕</button><h3>⚙️ Настройки</h3><div class="section-title">Стартовые монеты</div><div class="coin-input-row"><input type="number" id="startCoinsInput" placeholder="100" min="0" value="100"><button class="add" id="startCoinsSaveBtn">Сохранить</button></div><div class="section-title">Аватар (URL)</div><div class="coin-input-row"><input type="text" id="avatarUrlInput" placeholder="https://..."><button class="add" id="avatarUrlSaveBtn">Добавить</button></div><div class="friend-search"><input id="avatarPlayerSearch" placeholder="Кому (пусто=себе)" autocomplete="off" style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"><div class="autocomplete-suggestions" id="avatarAc" style="display:none;"></div></div><div id="customAvatarsList" style="margin-top:8px;"></div><div class="section-title">Музыка (URL mp3)</div><div class="coin-input-row"><input type="text" id="musicUrlInput" placeholder="https://..."><button class="add" id="musicUrlSaveBtn">Добавить</button></div><div class="friend-search"><input id="musicPlayerSearch" placeholder="Кому (пусто=себе)" autocomplete="off" style="background:#000;border:1px solid var(--gold);color:#fff;padding:12px;border-radius:8px;width:100%;font-size:14px;"><div class="autocomplete-suggestions" id="musicAc" style="display:none;"></div></div><div id="customMusicList" style="margin-top:8px;"></div></div></div>
-    <div class="modal" id="adminPlayerDetailModal"><div class="modal-content"><button class="modal-close" id="adminPlayerDetailCloseBtn">✕</button><h3>👤 Игрок</h3><div id="adminPlayerDetailContent"></div></div></div>
-    <div class="modal" id="freelancerIntroModal"><div class="modal-content" style="border-color:var(--gold);"><button class="modal-close" id="flCloseBtn">✕</button><h3>💼 ФРИЛАНСЕР</h3><p style="font-size:10px;color:var(--text2);text-align:center;">Ты — фрилансер с <b>$100</b>. Стань профи!<br>Акции $1-15 | ×2.5 волатильность<br>Вход: <b>5 000 💵</b></p><button class="btn gold" id="flEnterBtn" style="margin-top:10px;">💎 ВОЙТИ (5 000 💵)</button><button class="btn" id="flRatingViewBtn" style="margin-top:6px;">📊 Рейтинг</button></div></div>
-    <div class="modal" id="freelancerRatingModal"><div class="modal-content"><button class="modal-close" id="flRatingCloseBtn">✕</button><h3>🏆 РЕЙТИНГ</h3><div id="ratingTimer" style="text-align:center;font-size:12px;color:var(--gold);"></div><div id="ratingList" style="max-height:300px;overflow-y:auto;"></div></div></div>
-    <div class="modal" id="flConfirmModal"><div class="modal-content"><button class="modal-close" id="flConfirmCloseBtn">✕</button><h3 style="color:var(--green);">✅ УЧАСТВУЕТЕ!</h3><p style="text-align:center;">Вы в соревновании!</p><button class="btn gold" id="flPlayBtn" style="margin-top:10px;">🎮 ИГРАТЬ</button></div></div>
-    <div class="modal" id="historyModal"><div class="modal-content"><button class="modal-close" id="historyCloseBtn">✕</button><h3>📜 ИСТОРИЯ</h3><div id="historyList" style="max-height:300px;overflow-y:auto;"></div></div></div>
+
+    <!-- ==================== ОВЕРЛЕЙНЫЕ ОКНА (ИТОГИ, РЕЗУЛЬТАТЫ) ==================== -->
+    <div class="overlay" id="finalOverlay">
+        <div class="inner">
+            <div class="final-emoji">🏁</div>
+            <div class="timer" id="finalTimer">90</div>
+            <div id="finalPlayers" class="final-players"></div>
+            
+            <div class="portfolio-scroll">
+                <table class="portfolio">
+                    <thead>
+                        <tr>
+                            <th>Актив</th><th>Кол</th><th>Цена</th>
+                            <th>Стоим</th><th>±</th><th>P&amp;L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="finalBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="final-total" id="finalTotal">$0</div>
+            <button class="btn gold" id="sellAllFinalBtn">💰 ПРОДАТЬ ВСЁ</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="resultOverlay">
+        <div class="inner">
+            <div class="result-emoji" id="resultEmoji">🏆</div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-cash" id="resultCash"></div>
+            <div class="result-prize" id="resultPrize"></div>
+            <button class="btn gold" id="shareBtn">📤 ПОДЕЛИТЬСЯ</button>
+            <button class="btn" id="menuBtn">↩ В МЕНЮ</button>
+        </div>
+    </div>
+
+    <!-- ==================== МОДАЛЬНЫЕ ОКНА ==================== -->
+    <!-- Профиль -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <button class="modal-close" id="profileCloseBtn">✕</button>
+            <h3>👤 Профиль</h3>
+            <div class="profile-avatar modal-avatar" id="editAvatarBig">?</div>
+            <input class="input" id="editName" placeholder="Никнейм" maxlength="20">
+            
+            <div class="section-title">Аватар</div>
+            <div class="chip-row" id="avatarChips">
+                <div class="chip" data-avatar="icons/avatar1.png"><img src="icons/avatar1.png" alt="avatar"></div>
+                <div class="chip" data-avatar="icons/avatar2.png"><img src="icons/avatar2.png" alt="avatar"></div>
+                <div class="chip" data-avatar="icons/avatar3.png"><img src="icons/avatar3.png" alt="avatar"></div>
+                <div class="chip" data-avatar="icons/avatar4.png"><img src="icons/avatar4.png" alt="avatar"></div>
+                <div class="chip" data-avatar="icons/avatar5.png"><img src="icons/avatar5.png" alt="avatar"></div>
+            </div>
+            
+            <button class="btn gold" id="saveProfileBtn">💾 Сохранить</button>
+        </div>
+    </div>
+
+    <!-- Настройки -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <button class="modal-close" id="settingsCloseBtn">✕</button>
+            <h3>⚙️ Настройки</h3>
+            
+            <div class="section-title">Язык / Language</div>
+            <div class="chip-row" id="langChips">
+                <div class="chip" data-lang="ru">🇷🇺 Русский</div>
+                <div class="chip" data-lang="en">🇬🇧 English</div>
+            </div>
+            
+            <button class="btn" id="musicToggleBtn">🔊 Выкл</button>
+            <button class="btn" id="supportBtn">📞 Поддержка</button>
+        </div>
+    </div>
+
+    <!-- Поддержка -->
+    <div class="modal" id="supportModal">
+        <div class="modal-content">
+            <button class="modal-close" id="supportCloseBtn">✕</button>
+            <h3>📞 Поддержка</h3>
+            <textarea id="supportMsg" placeholder="Опишите проблему..."></textarea>
+            <button class="btn gold" id="supportSendBtn">Отправить</button>
+            <p id="supportCd" class="support-cd"></p>
+        </div>
+    </div>
+
+    <!-- Тренировка -->
+    <div class="modal" id="soloModal">
+        <div class="modal-content">
+            <button class="modal-close" id="soloCloseBtn">✕</button>
+            <h3>🤖 Тренировка</h3>
+            
+            <div class="section-title">💰 Капитал</div>
+            <div class="chip-row" id="sCashChips">
+                <div class="chip" data-cash="1000">$1K</div>
+                <div class="chip selected" data-cash="10000">$10K</div>
+                <div class="chip" data-cash="50000">$50K</div>
+            </div>
+            
+            <div class="section-title">📊 Раунды</div>
+            <div class="chip-row" id="sRoundsChips">
+                <div class="chip" data-rounds="5">5</div>
+                <div class="chip selected" data-rounds="10">10</div>
+                <div class="chip" data-rounds="15">15</div>
+            </div>
+            
+            <div class="section-title">⏱ Сек/раунд</div>
+            <div class="chip-row" id="sTimeChips">
+                <div class="chip" data-time="15">15с</div>
+                <div class="chip selected" data-time="30">30с</div>
+                <div class="chip" data-time="45">45с</div>
+            </div>
+            
+            <button class="btn gold" id="startSoloBtn">🚀 Начать</button>
+        </div>
+    </div>
+
+    <!-- Комната -->
+    <div class="modal" id="roomModal">
+        <div class="modal-content">
+            <button class="modal-close" id="roomCloseBtn">✕</button>
+            <h3 id="roomModalTitle">👥 Создать комнату</h3>
+            <div id="roomCodePreview" class="room-code-preview" style="display:none;">
+                Код: <span id="roomCodeText"></span>
+            </div>
+            
+            <input class="input" id="roomNameInput" placeholder="Название" value="Комната">
+            
+            <div class="section-title">Доступ</div>
+            <div class="chip-row" id="accessChips">
+                <div class="chip selected" data-access="open">Открытая</div>
+                <div class="chip" data-access="closed">Закрытая</div>
+            </div>
+            
+            <div class="section-title">Режим</div>
+            <div class="chip-row" id="modeChips">
+                <div class="chip selected" data-mode="hard">Жёсткая</div>
+                <div class="chip" data-mode="free">Произвольная</div>
+            </div>
+            
+            <div class="section-title">Ставка</div>
+            <div class="chip-row" id="betChips">
+                <div class="chip selected" data-bet="0">Без ставки</div>
+                <div class="chip" data-bet="100">100</div>
+                <div class="chip" data-bet="500">500</div>
+                <div class="chip" data-bet="1000">1K</div>
+                <div class="chip" data-bet="5000">5K</div>
+                <div class="chip custom" data-bet="custom">Своё</div>
+            </div>
+            
+            <div class="section-title">Макс игроков</div>
+            <div class="chip-row" id="maxChips">
+                <div class="chip" data-max="2">2</div>
+                <div class="chip selected" data-max="4">4</div>
+                <div class="chip" data-max="6">6</div>
+                <div class="chip" data-max="10">10</div>
+                <div class="chip custom" data-max="custom">Своё</div>
+            </div>
+            
+            <div class="section-title">Капитал</div>
+            <div class="chip-row" id="cashChips">
+                <div class="chip" data-cash="1000">$1K</div>
+                <div class="chip selected" data-cash="10000">$10K</div>
+                <div class="chip" data-cash="50000">$50K</div>
+                <div class="chip custom" data-cash="custom">Своё</div>
+            </div>
+            
+            <div class="section-title">Сек/раунд</div>
+            <div class="chip-row" id="timeChips">
+                <div class="chip" data-time="15">15с</div>
+                <div class="chip selected" data-time="30">30с</div>
+                <div class="chip" data-time="45">45с</div>
+                <div class="chip" data-time="60">60с</div>
+                <div class="chip custom" data-time="custom">Своё</div>
+            </div>
+            
+            <div class="section-title">Раунды</div>
+            <div class="chip-row" id="roundsChips">
+                <div class="chip selected" data-rounds="5">5</div>
+                <div class="chip" data-rounds="10">10</div>
+                <div class="chip" data-rounds="20">20</div>
+                <div class="chip custom" data-rounds="custom">Своё</div>
+            </div>
+            
+            <button class="btn gold" id="confirmRoomBtn">🏆 Создать</button>
+        </div>
+    </div>
+
+    <!-- Подключение к комнате -->
+    <div class="modal" id="joinModal">
+        <div class="modal-content">
+            <button class="modal-close" id="joinCloseBtn">✕</button>
+            <h3>🔗 Подключиться</h3>
+            <input class="input" id="joinCodeInput" placeholder="Код комнаты">
+            <button class="btn gold" id="confirmJoinBtn">Подключиться</button>
+        </div>
+    </div>
+
+    <!-- Параметры подключения -->
+    <div class="modal" id="joinParamsModal">
+        <div class="modal-content">
+            <button class="modal-close" id="joinParamsCloseBtn">✕</button>
+            <h3>🎲 Параметры</h3>
+            
+            <div class="section-title">Капитал</div>
+            <div class="chip-row" id="jpCashChips">
+                <div class="chip" data-cash="1000">$1K</div>
+                <div class="chip selected" data-cash="10000">$10K</div>
+                <div class="chip" data-cash="50000">$50K</div>
+            </div>
+            
+            <div class="section-title">Сек/раунд</div>
+            <div class="chip-row" id="jpTimeChips">
+                <div class="chip" data-time="15">15с</div>
+                <div class="chip selected" data-time="30">30с</div>
+                <div class="chip" data-time="45">45с</div>
+                <div class="chip" data-time="60">60с</div>
+            </div>
+            
+            <div class="section-title">Раунды</div>
+            <div class="chip-row" id="jpRoundsChips">
+                <div class="chip selected" data-rounds="5">5</div>
+                <div class="chip" data-rounds="10">10</div>
+                <div class="chip" data-rounds="20">20</div>
+            </div>
+            
+            <button class="btn gold" id="confirmJoinParamsBtn">✅ Войти</button>
+        </div>
+    </div>
+
+    <!-- Лобби -->
+    <div class="modal" id="lobbyModal">
+        <div class="modal-content">
+            <button class="modal-close" id="lobbyCloseX">✕</button>
+            <div id="lobbyContent"></div>
+        </div>
+    </div>
+
+    <!-- Профиль игрока -->
+    <div class="modal" id="playerProfileModal">
+        <div class="modal-content">
+            <button class="modal-close" id="ppCloseBtn">✕</button>
+            <div id="ppContent"></div>
+        </div>
+    </div>
+
+    <!-- Торговля -->
+    <div class="modal" id="tradeModal">
+        <div class="modal-content">
+            <button class="modal-close" id="tradeCloseBtn">✕</button>
+            <div id="tradeContent"></div>
+        </div>
+    </div>
+
+    <!-- Подтверждение -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <h3 id="confirmTitle">Подтверждение</h3>
+            <p id="confirmMsg"></p>
+            <div class="confirm-buttons">
+                <button class="btn green" id="confirmYes">✅ Да</button>
+                <button class="btn red" id="confirmNo">✕ Нет</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Друзья -->
+    <div class="modal" id="friendsModal">
+        <div class="modal-content">
+            <button class="modal-close" id="friendsCloseBtn">✕</button>
+            <h3>👥 Друзья</h3>
+            
+            <div class="section-title">🔍 Поиск</div>
+            <div class="friend-search">
+                <input id="friendSearchInput" placeholder="Введите ник...">
+            </div>
+            <div class="friend-search-results" id="friendSearchResults"></div>
+            
+            <div class="section-title">📨 Заявки</div>
+            <div id="frcList"></div>
+            
+            <div class="section-title">🎮 Приглашения</div>
+            <div id="gameInvitesList"></div>
+            
+            <div class="section-title">👥 Друзья</div>
+            <div id="friendsList"></div>
+        </div>
+    </div>
+
+    <!-- Приглашение -->
+    <div class="modal" id="inviteModal">
+        <div class="modal-content">
+            <button class="modal-close" id="inviteCloseBtn">✕</button>
+            <h3>📨 Пригласить</h3>
+            <div class="section-title">Отправить</div>
+            <div id="inviteFriendList"></div>
+        </div>
+    </div>
+
+    <!-- ==================== АДМИН ПАНЕЛЬ ==================== -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content admin-modal">
+            <button class="modal-close" id="adminCloseBtn">✕</button>
+            <h3>🛡️ АДМИН</h3>
+            
+            <div class="admin-row" id="adminOnlineBtn2"><span>🟢 Онлайн</span><span class="val" id="aOnline2">0</span></div>
+            <div class="admin-row" id="adminTotalBtn2"><span>👥 Всего</span><span class="val" id="aTotal2">0</span></div>
+            <div class="admin-row" id="adminPlayingBtn2"><span>🎮 Игры</span><span class="val" id="aPlaying2">0</span></div>
+            <div class="admin-row" id="adminCoinsBtn2"><span>💰 Монеты</span><span class="val">→</span></div>
+            <div class="admin-row" id="adminBanBtn2"><span>🔒 Бан</span><span class="val">→</span></div>
+            <div class="admin-row" id="adminStatsBtn2"><span>📊 Статистика</span><span class="val">→</span></div>
+            <div class="admin-row" id="adminBroadcastBtn2"><span>📨 Рассылка</span><span class="val">→</span></div>
+            <div class="admin-row" id="adminReportsBtn2"><span>📋 Жалобы</span><span class="val">→</span></div>
+            <div class="admin-row" id="adminSettingsBtn2"><span>⚙️ Настройки</span><span class="val">→</span></div>
+            <div class="admin-row" id="adminCheatsBtn2"><span>🎮 Читы</span><span class="val">→</span></div>
+            <div class="admin-row" id="adminScareBtn2"><span>🎃 Страшилки</span><span class="val">→</span></div>
+            
+            <button class="btn" id="adminConsoleBtn3">📟 Консоль</button>
+        </div>
+    </div>
+
+    <!-- Читы -->
+    <div class="modal" id="adminCheatsModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminCheatsCloseBtn">✕</button>
+            <h3>🎮 Читы</h3>
+            <div id="cheatsList"></div>
+        </div>
+    </div>
+
+    <!-- Страшилки -->
+    <div class="modal" id="adminScareModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminScareCloseBtn">✕</button>
+            <h3>🎃 Страшилки</h3>
+            <button class="btn gold" id="scareFakeCoinsBtn">💰 Фейк-выигрыш (+100500 монет)</button>
+        </div>
+    </div>
+
+    <!-- Управление монетами -->
+    <div class="modal" id="adminCoinsModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminCoinsCloseBtn">✕</button>
+            <h3>💰 Монеты</h3>
+            <div class="friend-search">
+                <input id="coinsSearchInput" placeholder="🔍 Поиск..." autocomplete="off">
+                <div class="autocomplete-suggestions" id="coinsAc" style="display:none;"></div>
+            </div>
+            <div id="coinsSearchList"></div>
+            <div id="coinsDetail" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Управление баном -->
+    <div class="modal" id="adminBanModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminBanCloseBtn">✕</button>
+            <h3>🔒 Бан / Мут</h3>
+            <div class="friend-search">
+                <input id="banSearchInput" placeholder="🔍 Поиск..." autocomplete="off">
+                <div class="autocomplete-suggestions" id="banAc" style="display:none;"></div>
+            </div>
+            <div id="banSearchList"></div>
+            <div id="banDetail" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="modal" id="adminStatsModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminStatsCloseBtn">✕</button>
+            <h3>📊 Статистика</h3>
+            <div id="statsContent"></div>
+        </div>
+    </div>
+
+    <!-- Рассылка -->
+    <div class="modal" id="adminBroadcastModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminBroadcastCloseBtn">✕</button>
+            <h3>📨 Рассылка</h3>
+            <textarea id="broadcastMsg" placeholder="Сообщение..."></textarea>
+            <input type="number" id="broadcastCoins" placeholder="Монеты (0 если без)" value="0">
+            <input type="number" id="broadcastDuration" placeholder="Секунд показа" value="10">
+            <button class="btn gold" id="broadcastSendBtn">Отправить</button>
+        </div>
+    </div>
+
+    <!-- Жалобы -->
+    <div class="modal" id="adminReportsModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminReportsCloseBtn">✕</button>
+            <h3>📋 Жалобы</h3>
+            <div id="reportsList"></div>
+        </div>
+    </div>
+
+    <!-- Настройки админа -->
+    <div class="modal" id="adminSettingsModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminSettingsCloseBtn">✕</button>
+            <h3>⚙️ Настройки</h3>
+            
+            <div class="section-title">Стартовые монеты</div>
+            <div class="coin-input-row">
+                <input type="number" id="startCoinsInput" placeholder="100" min="0" value="100">
+                <button class="add" id="startCoinsSaveBtn">Сохранить</button>
+            </div>
+            
+            <div class="section-title">Аватар (URL)</div>
+            <div class="coin-input-row">
+                <input type="text" id="avatarUrlInput" placeholder="https://...">
+                <button class="add" id="avatarUrlSaveBtn">Добавить</button>
+            </div>
+            <div class="friend-search">
+                <input id="avatarPlayerSearch" placeholder="Кому (пусто=себе)" autocomplete="off">
+                <div class="autocomplete-suggestions" id="avatarAc" style="display:none;"></div>
+            </div>
+            <div id="customAvatarsList"></div>
+            
+            <div class="section-title">Музыка (URL mp3)</div>
+            <div class="coin-input-row">
+                <input type="text" id="musicUrlInput" placeholder="https://...">
+                <button class="add" id="musicUrlSaveBtn">Добавить</button>
+            </div>
+            <div class="friend-search">
+                <input id="musicPlayerSearch" placeholder="Кому (пусто=себе)" autocomplete="off">
+                <div class="autocomplete-suggestions" id="musicAc" style="display:none;"></div>
+            </div>
+            <div id="customMusicList"></div>
+        </div>
+    </div>
+
+    <!-- Детали игрока для админа -->
+    <div class="modal" id="adminPlayerDetailModal">
+        <div class="modal-content">
+            <button class="modal-close" id="adminPlayerDetailCloseBtn">✕</button>
+            <h3>👤 Игрок</h3>
+            <div id="adminPlayerDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- ==================== МОДЕРАТОР ==================== -->
+    <div class="modal" id="modModal">
+        <div class="modal-content mod-modal">
+            <button class="modal-close" id="modCloseBtn">✕</button>
+            <h3>🛡️ МОДЕРАТОР</h3>
+            
+            <div class="admin-row" id="modOnlineBtn"><span>🟢 Онлайн</span><span class="val" id="mOnline">0</span></div>
+            <div class="admin-row" id="modTotalBtn"><span>👥 Всего</span><span class="val" id="mTotal">0</span></div>
+            <div class="admin-row" id="modPlayingBtn"><span>🎮 Игры</span><span class="val" id="mPlaying">0</span></div>
+            <div class="admin-row" id="modWatchBtn"><span>👻 Смотреть игру</span><span class="val">→</span></div>
+            <div class="admin-row" id="modReportsBtn"><span>📋 Жалобы</span><span class="val">→</span></div>
+            
+            <button class="btn" id="modConsoleBtn">📟 Консоль</button>
+        </div>
+    </div>
+
+    <!-- Консоль -->
+    <div class="modal" id="consoleModal">
+        <div class="modal-content">
+            <button class="modal-close" id="consoleCloseBtn">✕</button>
+            <h3>📟 Консоль</h3>
+            <div id="consoleContent" class="console-content"></div>
+        </div>
+    </div>
+
+    <!-- Онлайн игроки -->
+    <div class="modal" id="onlinePlayersModal">
+        <div class="modal-content">
+            <button class="modal-close" id="onlinePlayersCloseBtn">✕</button>
+            <h3>🟢 Онлайн</h3>
+            <input id="onlineSearchInput2" placeholder="🔍 Поиск...">
+            <div id="onlinePlayersList2"></div>
+        </div>
+    </div>
+
+    <!-- Все игроки -->
+    <div class="modal" id="allPlayersModal2">
+        <div class="modal-content">
+            <button class="modal-close" id="allPlayersCloseBtn2">✕</button>
+            <h3>👥 Все игроки</h3>
+            <input id="allSearchInput2" placeholder="🔍 Поиск...">
+            <div id="allPlayersList2"></div>
+        </div>
+    </div>
+
+    <!-- Активные игры -->
+    <div class="modal" id="activeGamesModal2">
+        <div class="modal-content">
+            <button class="modal-close" id="activeGamesCloseBtn2">✕</button>
+            <h3>🎮 Игры</h3>
+            <input id="ghostSearchInput" placeholder="🔍 Код комнаты или ник игрока...">
+            <div id="ghostRoomsList"></div>
+            <div id="ghostRoomDetail" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- ==================== ФРИЛАНСЕР ==================== -->
+    <div class="modal" id="freelancerIntroModal">
+        <div class="modal-content">
+            <button class="modal-close" id="flCloseBtn">✕</button>
+            <h3>💼 ФРИЛАНСЕР</h3>
+            <p class="freelancer-desc">
+                Ты — фрилансер с <b>$100</b>. Стань профи!<br>
+                Акции $1-15 | ×2.5 волатильность<br>
+                Вход: <b>5 000 💵</b>
+            </p>
+            <button class="btn gold" id="flEnterBtn">💎 ВОЙТИ (5 000 💵)</button>
+            <button class="btn" id="flRatingViewBtn">📊 Рейтинг</button>
+        </div>
+    </div>
+
+    <!-- Рейтинг фрилансеров -->
+    <div class="modal" id="freelancerRatingModal">
+        <div class="modal-content">
+            <button class="modal-close" id="flRatingCloseBtn">✕</button>
+            <h3>🏆 РЕЙТИНГ</h3>
+            <div id="ratingTimer" class="rating-timer"></div>
+            <div id="ratingList"></div>
+        </div>
+    </div>
+
+    <!-- Подтверждение фрилансера -->
+    <div class="modal" id="flConfirmModal">
+        <div class="modal-content">
+            <button class="modal-close" id="flConfirmCloseBtn">✕</button>
+            <h3>✅ УЧАСТВУЕТЕ!</h3>
+            <p>Вы в соревновании!</p>
+            <button class="btn gold" id="flPlayBtn">🎮 ИГРАТЬ</button>
+        </div>
+    </div>
+
+    <!-- История -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <button class="modal-close" id="historyCloseBtn">✕</button>
+            <h3>📜 ИСТОРИЯ</h3>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- ==================== ПЛАВАЮЩИЕ КНОПКИ ==================== -->
+    <button class="music-btn" id="musicFloatBtn">🎵</button>
+    <button class="admin-btn" id="adminFloatBtn">🛡️</button>
+    <button class="mod-btn" id="modFloatBtn">🛡️</button>
+
+    <!-- ==================== КАСТОМНЫЙ INPUT ==================== -->
+    <div class="custom-input-overlay" id="customInputOverlay">
+        <div class="custom-input-box">
+            <h3 id="customInputTitle">Введите значение</h3>
+            <input type="number" id="customInputValue" placeholder="0">
+            <div class="hint" id="customInputHint"></div>
+            <div class="btn-row">
+                <button class="btn red" id="customInputCancel">Отмена</button>
+                <button class="btn gold" id="customInputOk">ОК</button>
+            </div>
+        </div>
+    </div>
 </div>
-<button class="music-btn" id="musicFloatBtn">🎵</button>
-<button class="admin-btn" id="adminFloatBtn">🛡️</button>
-<button class="mod-btn" id="modFloatBtn">🛡️</button>
-<div class="custom-input-overlay" id="customInputOverlay"><div class="custom-input-box"><h3 id="customInputTitle">Введите значение</h3><input type="number" id="customInputValue" placeholder="0"><div class="hint" id="customInputHint"></div><div class="btn-row"><button class="btn red" id="customInputCancel">Отмена</button><button class="btn gold" id="customInputOk">ОК</button></div></div></div>
-<div id="leftNotice" class="left-notice"></div>
-<div id="tradeNotice" class="trade-notice"></div>
-</body>
+
 <script src="js/index.js"></script>
+</body>
 </html>
